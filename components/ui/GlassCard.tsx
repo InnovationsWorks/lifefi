@@ -18,7 +18,6 @@ export function GlassCard({
   ...props
 }: GlassCardProps) {
   const base = gold ? "glass-gold" : "glass";
-  const Tag = animate ? motion.div : "div";
 
   if (!animate) {
     return (
