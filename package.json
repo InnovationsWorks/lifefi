@@ -11,8 +11,11 @@
   "dependencies": {
     "@fontsource/inter": "^5.2.8",
     "@fontsource/playfair-display": "^5.2.8",
+    "@lottiefiles/react-lottie-player": "^3.6.0",
     "@supabase/supabase-js": "^2.105.4",
+    "canvas-confetti": "^1.9.4",
     "framer-motion": "^12.38.0",
+    "lottie-react": "^2.4.1",
     "lucide-react": "^1.14.0",
     "next": "14.2.35",
     "react": "^18",
@@ -21,6 +24,7 @@
     "stripe": "^22.1.1"
   },
   "devDependencies": {
+    "@types/canvas-confetti": "^1.9.0",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",

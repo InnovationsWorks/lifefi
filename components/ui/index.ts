@@ -1,2 +1,10 @@
 export { GlassCard } from "./GlassCard";
 export { Button } from "./Button";
+export { CountUp } from "./CountUp";
+export { AnimatedSection, staggerItem } from "./AnimatedSection";
+export { MotionButton } from "./MotionButton";
+export { HealthScore } from "./HealthScore";
+export { CardCarousel } from "./CardCarousel";
+export { SpendingRing } from "./SpendingRing";
+export { DebtTracker } from "./DebtTracker";
+export { PaySuccessOverlay } from "./PaySuccessOverlay";
