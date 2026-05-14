@@ -6,7 +6,7 @@ import { Wallet, ChevronLeft, ChevronRight } from "lucide-react";
 import { CountUp } from "./CountUp";
 
 interface Card {
-  id: number;
+  id: string | number;
   name: string;
   last4: string;
   balance: number;

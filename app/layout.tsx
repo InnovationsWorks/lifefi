@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { ClientProviders } from "./client-providers";
 
 export const metadata: Metadata = {
   title: "LifeFi — Your Financial Life, Finally in Order",
@@ -21,7 +22,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="scroll-smooth">
       <body className="bg-[#0a0a0f] text-[#E8E8E8] antialiased min-h-screen">
-        {children}
+        <ClientProviders>{children}</ClientProviders>
       </body>
     </html>
   );

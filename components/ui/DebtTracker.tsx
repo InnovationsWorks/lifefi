@@ -4,7 +4,7 @@ import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
 
 interface DebtItem {
-  id: number;
+  id: string | number;
   name: string;
   balance: number;
   limit: number;
