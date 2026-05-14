@@ -361,7 +361,7 @@ export function QuickAddFAB() {
         whileTap={{ scale: 0.93 }}
         onClick={() => { if (open) { close(); } else { setOpen(true); } }}
         className="fixed bottom-6 right-24 z-[130] w-14 h-14 rounded-full flex items-center justify-center shadow-2xl"
-        style={{ background: "linear-gradient(135deg, #4F8EF7, #6366f1)" }}
+        style={{ background: "linear-gradient(135deg, #D4AF37, #b8962e)" }}
         aria-label="Quick add"
       >
         <motion.div animate={{ rotate: open ? 45 : 0 }} transition={{ duration: 0.2 }}>
