@@ -145,6 +145,13 @@ export function VoiceButton() {
 
   useEffect(() => () => stopListening(), [stopListening]);
 
+  // Allow external trigger via custom DOM event
+  useEffect(() => {
+    const handler = () => { if (state === "idle") startListening(); };
+    window.addEventListener("lifefi:startVoice", handler);
+    return () => window.removeEventListener("lifefi:startVoice", handler);
+  }, [state, startListening]);
+
   function handleConfirm() {
     if (!parsed) return;
     const day = parsed.dueDay ?? 1;

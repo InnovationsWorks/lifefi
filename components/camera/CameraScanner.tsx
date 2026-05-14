@@ -25,10 +25,17 @@ const MOCK_CARDS: ScannedResult[] = [
   { name: "Bank of America",     amount: 12000, dueDay: 8,  category: "card" },
 ];
 
+const MOCK_UTILITIES: ScannedResult[] = [
+  { name: "Duke Energy",         amount: 134.50, dueDay: 15, category: "electric" },
+  { name: "SoCalGas",            amount: 98.20,  dueDay: 10, category: "gas"      },
+  { name: "Aqua America",        amount: 55.00,  dueDay: 22, category: "water"    },
+  { name: "AT&T Internet",       amount: 85.00,  dueDay: 8,  category: "internet" },
+];
+
 type Phase = "scanning" | "result" | "done";
 
 interface CameraScannerProps {
-  mode: "bill" | "card";
+  mode: "bill" | "card" | "utility";
   onConfirm: (result: ScannedResult) => void;
   onClose: () => void;
 }
@@ -49,7 +56,7 @@ export function CameraScanner({ mode, onConfirm, onClose }: CameraScannerProps) 
       if (p < 1) {
         requestAnimationFrame(tick);
       } else {
-        const pool = mode === "card" ? MOCK_CARDS : MOCK_BILLS;
+        const pool = mode === "card" ? MOCK_CARDS : mode === "utility" ? MOCK_UTILITIES : MOCK_BILLS;
         setResult(pool[Math.floor(Math.random() * pool.length)]);
         setPhase("result");
       }
@@ -92,7 +99,7 @@ export function CameraScanner({ mode, onConfirm, onClose }: CameraScannerProps) 
             <div className="flex items-center gap-2">
               <Camera className="w-4 h-4 text-[#D4AF37]" />
               <span className="font-semibold text-[#E8E8E8] text-sm">
-                {mode === "card" ? "Scan Card" : "Scan Bill"}
+                {mode === "card" ? "Scan Card" : mode === "utility" ? "Scan Utility" : "Scan Bill"}
               </span>
             </div>
             <button onClick={onClose} className="text-[#9ca3af] hover:text-[#E8E8E8] transition-colors">
@@ -119,7 +126,7 @@ export function CameraScanner({ mode, onConfirm, onClose }: CameraScannerProps) 
                   <div className="text-center">
                     <Camera className="w-10 h-10 text-[#D4AF37]/40 mx-auto mb-2" />
                     <div className="text-xs text-[#9ca3af]">
-                      {mode === "card" ? "Position card in frame" : "Position bill in frame"}
+                      {mode === "card" ? "Position card in frame" : mode === "utility" ? "Position statement in frame" : "Position bill in frame"}
                     </div>
                   </div>
                 )}

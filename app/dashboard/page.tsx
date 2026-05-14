@@ -9,7 +9,7 @@ import {
   LayoutDashboard, CreditCard, FileText, Zap, Bell, Settings, LogOut,
   TrendingUp, TrendingDown, CheckCircle2, Clock, AlertTriangle, Wallet,
   Menu, X, ChevronRight, Calendar, Droplets, Flame, Wifi, Lightbulb, Building2,
-  Mic, Camera, Crown, Star,
+  Mic, Camera, Crown, Star, Sparkles,
 } from "lucide-react";
 
 import { CameraScanner } from "@/components/camera/CameraScanner";
@@ -48,15 +48,15 @@ const ringSegments = [
 ];
 
 const navItems = [
-  { id: "overview",  label: "Overview",  icon: LayoutDashboard },
-  { id: "cards",     label: "Cards",     icon: CreditCard      },
-  { id: "bills",     label: "Bills",     icon: FileText        },
-  { id: "utilities", label: "Utilities", icon: Zap             },
-  { id: "calendar",  label: "Calendar",  icon: Calendar        },
-  { id: "banks",     label: "Banks",     icon: Building2       },
-  { id: "alerts",    label: "Alerts",    icon: Bell            },
-  { id: "settings",  label: "Settings",  icon: Settings        },
-  { id: "pricing",   label: "Upgrade",   icon: Crown           },
+  { id: "overview",  label: "Overview",  icon: LayoutDashboard, link: null  },
+  { id: "cards",     label: "Cards",     icon: CreditCard,      link: null  },
+  { id: "bills",     label: "Bills",     icon: FileText,        link: null  },
+  { id: "utilities", label: "Utilities", icon: Zap,             link: null  },
+  { id: "calendar",  label: "Calendar",  icon: Calendar,        link: null  },
+  { id: "banks",     label: "Banks",     icon: Building2,       link: null  },
+  { id: "alerts",    label: "Alerts",    icon: Bell,            link: null  },
+  { id: "upgrade",   label: "Upgrade",   icon: Star,            link: "/pricing" },
+  { id: "settings",  label: "Settings",  icon: Settings,        link: null  },
 ];
 
 const statusConfig = {
@@ -343,12 +343,14 @@ function UpgradeModal({ onClose }: { onClose: () => void }) {
 }
 
 export default function DashboardPage() {
-  const { bills, cards, utilities, connectedBanks, payBill, addBill, addCard } = useApp();
+  const { bills, cards, utilities, connectedBanks, payBill, addBill, addCard, addUtility } = useApp();
   const [activeNav, setActiveNav]     = useState("overview");
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [payOverlay, setPayOverlay]   = useState<{ name: string; amount: number } | null>(null);
-  const [cameraMode, setCameraMode]   = useState<"bill" | "card" | null>(null);
+  const [cameraMode, setCameraMode]   = useState<"bill" | "card" | "utility" | null>(null);
   const [showUpgrade, setShowUpgrade] = useState(false);
+  const [isPremium]                   = useState(true);  // demo: toggle to false to see free UX
+  const [showBanner, setShowBanner]   = useState(true);
 
   const dueSoonCount  = bills.filter((b) => b.status === "due_soon").length;
   const notifications = dueSoonCount + cards.filter((c) => c.utilization > 40).length;
@@ -364,6 +366,8 @@ export default function DashboardPage() {
     const dueDateStr = `Due ${day}${["th","st","nd","rd"][((day%100)-20)%10]||["th","st","nd","rd"][day%100]||"th"}`;
     if (cameraMode === "card") {
       addCard({ name: result.name, last4: "0000", balance: 0, limit: result.amount, dueDate: dueDateStr, dueDay: day, color: "#4F8EF7", utilization: 0 });
+    } else if (cameraMode === "utility") {
+      addUtility({ name: result.name, amount: result.amount, trend: 0, color: "#f59e0b", category: "other" });
     } else {
       addBill({ name: result.name, amount: result.amount, dueDate: dueDateStr, dueDay: day, status: "unpaid", category: result.category, frequency: "monthly" });
     }
@@ -440,8 +444,8 @@ export default function DashboardPage() {
                       className="absolute left-0 top-1 bottom-1 w-0.5 rounded-full bg-gradient-to-b from-[#D4AF37] to-[#4F8EF7]" />
                   )}
                 </AnimatePresence>
-                {item.id === "pricing" ? (
-                  <Link href="/pricing" className="block">
+                {item.link ? (
+                  <Link href={item.link} className="block">
                     <motion.div
                       whileHover={{ backgroundColor: "rgba(212,175,55,0.08)" }}
                       whileTap={{ scale: 0.97 }}
@@ -449,8 +453,10 @@ export default function DashboardPage() {
                       className="w-full flex items-center gap-3 pl-4 pr-3 py-3 rounded-xl text-sm font-medium transition-colors text-[#D4AF37] border border-[#D4AF37]/20 bg-[#D4AF37]/[0.06]"
                     >
                       <item.icon className="w-4 h-4 shrink-0" />
-                      {item.label}
-                      <span className="ml-auto text-[10px] font-bold bg-[#D4AF37] text-[#0a0a0f] px-1.5 py-0.5 rounded-full">PRO</span>
+                      {isPremium ? "My Plan" : item.label}
+                      <span className="ml-auto text-[10px] font-bold bg-[#D4AF37] text-[#0a0a0f] px-1.5 py-0.5 rounded-full">
+                        {isPremium ? "PRO" : "FREE"}
+                      </span>
                     </motion.div>
                   </Link>
                 ) : (
@@ -479,17 +485,47 @@ export default function DashboardPage() {
           })}
         </nav>
 
-        {/* User */}
-        <div className="p-4 border-t border-white/5">
-          <div className="flex items-center gap-3 px-2 mb-3">
+        {/* User + Plan Card */}
+        <div className="p-4 border-t border-white/5 space-y-3">
+          {/* User row */}
+          <div className="flex items-center gap-3 px-2">
             <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[#4F8EF7] to-[#D4AF37] flex items-center justify-center text-white text-sm font-bold shrink-0">
               JD
             </div>
             <div className="min-w-0">
               <div className="text-sm font-medium text-[#E8E8E8] truncate">Jane Doe</div>
-              <div className="text-xs text-[#D4AF37]">Premium</div>
+              <div className={`text-xs font-medium ${isPremium ? "text-[#D4AF37]" : "text-[#9ca3af]"}`}>
+                {isPremium ? "Premium Plan" : "Free Plan"}
+              </div>
             </div>
           </div>
+
+          {/* Plan card */}
+          <div className={`rounded-2xl p-3 border ${isPremium ? "border-[#D4AF37]/30 bg-[#D4AF37]/[0.06]" : "border-white/10 bg-white/[0.04]"}`}>
+            <div className="flex items-center gap-2 mb-2">
+              <div className={`w-7 h-7 rounded-lg flex items-center justify-center ${isPremium ? "bg-[#D4AF37]/20" : "bg-white/10"}`}>
+                <Crown className={`w-3.5 h-3.5 ${isPremium ? "text-[#D4AF37]" : "text-[#9ca3af]"}`} />
+              </div>
+              <div>
+                <div className={`text-xs font-bold ${isPremium ? "text-[#D4AF37]" : "text-[#E8E8E8]"}`}>
+                  {isPremium ? "Premium" : "Free Plan"}
+                </div>
+                {isPremium && <div className="text-[10px] text-[#9ca3af]">$4.99/mo</div>}
+              </div>
+            </div>
+            <Link href="/pricing">
+              <button className={`w-full py-1.5 rounded-xl text-xs font-semibold transition-colors ${
+                isPremium
+                  ? "border border-white/10 text-[#9ca3af] hover:text-[#E8E8E8]"
+                  : "text-[#0a0a0f]"
+              }`}
+                style={!isPremium ? { background: "linear-gradient(135deg, #D4AF37, #b8962e)" } : undefined}
+              >
+                {isPremium ? "Manage Plan" : "⭐ Upgrade to Premium"}
+              </button>
+            </Link>
+          </div>
+
           <MotionButton variant="ghost" className="w-full flex items-center gap-3 px-4 py-2 text-sm text-[#9ca3af] border-0 rounded-xl justify-start">
             <LogOut className="w-4 h-4" />
             Sign Out
@@ -517,6 +553,10 @@ export default function DashboardPage() {
               </div>
             </div>
             <div className="flex items-center gap-3">
+              <Link href="/pricing" className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-[#D4AF37]/30 hover:bg-[#D4AF37]/10 transition-colors">
+                <Sparkles className="w-3.5 h-3.5 text-[#D4AF37]" />
+                <span className="text-xs font-semibold text-[#D4AF37]">Plans</span>
+              </Link>
               <MotionButton variant="ghost" className="relative p-2 border-white/10 rounded-xl !py-2 !px-2">
                 <Bell className="w-4 h-4 text-[#9ca3af]" />
                 {notifications > 0 && (
@@ -552,6 +592,88 @@ export default function DashboardPage() {
           {/* ── Overview ──────────────────────────────────────────────── */}
           {activeNav === "overview" && (
             <>
+              {/* ── Upgrade banner (free users only) ──────────────────── */}
+              {!isPremium && showBanner && (
+                <motion.div
+                  initial={{ opacity: 0, y: -8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  className="relative flex items-center justify-between gap-4 px-5 py-3.5 rounded-2xl overflow-hidden"
+                  style={{ background: "linear-gradient(135deg, #D4AF37 0%, #b8962e 50%, #8a6d1c 100%)" }}
+                >
+                  <div className="flex items-center gap-3">
+                    <Star className="w-5 h-5 text-[#0a0a0f] shrink-0" />
+                    <div>
+                      <div className="text-sm font-bold text-[#0a0a0f]">Upgrade to Premium</div>
+                      <div className="text-xs text-[#0a0a0f]/70">Connect your bank, use voice &amp; camera features — $4.99/mo</div>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2 shrink-0">
+                    <Link href="/pricing">
+                      <button className="px-4 py-1.5 rounded-xl text-xs font-bold bg-[#0a0a0f] text-[#D4AF37] hover:bg-[#0a0a0f]/80 transition-colors whitespace-nowrap">
+                        Upgrade Now
+                      </button>
+                    </Link>
+                    <button onClick={() => setShowBanner(false)} className="text-[#0a0a0f]/60 hover:text-[#0a0a0f] transition-colors">
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                </motion.div>
+              )}
+
+              {/* ── Take a Picture hero card ───────────────────────────── */}
+              <motion.div
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.05 }}
+                className="relative rounded-3xl overflow-hidden border border-[#D4AF37]/40 p-6"
+                style={{ background: "linear-gradient(135deg, rgba(212,175,55,0.08) 0%, rgba(79,142,247,0.05) 100%)" }}
+              >
+                {/* Pulse glow */}
+                <motion.div
+                  animate={{ scale: [1, 1.15, 1], opacity: [0.15, 0.35, 0.15] }}
+                  transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                  className="absolute inset-0 rounded-3xl"
+                  style={{ background: "radial-gradient(circle at 50% 40%, #D4AF37 0%, transparent 65%)", pointerEvents: "none" }}
+                />
+
+                <div className="relative z-10">
+                  {/* Icon */}
+                  <div className="flex justify-center mb-3">
+                    <div className="w-16 h-16 rounded-2xl flex items-center justify-center"
+                      style={{ background: "linear-gradient(135deg, #D4AF37, #b8962e)" }}>
+                      <Camera className="w-8 h-8 text-[#0a0a0f]" />
+                    </div>
+                  </div>
+
+                  {/* Text */}
+                  <div className="text-center mb-5">
+                    <h2 className="font-display text-xl font-bold text-[#E8E8E8] mb-1">📷 Take a Picture to Add</h2>
+                    <p className="text-sm text-[#9ca3af]">Snap a credit card, bill, or utility statement</p>
+                  </div>
+
+                  {/* Pill buttons */}
+                  <div className="flex gap-3 justify-center flex-wrap">
+                    {[
+                      { label: "💳 Credit Card", mode: "card"    as const, color: "#4F8EF7" },
+                      { label: "🧾 Bill",         mode: "bill"    as const, color: "#D4AF37" },
+                      { label: "⚡ Utility",      mode: "utility" as const, color: "#f59e0b" },
+                    ].map(({ label, mode, color }) => (
+                      <motion.button
+                        key={mode}
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={() => isPremium ? setCameraMode(mode) : setShowUpgrade(true)}
+                        className="flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold border transition-all"
+                        style={{ borderColor: `${color}50`, background: `${color}15`, color }}
+                      >
+                        {label}
+                      </motion.button>
+                    ))}
+                  </div>
+                </div>
+              </motion.div>
+
               {/* KPI Row */}
               <motion.div variants={staggerContainer} initial="hidden" animate="visible"
                 className="grid grid-cols-2 lg:grid-cols-4 gap-4">
@@ -881,11 +1003,12 @@ export default function DashboardPage() {
               <motion.button
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.97 }}
-                onClick={() => setCameraMode("card")}
-                className="w-full flex items-center justify-center gap-2 py-3 rounded-2xl border border-[#D4AF37]/30 text-[#D4AF37] hover:bg-[#D4AF37]/10 transition-colors font-medium text-sm"
+                onClick={() => isPremium ? setCameraMode("card") : setShowUpgrade(true)}
+                className="w-full flex items-center justify-center gap-2 py-3 rounded-2xl font-semibold text-sm"
+                style={{ background: "linear-gradient(135deg, #D4AF37, #b8962e)", color: "#0a0a0f" }}
               >
                 <Camera className="w-4 h-4" />
-                Scan Credit Card to Add
+                📷 Scan Credit Card to Add
               </motion.button>
 
               <div className="glass p-6">
@@ -915,21 +1038,21 @@ export default function DashboardPage() {
                 <motion.button
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.97 }}
-                  onClick={() => setShowUpgrade(true)}
+                  onClick={() => isPremium ? window.dispatchEvent(new Event("lifefi:startVoice")) : setShowUpgrade(true)}
                   className="flex-1 flex items-center justify-center gap-2 py-3 rounded-2xl font-semibold text-sm"
                   style={{ background: "linear-gradient(135deg, #D4AF37, #b8962e)", color: "#0a0a0f" }}
                 >
                   <Mic className="w-4 h-4" />
-                  Add Bill by Voice
+                  Add Bills by Voice
                 </motion.button>
                 <motion.button
                   whileHover={{ scale: 1.06 }}
                   whileTap={{ scale: 0.93 }}
-                  onClick={() => setCameraMode("bill")}
+                  onClick={() => isPremium ? setCameraMode("bill") : setShowUpgrade(true)}
                   className="flex items-center justify-center gap-2 px-5 py-3 rounded-2xl border border-[#D4AF37]/30 text-[#D4AF37] hover:bg-[#D4AF37]/10 transition-colors text-sm font-medium"
                 >
                   <Camera className="w-4 h-4" />
-                  Scan Bill
+                  📷 Scan Bill
                 </motion.button>
               </div>
 
