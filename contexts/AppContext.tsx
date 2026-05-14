@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useContext, useState, useCallback, ReactNode } from "react";
-import { Bill, CreditCard, Utility } from "@/lib/types";
+import { Bill, CreditCard, Utility, ConnectedBank } from "@/lib/types";
 
 // ── Initial mock data ──────────────────────────────────────────────────────
 
@@ -35,12 +35,14 @@ interface AppContextValue {
   bills: Bill[];
   cards: CreditCard[];
   utilities: Utility[];
+  connectedBanks: ConnectedBank[];
   privacyMode: boolean;
   lastUpdated: Date;
   addBill: (b: Omit<Bill, "id">) => void;
   payBill: (id: string) => void;
   addCard: (c: Omit<CreditCard, "id">) => void;
   addUtility: (u: Omit<Utility, "id">) => void;
+  addConnectedBank: (bank: ConnectedBank) => void;
   togglePrivacy: () => void;
 }
 
@@ -49,11 +51,12 @@ const AppContext = createContext<AppContextValue | null>(null);
 function uid() { return Math.random().toString(36).slice(2); }
 
 export function AppProvider({ children }: { children: ReactNode }) {
-  const [bills, setBills]           = useState<Bill[]>(INITIAL_BILLS);
-  const [cards, setCards]           = useState<CreditCard[]>(INITIAL_CARDS);
-  const [utilities, setUtilities]   = useState<Utility[]>(INITIAL_UTILITIES);
-  const [privacyMode, setPrivacy]   = useState(false);
-  const [lastUpdated, setUpdated]   = useState(new Date());
+  const [bills, setBills]               = useState<Bill[]>(INITIAL_BILLS);
+  const [cards, setCards]               = useState<CreditCard[]>(INITIAL_CARDS);
+  const [utilities, setUtilities]       = useState<Utility[]>(INITIAL_UTILITIES);
+  const [connectedBanks, setBanks]      = useState<ConnectedBank[]>([]);
+  const [privacyMode, setPrivacy]       = useState(false);
+  const [lastUpdated, setUpdated]       = useState(new Date());
 
   const touch = () => setUpdated(new Date());
 
@@ -77,10 +80,18 @@ export function AppProvider({ children }: { children: ReactNode }) {
     touch();
   }, []);
 
+  const addConnectedBank = useCallback((bank: ConnectedBank) => {
+    setBanks((prev) => {
+      const filtered = prev.filter((b) => b.institutionId !== bank.institutionId);
+      return [...filtered, bank];
+    });
+    touch();
+  }, []);
+
   const togglePrivacy = useCallback(() => setPrivacy((p) => !p), []);
 
   return (
-    <AppContext.Provider value={{ bills, cards, utilities, privacyMode, lastUpdated, addBill, payBill, addCard, addUtility, togglePrivacy }}>
+    <AppContext.Provider value={{ bills, cards, utilities, connectedBanks, privacyMode, lastUpdated, addBill, payBill, addCard, addUtility, addConnectedBank, togglePrivacy }}>
       {children}
     </AppContext.Provider>
   );

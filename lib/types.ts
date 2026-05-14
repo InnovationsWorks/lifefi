@@ -32,3 +32,32 @@ export interface Utility {
 }
 
 export type ItemType = "bill" | "card" | "utility";
+
+export interface PlaidAccount {
+  account_id:        string;
+  name:              string;
+  official_name:     string | null;
+  mask:              string | null;
+  type:              string;
+  subtype:           string | null;
+  current_balance:   number | null;
+  available_balance: number | null;
+  limit:             number | null;
+}
+
+export interface ConnectedBank {
+  institutionId:   string;
+  institutionName: string;
+  accounts:        PlaidAccount[];
+}
+
+export interface PlaidTransaction {
+  transaction_id: string;
+  account_id:     string;
+  name:           string;
+  amount:         number;
+  date:           string;
+  category:       string;
+  merchant_name:  string | null;
+  pending:        boolean;
+}

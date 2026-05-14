@@ -3,6 +3,8 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Wallet, CreditCard, FileText, Zap, Bell, ChevronRight, Check, X } from "lucide-react";
+import { PlaidLink } from "@/components/plaid/PlaidLink";
+import type { ConnectedBank } from "@/lib/types";
 
 const STEPS = [
   {
@@ -16,10 +18,11 @@ const STEPS = [
   {
     icon: CreditCard,
     color: "#4F8EF7",
-    title: "Track Your Cards",
-    subtitle: "All your credit cards in one place",
-    body: "Add all your credit cards to see balances, utilization, and due dates at a glance. Get notified before any payment hits.",
-    cta: "Got it",
+    title: "Connect Your Bank",
+    subtitle: "Live balances in one tap",
+    body: "Securely link your bank via Plaid to see real balances and transactions. Read-only, 256-bit encrypted, trusted by millions.",
+    cta: "Connect Later",
+    plaid: true,
   },
   {
     icon: FileText,
@@ -50,14 +53,20 @@ const STEPS = [
 const STORAGE_KEY = "lifefi_onboarding_done";
 
 export function OnboardingFlow() {
-  const [step, setStep]       = useState(0);
-  const [visible, setVisible] = useState(false);
-  const [exiting, setExiting] = useState(false);
+  const [step, setStep]             = useState(0);
+  const [visible, setVisible]       = useState(false);
+  const [exiting, setExiting]       = useState(false);
+  const [bankConnected, setBankConnected] = useState(false);
 
   useEffect(() => {
     const done = typeof window !== "undefined" && localStorage.getItem(STORAGE_KEY);
     if (!done) setVisible(true);
   }, []);
+
+  function handleBankConnected(_bank: ConnectedBank) { // eslint-disable-line @typescript-eslint/no-unused-vars
+    setBankConnected(true);
+    setTimeout(() => next(), 800);
+  }
 
   function finish() {
     setExiting(true);
@@ -148,6 +157,24 @@ export function OnboardingFlow() {
                 <p className="text-sm text-[#9ca3af] leading-relaxed">{s.body}</p>
               </motion.div>
             </AnimatePresence>
+
+            {/* Plaid button for step 1 */}
+            {(s as typeof STEPS[0] & { plaid?: boolean }).plaid && !bankConnected && (
+              <div className="mb-3">
+                <PlaidLink compact onConnected={handleBankConnected} />
+              </div>
+            )}
+
+            {bankConnected && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="flex items-center justify-center gap-2 py-3 rounded-xl bg-[#22c55e]/15 border border-[#22c55e]/30 text-[#22c55e] text-sm font-semibold mb-3"
+              >
+                <Check className="w-4 h-4" />
+                Bank connected!
+              </motion.div>
+            )}
 
             {/* CTA */}
             <motion.button

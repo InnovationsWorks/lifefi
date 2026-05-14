@@ -18,8 +18,10 @@
     "lottie-react": "^2.4.1",
     "lucide-react": "^1.14.0",
     "next": "14.2.35",
+    "plaid": "^42.2.0",
     "react": "^18",
     "react-dom": "^18",
+    "react-plaid-link": "^4.1.1",
     "recharts": "^3.8.1",
     "stripe": "^22.1.1",
     "tesseract.js": "^7.0.0"

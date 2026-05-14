@@ -8,10 +8,11 @@ import {
 import {
   LayoutDashboard, CreditCard, FileText, Zap, Bell, Settings, LogOut,
   TrendingUp, TrendingDown, CheckCircle2, Clock, AlertTriangle, Wallet,
-  Menu, X, ChevronRight, Calendar, Droplets, Flame, Wifi, Lightbulb,
+  Menu, X, ChevronRight, Calendar, Droplets, Flame, Wifi, Lightbulb, Building2,
 } from "lucide-react";
 import confetti from "canvas-confetti";
 
+import Link from "next/link";
 import { CountUp } from "@/components/ui/CountUp";
 import { AnimatedSection, staggerItem } from "@/components/ui/AnimatedSection";
 import { MotionButton } from "@/components/ui/MotionButton";
@@ -20,6 +21,7 @@ import { CardCarousel } from "@/components/ui/CardCarousel";
 import { SpendingRing } from "@/components/ui/SpendingRing";
 import { DebtTracker } from "@/components/ui/DebtTracker";
 import { PaySuccessOverlay } from "@/components/ui/PaySuccessOverlay";
+import { PlaidLink } from "@/components/plaid/PlaidLink";
 import { useApp } from "@/contexts/AppContext";
 import { useToast } from "@/contexts/ToastContext";
 
@@ -48,6 +50,7 @@ const navItems = [
   { id: "bills",     label: "Bills",     icon: FileText        },
   { id: "utilities", label: "Utilities", icon: Zap             },
   { id: "calendar",  label: "Calendar",  icon: Calendar        },
+  { id: "banks",     label: "Banks",     icon: Building2       },
   { id: "alerts",    label: "Alerts",    icon: Bell            },
   { id: "settings",  label: "Settings",  icon: Settings        },
 ];
@@ -288,7 +291,7 @@ function SmartAlertsPanel() {
 // ── Dashboard ──────────────────────────────────────────────────────────────
 
 export default function DashboardPage() {
-  const { bills, cards, utilities, payBill } = useApp();
+  const { bills, cards, utilities, connectedBanks, payBill } = useApp();
   const [activeNav, setActiveNav]     = useState("overview");
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [payOverlay, setPayOverlay]   = useState<{ name: string; amount: number } | null>(null);
@@ -491,6 +494,71 @@ export default function DashboardPage() {
                   </motion.div>
                 ))}
               </motion.div>
+
+              {/* Connected Accounts */}
+              <AnimatedSection className="glass p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-2">
+                    <Building2 className="w-4 h-4 text-[#D4AF37]" />
+                    <h2 className="font-semibold text-[#E8E8E8]">Connected Accounts</h2>
+                  </div>
+                  <Link href="/connect">
+                    <MotionButton variant="ghost" className="text-xs text-[#D4AF37] border-[#D4AF37]/30 py-1 px-3 flex items-center gap-1">
+                      {connectedBanks.length > 0 ? "Manage" : "+ Connect Bank"} <ChevronRight className="w-3 h-3" />
+                    </MotionButton>
+                  </Link>
+                </div>
+
+                {connectedBanks.length === 0 ? (
+                  <div className="flex flex-col sm:flex-row items-center gap-5 py-2">
+                    <div className="flex-1 min-w-0">
+                      <div className="text-sm font-medium text-[#E8E8E8] mb-1">Connect your bank account</div>
+                      <div className="text-xs text-[#9ca3af] leading-relaxed">
+                        See real balances and transactions from 12,000+ banks. Powered by Plaid — bank-level security, read-only access.
+                      </div>
+                    </div>
+                    <Link href="/connect" className="shrink-0">
+                      <motion.button
+                        whileHover={{ scale: 1.03 }}
+                        whileTap={{ scale: 0.97 }}
+                        className="flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-sm"
+                        style={{ background: "linear-gradient(135deg, #D4AF37, #b8962e)", color: "#0a0a0f" }}
+                      >
+                        <Building2 className="w-4 h-4" />
+                        Connect Bank
+                      </motion.button>
+                    </Link>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {connectedBanks.map((bank) => {
+                      const totalBal = bank.accounts.reduce((s, a) => s + (a.current_balance ?? 0), 0);
+                      return (
+                        <div key={bank.institutionId}
+                          className="flex items-center justify-between p-3 rounded-xl bg-white/[0.04]">
+                          <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 rounded-lg bg-[#22c55e]/20 flex items-center justify-center">
+                              <CheckCircle2 className="w-4 h-4 text-[#22c55e]" />
+                            </div>
+                            <div>
+                              <div className="text-sm font-medium text-[#E8E8E8]">{bank.institutionName}</div>
+                              <div className="text-xs text-[#9ca3af]">{bank.accounts.length} account{bank.accounts.length !== 1 ? "s" : ""}</div>
+                            </div>
+                          </div>
+                          <div className="text-sm font-bold text-[#E8E8E8]">
+                            ${Math.abs(totalBal).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                          </div>
+                        </div>
+                      );
+                    })}
+                    <Link href="/connect" className="block">
+                      <div className="text-xs text-center text-[#D4AF37] hover:text-[#b8962e] transition-colors py-1">
+                        + Connect another bank
+                      </div>
+                    </Link>
+                  </div>
+                )}
+              </AnimatedSection>
 
               {/* Health Score + Upcoming */}
               <div className="grid lg:grid-cols-3 gap-6">
@@ -831,6 +899,71 @@ export default function DashboardPage() {
                     </div>
                   );
                 })}
+              </div>
+            </AnimatedSection>
+          )}
+
+          {/* ── Banks view ────────────────────────────────────────────── */}
+          {activeNav === "banks" && (
+            <AnimatedSection>
+              <div className="glass p-6 rounded-3xl space-y-6">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Building2 className="w-4 h-4 text-[#D4AF37]" />
+                    <h2 className="font-semibold text-[#E8E8E8]">Connected Bank Accounts</h2>
+                  </div>
+                  <span className="text-xs text-[#9ca3af]">
+                    {connectedBanks.reduce((s, b) => s + b.accounts.length, 0)} account{connectedBanks.reduce((s, b) => s + b.accounts.length, 0) !== 1 ? "s" : ""}
+                  </span>
+                </div>
+
+                {connectedBanks.length === 0 && (
+                  <div className="text-center py-8 space-y-4">
+                    <div className="w-16 h-16 rounded-3xl bg-[#D4AF37]/20 flex items-center justify-center mx-auto">
+                      <Building2 className="w-7 h-7 text-[#D4AF37]" />
+                    </div>
+                    <div>
+                      <div className="font-semibold text-[#E8E8E8] mb-1">No banks connected yet</div>
+                      <div className="text-sm text-[#9ca3af]">Connect your bank to see real balances and transactions.</div>
+                    </div>
+                  </div>
+                )}
+
+                <PlaidLink />
+
+                {connectedBanks.length > 0 && (
+                  <div className="pt-2 border-t border-white/08">
+                    <div className="text-xs text-[#9ca3af] mb-3">All Accounts</div>
+                    <div className="space-y-2">
+                      {connectedBanks.flatMap((bank) =>
+                        bank.accounts.map((acc) => {
+                          const bal = acc.current_balance ?? acc.available_balance;
+                          return (
+                            <div key={acc.account_id}
+                              className="flex items-center justify-between p-3 rounded-xl bg-white/[0.04]">
+                              <div className="flex items-center gap-3">
+                                <div className="w-7 h-7 rounded-lg bg-[#4F8EF7]/20 flex items-center justify-center">
+                                  <CreditCard className="w-3.5 h-3.5 text-[#4F8EF7]" />
+                                </div>
+                                <div>
+                                  <div className="text-sm font-medium text-[#E8E8E8]">{acc.name}</div>
+                                  <div className="text-xs text-[#9ca3af]">
+                                    {bank.institutionName}{acc.mask ? ` ····${acc.mask}` : ""}
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="text-sm font-bold text-[#E8E8E8]">
+                                {bal !== null
+                                  ? `$${Math.abs(bal).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+                                  : "—"}
+                              </div>
+                            </div>
+                          );
+                        })
+                      )}
+                    </div>
+                  </div>
+                )}
               </div>
             </AnimatedSection>
           )}
