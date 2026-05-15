@@ -361,11 +361,11 @@ export default function DashboardPage() {
   const unpaidCount   = bills.filter((b) => b.status !== "paid").length;
   const upcomingBills = bills.filter((b) => b.status !== "paid").slice(0, 4);
 
-  function handleCameraConfirm(result: { name: string; amount: number; dueDay: number; category: string }) {
+  function handleCameraConfirm(result: { name: string; amount: number; dueDay: number; category: string; last4?: string; expiry?: string }) {
     const day = result.dueDay;
     const dueDateStr = `Due ${day}${["th","st","nd","rd"][((day%100)-20)%10]||["th","st","nd","rd"][day%100]||"th"}`;
     if (cameraMode === "card") {
-      addCard({ name: result.name, last4: "0000", balance: 0, limit: result.amount, dueDate: dueDateStr, dueDay: day, color: "#4F8EF7", utilization: 0 });
+      addCard({ name: result.name, last4: result.last4 ?? "0000", balance: 0, limit: result.amount, dueDate: dueDateStr, dueDay: day, color: "#4F8EF7", utilization: 0 });
     } else if (cameraMode === "utility") {
       addUtility({ name: result.name, amount: result.amount, trend: 0, color: "#f59e0b", category: "other" });
     } else {
@@ -552,8 +552,24 @@ export default function DashboardPage() {
                 <p className="text-xs text-[#9ca3af]">Tuesday, May 13, 2026</p>
               </div>
             </div>
-            <div className="flex items-center gap-3">
-              <Link href="/pricing" className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-[#D4AF37]/30 hover:bg-[#D4AF37]/10 transition-colors">
+            <div className="flex items-center gap-2.5">
+              {/* BIG CAMERA BUTTON */}
+              <motion.button
+                whileHover={{ scale: 1.04 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => isPremium ? setCameraMode("card") : setShowUpgrade(true)}
+                className="flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-sm"
+                style={{
+                  background: "linear-gradient(135deg, #D4AF37, #b8962e)",
+                  color: "#0a0a0f",
+                  boxShadow: "0 0 18px rgba(212,175,55,0.40)",
+                }}
+              >
+                <Camera className="w-4 h-4" />
+                <span className="hidden sm:inline">📷 Add a Card</span>
+                <span className="sm:hidden">📷</span>
+              </motion.button>
+              <Link href="/pricing" className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-[#D4AF37]/30 hover:bg-[#D4AF37]/10 transition-colors">
                 <Sparkles className="w-3.5 h-3.5 text-[#D4AF37]" />
                 <span className="text-xs font-semibold text-[#D4AF37]">Plans</span>
               </Link>
@@ -1046,13 +1062,14 @@ export default function DashboardPage() {
                   Add Bills by Voice
                 </motion.button>
                 <motion.button
-                  whileHover={{ scale: 1.06 }}
-                  whileTap={{ scale: 0.93 }}
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.96 }}
                   onClick={() => isPremium ? setCameraMode("bill") : setShowUpgrade(true)}
-                  className="flex items-center justify-center gap-2 px-5 py-3 rounded-2xl border border-[#D4AF37]/30 text-[#D4AF37] hover:bg-[#D4AF37]/10 transition-colors text-sm font-medium"
+                  className="flex-1 flex items-center justify-center gap-2 py-3 rounded-2xl font-bold text-sm"
+                  style={{ background: "linear-gradient(135deg, #4F8EF7, #3a6fd8)", color: "#fff" }}
                 >
                   <Camera className="w-4 h-4" />
-                  📷 Scan Bill
+                  📷 Scan a Bill
                 </motion.button>
               </div>
 
