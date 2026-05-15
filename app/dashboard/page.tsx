@@ -347,7 +347,7 @@ export default function DashboardPage() {
   const { bills, cards, utilities, connectedBanks, payBill, addBill, addCard, addUtility } = useApp();
   const [activeNav, setActiveNav]     = useState("overview");
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [payOverlay, setPayOverlay]   = useState<{ name: string; amount: number } | null>(null);
+  const [payOverlay, setPayOverlay]   = useState<{ name: string; amount: number; method?: string } | null>(null);
   const [pendingBill, setPendingBill] = useState<typeof bills[0] | null>(null);
   const [cameraMode, setCameraMode]   = useState<"bill" | "card" | "utility" | null>(null);
   const [showUpgrade, setShowUpgrade] = useState(false);
@@ -387,10 +387,10 @@ export default function DashboardPage() {
     setPendingBill(bill);
   }
 
-  function handlePayWithMethod(_method: string) {
+  function handlePayWithMethod(method: string) {
     if (!pendingBill) return;
     payBill(pendingBill.id);
-    setPayOverlay({ name: pendingBill.name, amount: pendingBill.amount });
+    setPayOverlay({ name: pendingBill.name, amount: pendingBill.amount, method });
     fireConfetti();
     setPendingBill(null);
   }
@@ -1260,6 +1260,7 @@ export default function DashboardPage() {
         visible={payOverlay !== null}
         billName={payOverlay?.name ?? ""}
         amount={payOverlay?.amount ?? 0}
+        method={payOverlay?.method}
         onDone={() => setPayOverlay(null)}
       />
 

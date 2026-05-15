@@ -13,10 +13,11 @@ interface PaySuccessOverlayProps {
   visible: boolean;
   billName: string;
   amount: number;
+  method?: string;
   onDone: () => void;
 }
 
-export function PaySuccessOverlay({ visible, billName, amount, onDone }: PaySuccessOverlayProps) {
+export function PaySuccessOverlay({ visible, billName, amount, method, onDone }: PaySuccessOverlayProps) {
   useEffect(() => {
     if (!visible) return;
     const t = setTimeout(onDone, 3000);
@@ -55,6 +56,9 @@ export function PaySuccessOverlay({ visible, billName, amount, onDone }: PaySucc
             <div className="text-[#9ca3af] text-sm mt-1">
               <span className="text-[#D4AF37] font-semibold">{billName}</span> — ${amount.toFixed(2)}
             </div>
+            {method && (
+              <div className="text-xs text-[#9ca3af] mt-1">via {method}</div>
+            )}
             <motion.div
               className="mt-4 text-xs text-[#9ca3af]"
               animate={{ opacity: [1, 0.4, 1] }}
