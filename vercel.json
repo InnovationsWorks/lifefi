@@ -1,11 +1,5 @@
 {
   "framework": "nextjs",
   "buildCommand": "npm run build",
-  "outputDirectory": ".next",
-  "env": {
-    "PLAID_CLIENT_ID": "@plaid_client_id",
-    "PLAID_SECRET": "@plaid_secret",
-    "PLAID_ENV": "@plaid_env",
-    "NEXT_PUBLIC_PLAID_ENV": "@plaid_env"
-  }
+  "outputDirectory": ".next"
 }
