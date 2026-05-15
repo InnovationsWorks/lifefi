@@ -24,6 +24,7 @@ import { CardCarousel } from "@/components/ui/CardCarousel";
 import { SpendingRing } from "@/components/ui/SpendingRing";
 import { DebtTracker } from "@/components/ui/DebtTracker";
 import { PaySuccessOverlay } from "@/components/ui/PaySuccessOverlay";
+import { PaymentMethodModal } from "@/components/ui/PaymentMethodModal";
 import { PlaidLink } from "@/components/plaid/PlaidLink";
 import { useApp } from "@/contexts/AppContext";
 import { useToast } from "@/contexts/ToastContext";
@@ -347,6 +348,7 @@ export default function DashboardPage() {
   const [activeNav, setActiveNav]     = useState("overview");
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [payOverlay, setPayOverlay]   = useState<{ name: string; amount: number } | null>(null);
+  const [pendingBill, setPendingBill] = useState<typeof bills[0] | null>(null);
   const [cameraMode, setCameraMode]   = useState<"bill" | "card" | "utility" | null>(null);
   const [showUpgrade, setShowUpgrade] = useState(false);
   const [isPremium]                   = useState(true);  // demo: toggle to false to see free UX
@@ -382,9 +384,15 @@ export default function DashboardPage() {
   }, []);
 
   function handlePay(bill: typeof bills[0]) {
-    payBill(bill.id);
-    setPayOverlay({ name: bill.name, amount: bill.amount });
+    setPendingBill(bill);
+  }
+
+  function handlePayWithMethod(_method: string) {
+    if (!pendingBill) return;
+    payBill(pendingBill.id);
+    setPayOverlay({ name: pendingBill.name, amount: pendingBill.amount });
     fireConfetti();
+    setPendingBill(null);
   }
 
   const carouselCards = cards.map((c) => ({
@@ -1237,6 +1245,15 @@ export default function DashboardPage() {
 
         </main>
       </div>
+
+      {/* ── Payment Method Picker ────────────────────────────────────────── */}
+      <PaymentMethodModal
+        visible={pendingBill !== null}
+        billName={pendingBill?.name ?? ""}
+        amount={pendingBill?.amount ?? 0}
+        onSelect={handlePayWithMethod}
+        onClose={() => setPendingBill(null)}
+      />
 
       {/* ── Pay Success Overlay ──────────────────────────────────────────── */}
       <PaySuccessOverlay
