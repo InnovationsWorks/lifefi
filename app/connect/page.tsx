@@ -32,11 +32,11 @@ const SUPPORTED_BANKS = [
 const FAQS = [
   {
     q: "Is this safe?",
-    a: "Yes. LifeFi uses Plaid, the most trusted financial data network, used by 7,000+ apps including Venmo and Robinhood. Your bank credentials are never stored by LifeFi — Plaid uses bank-level 256-bit encryption.",
+    a: "We have no access to any of your financial information as everything goes through Plaid.",
   },
   {
     q: "What data does LifeFi access?",
-    a: "LifeFi reads your account balances, transaction history, and account names. We never access your username, password, or Social Security Number. All data is read-only.",
+    a: "We never have access and cannot initiate transfers, payments, or any transactions of any kind. Your money is completely secure.",
   },
   {
     q: "Can Plaid or LifeFi move my money?",
