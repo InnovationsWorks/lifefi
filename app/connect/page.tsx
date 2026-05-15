@@ -39,10 +39,6 @@ const FAQS = [
     a: "We never have access and cannot initiate transfers, payments, or any transactions of any kind. Your money is completely secure.",
   },
   {
-    q: "Can Plaid or LifeFi move my money?",
-    a: "No. LifeFi has read-only access to your accounts. We cannot initiate transfers, payments, or any transactions of any kind. Your money is completely secure.",
-  },
-  {
     q: "Which banks are supported?",
     a: "Plaid supports over 12,000 banks and credit unions in the US, including all major institutions like Chase, Bank of America, Wells Fargo, Citibank, and virtually every community bank and credit union.",
   },
