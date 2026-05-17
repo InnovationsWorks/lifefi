@@ -263,7 +263,7 @@ export default function PricingPage() {
                         ? { background: "linear-gradient(135deg, #D4AF37, #b8962e)" }
                         : undefined
                     }
-                    disabled={plan.id === "free"}
+                    disabled={plan.id === "free" || loading}
                   >
                     {plan.cta}
                   </button>
