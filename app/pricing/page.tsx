@@ -116,9 +116,12 @@ export default function PricingPage() {
   const handleCheckout = async (planId: string) => {
     if (planId === 'free') return;
     setLoading(true);
-    const priceId = planId === 'premium'
-      ? process.env.NEXT_PUBLIC_STRIPE_PREMIUM_PRICE_ID
-      : process.env.NEXT_PUBLIC_STRIPE_PRO_PRICE_ID;
+    const PRICE_IDS: Record<string, string> = {
+      premium: process.env.NEXT_PUBLIC_STRIPE_PREMIUM_PRICE_ID ?? '',
+      bizfi: process.env.NEXT_PUBLIC_STRIPE_PRO_PRICE_ID ?? '',
+    };
+    const priceId = PRICE_IDS[planId];
+    if (!priceId) { setLoading(false); return; }
     try {
       const res = await fetch('/api/stripe/checkout', {
         method: 'POST',
