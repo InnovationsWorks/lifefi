@@ -344,7 +344,7 @@ function UpgradeModal({ onClose }: { onClose: () => void }) {
 }
 
 export default function DashboardPage() {
-  const { bills, cards, utilities, connectedBanks, payBill, addBill, addCard, addUtility } = useApp();
+  const { bills, cards, utilities, connectedBanks, payBill, addBill, addCard, addUtility, userName } = useApp();
   const [activeNav, setActiveNav]     = useState("overview");
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [payOverlay, setPayOverlay]   = useState<{ name: string; amount: number; method?: string } | null>(null);
@@ -501,7 +501,7 @@ export default function DashboardPage() {
               JD
             </div>
             <div className="min-w-0">
-              <div className="text-sm font-medium text-[#E8E8E8] truncate">Jane Doe</div>
+              <div className="text-sm font-medium text-[#E8E8E8] truncate">{ userName || "My Account" }</div>
               <div className={`text-xs font-medium ${isPremium ? "text-[#D4AF37]" : "text-[#9ca3af]"}`}>
                 {isPremium ? "Premium Plan" : "Free Plan"}
               </div>
@@ -556,7 +556,7 @@ export default function DashboardPage() {
                 <Menu className="w-5 h-5" />
               </motion.button>
               <div>
-                <h1 className="font-display text-xl font-bold text-[#E8E8E8]">Good morning, Jane 👋</h1>
+                <h1 className="font-display text-xl font-bold text-[#E8E8E8]">{ `Good morning, ${ userName?.split(" ")[0] || "there" } 👋` }</h1>
                 <p className="text-xs text-[#9ca3af]">Tuesday, May 13, 2026</p>
               </div>
             </div>

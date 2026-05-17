@@ -23,6 +23,11 @@ interface CardCarouselProps {
 const DRAG_THRESHOLD = 50;
 
 export function CardCarousel({ cards }: CardCarouselProps) {
+  if (!cards || cards.length === 0) return (
+    <div className="glass rounded-2xl p-6 text-center text-[#9ca3af]">
+      <p className="text-sm">No cards added yet. Tap + to add your first card.</p>
+    </div>
+  );
   const [active, setActive] = useState(0);
   const [direction, setDirection] = useState(0);
 
