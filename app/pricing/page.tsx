@@ -112,16 +112,22 @@ export default function PricingPage() {
   const [billing, setBilling] = useState<"monthly" | "annual">("monthly");
   const [selected, setSelected] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [checkoutError, setCheckoutError] = useState<string | null>(null);
 
   const handleCheckout = async (planId: string) => {
     if (planId === 'free') return;
+    setCheckoutError(null);
     setLoading(true);
     const PRICE_IDS: Record<string, string> = {
       premium: process.env.NEXT_PUBLIC_STRIPE_PREMIUM_PRICE_ID ?? '',
       bizfi: process.env.NEXT_PUBLIC_STRIPE_PRO_PRICE_ID ?? '',
     };
     const priceId = PRICE_IDS[planId];
-    if (!priceId) { setLoading(false); return; }
+    if (!priceId || priceId.startsWith('price_YOUR_')) {
+      setCheckoutError('Stripe price ID is not configured. Please contact support.');
+      setLoading(false);
+      return;
+    }
     try {
       const res = await fetch('/api/stripe/checkout', {
         method: 'POST',
@@ -129,9 +135,14 @@ export default function PricingPage() {
         body: JSON.stringify({ priceId }),
       });
       const data = await res.json();
-      if (data.url) window.location.href = data.url;
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        setCheckoutError(data.error ?? 'Could not start checkout. Please try again.');
+      }
     } catch (e) {
       console.error(e);
+      setCheckoutError('Network error. Please check your connection and try again.');
     }
     setLoading(false);
   };
@@ -192,6 +203,16 @@ export default function PricingPage() {
           ))}
         </motion.div>
       </div>
+
+      {/* Checkout error */}
+      {checkoutError && (
+        <div className="max-w-5xl mx-auto px-4 mb-4">
+          <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 text-sm">
+            <X className="w-4 h-4 shrink-0" />
+            {checkoutError}
+          </div>
+        </div>
+      )}
 
       {/* Plans grid */}
       <div className="max-w-5xl mx-auto px-4 pb-20">
