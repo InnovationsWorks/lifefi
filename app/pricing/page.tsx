@@ -111,6 +111,27 @@ const cardVariant = {
 export default function PricingPage() {
   const [billing, setBilling] = useState<"monthly" | "annual">("monthly");
   const [selected, setSelected] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  const handleCheckout = async (planId: string) => {
+    if (planId === 'free') return;
+    setLoading(true);
+    const priceId = planId === 'premium'
+      ? process.env.NEXT_PUBLIC_STRIPE_PREMIUM_PRICE_ID
+      : process.env.NEXT_PUBLIC_STRIPE_PRO_PRICE_ID;
+    try {
+      const res = await fetch('/api/stripe/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ priceId }),
+      });
+      const data = await res.json();
+      if (data.url) window.location.href = data.url;
+    } catch (e) {
+      console.error(e);
+    }
+    setLoading(false);
+  };
 
   return (
     <div className="min-h-screen bg-[#0a0a0f]">
