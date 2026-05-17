@@ -463,7 +463,7 @@ export default function DashboardPage() {
                       <item.icon className="w-4 h-4 shrink-0" />
                       {isPremium ? "My Plan" : item.label}
                       <span className="ml-auto text-[10px] font-bold bg-[#D4AF37] text-[#0a0a0f] px-1.5 py-0.5 rounded-full">
-                        {isPremium ? "PRO" : "FREE"}
+                        {isPremium ? "STARTER" : "FREE"}
                       </span>
                     </motion.div>
                   </Link>
