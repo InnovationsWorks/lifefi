@@ -229,7 +229,7 @@ export default function PricingPage() {
 
                   {/* CTA */}
                   <button
-                    onClick={() => setSelected(plan.id)}
+                    onClick={() => { setSelected(plan.id); handleCheckout(plan.id); }}
                     className={`w-full py-3 rounded-xl font-semibold text-sm mb-6 transition-all ${
                       plan.id === "free"
                         ? "border border-white/15 text-[#9ca3af] cursor-default"
