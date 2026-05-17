@@ -317,7 +317,7 @@ function UpgradeModal({ onClose }: { onClose: () => void }) {
           </div>
           <h3 className="font-display text-xl font-bold text-[#E8E8E8] mb-2">Premium Feature</h3>
           <p className="text-sm text-[#9ca3af] mb-6 leading-relaxed">
-            This feature is available on the Premium plan ($4.99/mo). Upgrade for unlimited bills, voice input, camera scanning, and smart insights.
+            This feature is available on the Premium plan ($12.99/mo). Upgrade for unlimited bills, voice input, camera scanning, and smart insights.
           </p>
           <div className="space-y-2">
             <Link href="/pricing">
@@ -518,7 +518,7 @@ export default function DashboardPage() {
                 <div className={`text-xs font-bold ${isPremium ? "text-[#D4AF37]" : "text-[#E8E8E8]"}`}>
                   {isPremium ? "Premium" : "Free Plan"}
                 </div>
-                {isPremium && <div className="text-[10px] text-[#9ca3af]">$4.99/mo</div>}
+                {isPremium && <div className="text-[10px] text-[#9ca3af]">$12.99/mo</div>}
               </div>
             </div>
             <Link href="/pricing">
@@ -629,7 +629,7 @@ export default function DashboardPage() {
                     <Star className="w-5 h-5 text-[#0a0a0f] shrink-0" />
                     <div>
                       <div className="text-sm font-bold text-[#0a0a0f]">Upgrade to Premium</div>
-                      <div className="text-xs text-[#0a0a0f]/70">Connect your bank, use voice &amp; camera features — $4.99/mo</div>
+                      <div className="text-xs text-[#0a0a0f]/70">Connect your bank, use voice &amp; camera features — $12.99/mo</div>
                     </div>
                   </div>
                   <div className="flex items-center gap-2 shrink-0">
