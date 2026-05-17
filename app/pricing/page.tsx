@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import {
-  Check, X, Zap, Crown, Briefcase, Wallet, ArrowLeft, Star,
+  Check, X, Zap, Crown, Briefcase, ArrowLeft, Star,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -30,28 +30,6 @@ interface Plan {
 }
 
 const PLANS: Plan[] = [
-  {
-    id: "free",
-    name: "Free",
-    price: "$0",
-    period: "forever",
-    tagline: "Get started with the basics",
-    icon: Wallet,
-    color: "#9ca3af",
-    features: [
-      { text: "Up to 5 bills tracked",       included: true  },
-      { text: "Up to 2 credit cards",         included: true  },
-      { text: "Basic spending overview",       included: true  },
-      { text: "Due-date reminders",           included: true  },
-      { text: "Unlimited bills & cards",      included: false },
-      { text: "Voice input (AI add bills)",   included: false },
-      { text: "Smart alerts & insights",      included: false },
-      { text: "Camera bill scanning",         included: false },
-      { text: "Financial health score",       included: false },
-      { text: "Business expense tracking",    included: false },
-    ],
-    cta: "Current Plan",
-  },
   {
     id: "starter",
     name: "Starter",
@@ -141,7 +119,7 @@ export default function PricingPage() {
   const [checkoutError, setCheckoutError] = useState<string | null>(null);
 
   const handleCheckout = async (planId: string) => {
-    if (planId === 'free' || planId === 'bizfi') return;
+    if (planId === 'bizfi') return;
     setCheckoutError(null);
     setLoading(true);
     const PRICE_IDS: Record<string, string> = {
@@ -177,7 +155,7 @@ export default function PricingPage() {
   return (
     <div className="min-h-screen bg-[#0a0a0f]">
       {/* Back nav */}
-      <div className="max-w-7xl mx-auto px-4 pt-6">
+      <div className="max-w-5xl mx-auto px-4 pt-6">
         <Link href="/dashboard" className="inline-flex items-center gap-2 text-sm text-[#9ca3af] hover:text-[#E8E8E8] transition-colors">
           <ArrowLeft className="w-4 h-4" />
           Back to Dashboard
@@ -199,7 +177,7 @@ export default function PricingPage() {
             Choose your plan
           </h1>
           <p className="text-[#9ca3af] text-lg max-w-xl mx-auto">
-            Start free, upgrade when you&apos;re ready. No hidden fees, cancel anytime.
+            Simple pricing, no hidden fees. Cancel anytime.
           </p>
         </motion.div>
 
@@ -242,12 +220,12 @@ export default function PricingPage() {
       )}
 
       {/* Plans grid */}
-      <div className="max-w-7xl mx-auto px-4 pb-20">
+      <div className="max-w-5xl mx-auto px-4 pb-20">
         <motion.div
           variants={staggerContainer}
           initial="hidden"
           animate="visible"
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5"
+          className="grid grid-cols-1 md:grid-cols-3 gap-6"
         >
           {PLANS.map((plan) => {
             const isPremium = plan.id === "premium";
@@ -366,7 +344,7 @@ export default function PricingPage() {
           <div>Cancel anytime — no contracts, no surprise fees.</div>
           <div className="pt-4">
             <Link href="/dashboard" className="text-[#D4AF37] hover:text-[#b8962e] transition-colors underline underline-offset-2">
-              Continue with Free plan →
+              Back to Dashboard →
             </Link>
           </div>
         </motion.div>
