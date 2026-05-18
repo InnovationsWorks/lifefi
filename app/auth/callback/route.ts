@@ -19,7 +19,7 @@ export async function GET(request: Request) {
             {
               id: user.id,
               full_name: (user.user_metadata?.full_name as string) ?? '',
-              subscription_tier: 'free',
+              subscription_tier: 'personal',
             },
             { onConflict: 'id', ignoreDuplicates: true }
           )

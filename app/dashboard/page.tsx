@@ -377,17 +377,17 @@ export default function DashboardPage() {
             setUserProfile(data.profile);
             return data.profile.subscription_tier as string;
           }
-          return 'free';
+          return 'personal';
         })
-        .catch(() => 'free');
+        .catch(() => 'personal');
 
     if (upgraded) {
-      // Poll until subscription_tier changes from 'free' (webhook may lag)
+      // Poll until subscription_tier changes from 'personal' to a higher tier (webhook may lag)
       let attempts = 0;
       const poll = async () => {
         const tier = await fetchProfile();
         attempts++;
-        if (tier !== 'free' || attempts >= 10) {
+        if (tier !== 'personal' || attempts >= 10) {
           setActivating(false);
           window.history.replaceState({}, '', '/dashboard');
         } else {

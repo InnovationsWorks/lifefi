@@ -19,7 +19,7 @@ export async function GET() {
     return NextResponse.json({
       profile: profile
         ? { ...profile, email: user.email }
-        : { id: user.id, email: user.email, full_name: '', subscription_tier: 'free' },
+        : { id: user.id, email: user.email, full_name: '', subscription_tier: 'personal' },
       user: { id: user.id, email: user.email },
     })
   } catch {
