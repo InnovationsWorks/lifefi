@@ -46,7 +46,7 @@ const plans = [
     name: "LifeFi Personal", price: "$4.99",  period: "/month", description: "Your personal finances, finally under control",
     badge: "First Month Free", comingSoon: false,
     features: ["Unlimited bills & cards", "Voice input (AI add bills)", "Smart alerts & insights", "Camera bill scanning", "Financial health score", "Bank account sync (Plaid)", "Spending analytics + charts"],
-    cta: "Get Started", href: "/pricing", highlight: true,
+    cta: "Get Started", href: "/signup", highlight: true,
   },
   {
     name: "LifeFi Business", price: "$7.99",  period: "/month", description: "Track, manage, and grow your business finances",
@@ -90,9 +90,11 @@ export default function LandingPage() {
           </div>
           <div className="flex items-center gap-3">
             <Link href="/login"  className="text-sm text-[#9ca3af] hover:text-[#E8E8E8] transition-colors px-4 py-2">Sign In</Link>
-            <MotionButton variant="primary" className="text-sm py-2 px-5" onClick={() => {}}>
-              Get Started
-            </MotionButton>
+            <Link href="/signup">
+              <MotionButton variant="primary" className="text-sm py-2 px-5" onClick={() => {}}>
+                Get Started
+              </MotionButton>
+            </Link>
           </div>
         </div>
       </nav>
