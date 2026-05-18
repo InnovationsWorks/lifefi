@@ -82,7 +82,7 @@ const PLANS: Plan[] = [
     tagline: "Personal + business finances, one subscription",
     icon: Zap,
     color: "#8B5CF6",
-    badge: "Best Value",
+    badge: "Coming Soon",
     comingSoon: true,
     savings: "Saves $2.99/mo",
     features: [
