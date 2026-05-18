@@ -315,9 +315,9 @@ function UpgradeModal({ onClose }: { onClose: () => void }) {
           <div className="w-14 h-14 rounded-2xl bg-[#D4AF37]/20 flex items-center justify-center mx-auto mb-4">
             <Crown className="w-7 h-7 text-[#D4AF37]" />
           </div>
-          <h3 className="font-display text-xl font-bold text-[#E8E8E8] mb-2">Premium Feature</h3>
+          <h3 className="font-display text-xl font-bold text-[#E8E8E8] mb-2">LifeFi Personal Feature</h3>
           <p className="text-sm text-[#9ca3af] mb-6 leading-relaxed">
-            This feature is available on the Premium plan ($12.99/mo). Upgrade for unlimited bills, voice input, camera scanning, and smart insights.
+            This feature is available on the LifeFi Personal plan ($4.99/mo). Upgrade for unlimited bills, voice input, camera scanning, and smart insights.
           </p>
           <div className="space-y-2">
             <Link href="/pricing">
@@ -463,7 +463,7 @@ export default function DashboardPage() {
                       <item.icon className="w-4 h-4 shrink-0" />
                       {isPremium ? "My Plan" : item.label}
                       <span className="ml-auto text-[10px] font-bold bg-[#D4AF37] text-[#0a0a0f] px-1.5 py-0.5 rounded-full">
-                        {isPremium ? "STARTER" : "FREE"}
+                        {isPremium ? "PERSONAL" : "FREE"}
                       </span>
                     </motion.div>
                   </Link>
@@ -503,7 +503,7 @@ export default function DashboardPage() {
             <div className="min-w-0">
               <div className="text-sm font-medium text-[#E8E8E8] truncate">{ userName || "My Account" }</div>
               <div className={`text-xs font-medium ${isPremium ? "text-[#D4AF37]" : "text-[#9ca3af]"}`}>
-                {isPremium ? "Premium Plan" : "Free Plan"}
+                {isPremium ? "LifeFi Personal" : "Free Plan"}
               </div>
             </div>
           </div>
@@ -516,9 +516,9 @@ export default function DashboardPage() {
               </div>
               <div>
                 <div className={`text-xs font-bold ${isPremium ? "text-[#D4AF37]" : "text-[#E8E8E8]"}`}>
-                  {isPremium ? "Premium" : "Free Plan"}
+                  {isPremium ? "LifeFi Personal" : "Free Plan"}
                 </div>
-                {isPremium && <div className="text-[10px] text-[#9ca3af]">$12.99/mo</div>}
+                {isPremium && <div className="text-[10px] text-[#9ca3af]">$4.99/mo</div>}
               </div>
             </div>
             <Link href="/pricing">
@@ -628,8 +628,8 @@ export default function DashboardPage() {
                   <div className="flex items-center gap-3">
                     <Star className="w-5 h-5 text-[#0a0a0f] shrink-0" />
                     <div>
-                      <div className="text-sm font-bold text-[#0a0a0f]">Upgrade to Premium</div>
-                      <div className="text-xs text-[#0a0a0f]/70">Connect your bank, use voice &amp; camera features — $12.99/mo</div>
+                      <div className="text-sm font-bold text-[#0a0a0f]">Upgrade to LifeFi Personal</div>
+                      <div className="text-xs text-[#0a0a0f]/70">Connect your bank, use voice &amp; camera features — $4.99/mo</div>
                     </div>
                   </div>
                   <div className="flex items-center gap-2 shrink-0">
