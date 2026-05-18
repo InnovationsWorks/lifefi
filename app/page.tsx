@@ -457,7 +457,7 @@ export default function LandingPage() {
           <div className="flex items-center gap-6 text-sm text-[#9ca3af]">
             <a href="#" className="hover:text-[#E8E8E8] transition-colors">Privacy</a>
             <a href="#" className="hover:text-[#E8E8E8] transition-colors">Terms</a>
-            <a href="#" className="hover:text-[#E8E8E8] transition-colors">Support</a>
+            <a href="mailto:support@lifefi.ai" className="hover:text-[#E8E8E8] transition-colors">Support</a>
           </div>
           <div className="text-sm text-[#9ca3af]">© 2026 LifeFi. All rights reserved.</div>
         </div>

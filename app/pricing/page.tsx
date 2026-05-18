@@ -128,7 +128,7 @@ export default function PricingPage() {
     };
     const priceId = PRICE_IDS[planId];
     if (!priceId || priceId.startsWith('price_YOUR_')) {
-      setCheckoutError('Stripe price ID is not configured. Please contact support.');
+      setCheckoutError('Stripe price ID is not configured. Please email support@lifefi.ai');
       setLoading(false);
       return;
     }
