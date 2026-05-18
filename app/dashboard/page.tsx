@@ -1,6 +1,8 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { createClient } from "@/lib/supabase/client";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
@@ -58,6 +60,13 @@ const navItems = [
   { id: "upgrade",   label: "Upgrade",   icon: Star,            link: "/pricing" },
   { id: "settings",  label: "Settings",  icon: Settings,        link: null  },
 ];
+
+const PLAN_CONFIG = {
+  personal: { name: "LifeFi Personal", price: "$4.99/mo", badge: "PERSONAL" },
+  bizfi:    { name: "LifeFi Business", price: "$7.99/mo", badge: "BUSINESS" },
+  duo:      { name: "LifeFi Duo",      price: "$9.99/mo", badge: "DUO"      },
+} as const;
+type PlanKey = keyof typeof PLAN_CONFIG;
 
 const statusConfig = {
   paid:     { label: "Paid",     color: "#22c55e", icon: CheckCircle2  },
@@ -350,8 +359,36 @@ export default function DashboardPage() {
   const [pendingBill, setPendingBill] = useState<typeof bills[0] | null>(null);
   const [cameraMode, setCameraMode]   = useState<"bill" | "card" | "utility" | null>(null);
   const [showUpgrade, setShowUpgrade] = useState(false);
-  const [isPremium]                   = useState(true);  // demo: toggle to false to see free UX
   const [showBanner, setShowBanner]   = useState(true);
+  const [userProfile, setUserProfile] = useState<{ plan: string; email: string; full_name?: string } | null>(null);
+  const router = useRouter();
+
+  useEffect(() => {
+    fetch('/api/user/profile')
+      .then(r => r.ok ? r.json() : null)
+      .then(data => { if (data?.profile) setUserProfile(data.profile); })
+      .catch(() => {});
+  }, []);
+
+  const isPremium   = ['personal', 'bizfi', 'duo'].includes(userProfile?.plan ?? '');
+  const currentPlan = PLAN_CONFIG[userProfile?.plan as PlanKey] ?? null;
+  const planName    = currentPlan?.name  ?? 'Free Plan';
+  const planPrice   = currentPlan?.price ?? '';
+  const planBadge   = currentPlan?.badge ?? 'FREE';
+  const userInitials = (() => {
+    const n = userProfile?.full_name?.trim();
+    if (n) {
+      const p = n.split(' ').filter(Boolean);
+      return (p.length >= 2 ? p[0][0] + p[p.length - 1][0] : n.slice(0, 2)).toUpperCase();
+    }
+    return (userProfile?.email?.[0] ?? '?').toUpperCase();
+  })();
+
+  async function handleSignOut() {
+    const supabase = createClient();
+    await supabase.auth.signOut();
+    router.push('/login');
+  }
 
   const dueSoonCount  = bills.filter((b) => b.status === "due_soon").length;
   const notifications = dueSoonCount + cards.filter((c) => c.utilization > 40).length;
@@ -462,7 +499,7 @@ export default function DashboardPage() {
                       <item.icon className="w-4 h-4 shrink-0" />
                       {isPremium ? "My Plan" : item.label}
                       <span className="ml-auto text-[10px] font-bold bg-[#D4AF37] text-[#0a0a0f] px-1.5 py-0.5 rounded-full">
-                        {isPremium ? "PERSONAL" : "FREE"}
+                        {planBadge}
                       </span>
                     </motion.div>
                   </Link>
@@ -497,12 +534,12 @@ export default function DashboardPage() {
           {/* User row */}
           <div className="flex items-center gap-3 px-2">
             <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[#4F8EF7] to-[#D4AF37] flex items-center justify-center text-white text-sm font-bold shrink-0">
-              JD
+              {userInitials}
             </div>
             <div className="min-w-0">
-              <div className="text-sm font-medium text-[#E8E8E8] truncate">{ userName || "My Account" }</div>
+              <div className="text-sm font-medium text-[#E8E8E8] truncate">{userProfile?.full_name || userProfile?.email || userName || "My Account"}</div>
               <div className={`text-xs font-medium ${isPremium ? "text-[#D4AF37]" : "text-[#9ca3af]"}`}>
-                {isPremium ? "LifeFi Personal" : "Free Plan"}
+                {planName}
               </div>
             </div>
           </div>
@@ -515,9 +552,9 @@ export default function DashboardPage() {
               </div>
               <div>
                 <div className={`text-xs font-bold ${isPremium ? "text-[#D4AF37]" : "text-[#E8E8E8]"}`}>
-                  {isPremium ? "LifeFi Personal" : "Free Plan"}
+                  {planName}
                 </div>
-                {isPremium && <div className="text-[10px] text-[#9ca3af]">$4.99/mo</div>}
+                {isPremium && planPrice && <div className="text-[10px] text-[#9ca3af]">{planPrice}</div>}
               </div>
             </div>
             <Link href="/pricing">
@@ -533,10 +570,13 @@ export default function DashboardPage() {
             </Link>
           </div>
 
-          <MotionButton variant="ghost" className="w-full flex items-center gap-3 px-4 py-2 text-sm text-[#9ca3af] border-0 rounded-xl justify-start">
+          <button
+            onClick={handleSignOut}
+            className="w-full flex items-center gap-3 px-4 py-2 text-sm text-[#9ca3af] hover:text-[#E8E8E8] rounded-xl transition-colors"
+          >
             <LogOut className="w-4 h-4" />
             Sign Out
-          </MotionButton>
+          </button>
         </div>
       </motion.aside>
 
@@ -555,7 +595,7 @@ export default function DashboardPage() {
                 <Menu className="w-5 h-5" />
               </motion.button>
               <div>
-                <h1 className="font-display text-xl font-bold text-[#E8E8E8]">{ `Good morning, ${ userName?.split(" ")[0] || "there" } 👋` }</h1>
+                <h1 className="font-display text-xl font-bold text-[#E8E8E8]">{`Good morning, ${userProfile?.full_name?.split(" ")[0] || userName?.split(" ")[0] || "there"} 👋`}</h1>
                 <p className="text-xs text-[#9ca3af]">Tuesday, May 13, 2026</p>
               </div>
             </div>
