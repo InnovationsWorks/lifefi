@@ -16,9 +16,23 @@ function LoginForm() {
   const [form, setForm] = useState({ email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [resetLoading, setResetLoading] = useState(false);
+  const [resetSent, setResetSent] = useState(false);
   const [error, setError] = useState(
     callbackError === "auth_callback_failed" ? "Email confirmation failed. Please try again." : ""
   );
+
+  async function handleForgotPassword() {
+    if (!form.email) { setError("Enter your email address above, then click Forgot Password."); return; }
+    setResetLoading(true);
+    setError("");
+    const supabase = createClient();
+    await supabase.auth.resetPasswordForEmail(form.email, {
+      redirectTo: `${window.location.origin}/auth/callback`,
+    });
+    setResetSent(true);
+    setResetLoading(false);
+  }
 
   function update(field: string) {
     return (e: React.ChangeEvent<HTMLInputElement>) =>
@@ -70,7 +84,17 @@ function LoginForm() {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-[#E8E8E8] mb-2">Password</label>
+          <div className="flex items-center justify-between mb-2">
+            <label className="text-sm font-medium text-[#E8E8E8]">Password</label>
+            <button
+              type="button"
+              onClick={handleForgotPassword}
+              disabled={resetLoading}
+              className="text-xs text-[#4F8EF7] hover:text-[#7EB3FF] transition-colors"
+            >
+              {resetLoading ? "Sending…" : resetSent ? "Email sent ✓" : "Forgot password?"}
+            </button>
+          </div>
           <div className="relative">
             <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#9ca3af]" />
             <input
@@ -162,6 +186,19 @@ export default function LoginPage() {
             Sign up free
           </Link>
         </motion.p>
+
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.4 }}
+          className="text-center text-xs text-[#4a5568] mt-8 flex items-center justify-center gap-4"
+        >
+          <Link href="/terms" className="hover:text-[#9ca3af] transition-colors">Terms</Link>
+          <span>·</span>
+          <Link href="/terms#privacy" className="hover:text-[#9ca3af] transition-colors">Privacy</Link>
+          <span>·</span>
+          <a href="mailto:support@lifefi.ai" className="hover:text-[#9ca3af] transition-colors">Support</a>
+        </motion.div>
       </div>
     </div>
   );

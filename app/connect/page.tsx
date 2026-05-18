@@ -289,7 +289,7 @@ export default function ConnectPage() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5 }}
-          className="text-center text-xs text-[#9ca3af] pb-6"
+          className="text-center text-xs text-[#9ca3af] pb-2"
         >
           Bank connection powered by{" "}
           <span className="text-[#E8E8E8] font-medium">Plaid Technologies, Inc.</span>
@@ -298,6 +298,18 @@ export default function ConnectPage() {
         </motion.div>
 
       </main>
+
+      {/* Footer */}
+      <footer className="border-t border-white/5 py-6 px-6">
+        <div className="max-w-2xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-[#4a5568]">
+          <span>© 2026 LifeFi. All rights reserved.</span>
+          <div className="flex items-center gap-5">
+            <Link href="/terms" className="hover:text-[#9ca3af] transition-colors">Terms</Link>
+            <Link href="/terms#privacy" className="hover:text-[#9ca3af] transition-colors">Privacy</Link>
+            <a href="mailto:support@lifefi.ai" className="hover:text-[#9ca3af] transition-colors">Support</a>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }

@@ -174,8 +174,8 @@ function SignupForm() {
           />
           <label htmlFor="terms" className="text-xs text-[#9ca3af] leading-relaxed">
             I agree to LifeFi&apos;s{" "}
-            <a href="#" className="text-[#4F8EF7] hover:underline">Terms of Service</a> and{" "}
-            <a href="#" className="text-[#4F8EF7] hover:underline">Privacy Policy</a>
+            <Link href="/terms" className="text-[#4F8EF7] hover:underline">Terms of Service</Link> and{" "}
+            <Link href="/terms#privacy" className="text-[#4F8EF7] hover:underline">Privacy Policy</Link>
           </label>
         </div>
 
@@ -251,6 +251,19 @@ export default function SignupPage() {
             Sign in
           </Link>
         </motion.p>
+
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.4 }}
+          className="text-center text-xs text-[#4a5568] mt-8 flex items-center justify-center gap-4"
+        >
+          <Link href="/terms" className="hover:text-[#9ca3af] transition-colors">Terms</Link>
+          <span>·</span>
+          <Link href="/terms#privacy" className="hover:text-[#9ca3af] transition-colors">Privacy</Link>
+          <span>·</span>
+          <a href="mailto:support@lifefi.ai" className="hover:text-[#9ca3af] transition-colors">Support</a>
+        </motion.div>
       </div>
     </div>
   );

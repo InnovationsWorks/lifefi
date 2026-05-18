@@ -119,13 +119,14 @@ function CustomTooltip({ active, payload, label }: {
 
 function FinancialCalendar() {
   const { bills, cards } = useApp();
-  const [month] = useState(new Date(2026, 4)); // May 2026
+  const now = new Date();
+  const [month] = useState(new Date(now.getFullYear(), now.getMonth()));
 
   const year  = month.getFullYear();
   const mon   = month.getMonth();
   const firstDay = new Date(year, mon, 1).getDay();
   const daysInMonth = new Date(year, mon + 1, 0).getDate();
-  const today = 13; // fixed for demo
+  const today = now.getDate();
 
   // Build event map: day -> events
   const events: Record<number, { name: string; amount: number; color: string; type: string }[]> = {};
@@ -624,8 +625,8 @@ export default function DashboardPage() {
                 <Menu className="w-5 h-5" />
               </motion.button>
               <div>
-                <h1 className="font-display text-xl font-bold text-[#E8E8E8]">{`Good morning, ${userProfile?.full_name?.split(" ")[0] || userName?.split(" ")[0] || "there"} 👋`}</h1>
-                <p className="text-xs text-[#9ca3af]">Tuesday, May 13, 2026</p>
+                <h1 className="font-display text-xl font-bold text-[#E8E8E8]">{`Good ${new Date().getHours() < 12 ? "morning" : new Date().getHours() < 18 ? "afternoon" : "evening"}, ${userProfile?.full_name?.split(" ")[0] || userName?.split(" ")[0] || "there"} 👋`}</h1>
+                <p className="text-xs text-[#9ca3af]">{new Date().toLocaleDateString("en-US", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}</p>
               </div>
             </div>
             <div className="flex items-center gap-2.5">
@@ -658,7 +659,7 @@ export default function DashboardPage() {
                 )}
               </MotionButton>
               <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#4F8EF7] to-[#D4AF37] flex items-center justify-center text-white text-xs font-bold">
-                JD
+                {userInitials}
               </div>
             </div>
           </div>
@@ -893,6 +894,12 @@ export default function DashboardPage() {
                   </div>
                   <motion.div variants={staggerContainer} initial="hidden" whileInView="visible"
                     viewport={{ once: true }} className="space-y-3">
+                    {upcomingBills.length === 0 && (
+                      <div className="text-center py-6 text-sm text-[#9ca3af]">
+                        No upcoming bills.{" "}
+                        <button onClick={() => isPremium ? setCameraMode("bill") : setShowUpgrade(true)} className="text-[#4F8EF7] hover:underline">Add a bill</button>
+                      </div>
+                    )}
                     {upcomingBills.map((bill) => {
                       const cfg = statusConfig[bill.status as keyof typeof statusConfig];
                       return (
@@ -931,7 +938,7 @@ export default function DashboardPage() {
                     <CreditCard className="w-4 h-4 text-[#4F8EF7]" />
                     <h2 className="font-semibold text-[#E8E8E8]">Your Cards</h2>
                   </div>
-                  <MotionButton variant="ghost" className="text-xs text-[#4F8EF7] border-0 py-1 px-2">
+                  <MotionButton variant="ghost" className="text-xs text-[#4F8EF7] border-0 py-1 px-2" onClick={() => isPremium ? setCameraMode("card") : setShowUpgrade(true)}>
                     + Add Card
                   </MotionButton>
                 </div>
@@ -946,7 +953,7 @@ export default function DashboardPage() {
                       <TrendingUp className="w-4 h-4 text-[#4F8EF7]" />
                       <h2 className="font-semibold text-[#E8E8E8]">Spending Breakdown</h2>
                     </div>
-                    <span className="text-xs text-[#9ca3af]">May 2026</span>
+                    <span className="text-xs text-[#9ca3af]">{new Date().toLocaleString("default", { month: "long", year: "numeric" })}</span>
                   </div>
                   <SpendingRing segments={ringSegments} />
                   <div className="mt-6">
@@ -980,12 +987,18 @@ export default function DashboardPage() {
                       <FileText className="w-4 h-4 text-[#4F8EF7]" />
                       <h2 className="font-semibold text-[#E8E8E8]">Monthly Bills</h2>
                     </div>
-                    <MotionButton variant="ghost" className="text-xs text-[#4F8EF7] border-0 py-1 px-2">
+                    <MotionButton variant="ghost" className="text-xs text-[#4F8EF7] border-0 py-1 px-2" onClick={() => isPremium ? setCameraMode("bill") : setShowUpgrade(true)}>
                       + Add Bill
                     </MotionButton>
                   </div>
                   <motion.div variants={staggerContainer} initial="hidden" whileInView="visible"
                     viewport={{ once: true }} className="space-y-1 max-h-[400px] overflow-y-auto pr-1">
+                    {bills.length === 0 && (
+                      <div className="text-center py-6 text-sm text-[#9ca3af]">
+                        No bills yet.{" "}
+                        <button onClick={() => isPremium ? setCameraMode("bill") : setShowUpgrade(true)} className="text-[#4F8EF7] hover:underline">Add your first bill</button>
+                      </div>
+                    )}
                     {bills.map((bill) => {
                       const cfg = statusConfig[bill.status as keyof typeof statusConfig];
                       return (
@@ -1152,6 +1165,13 @@ export default function DashboardPage() {
                 </span>
               </div>
               <div className="space-y-2">
+                {bills.length === 0 && (
+                  <div className="text-center py-10 space-y-3">
+                    <div className="text-4xl">🧾</div>
+                    <div className="text-sm font-medium text-[#E8E8E8]">No bills added yet</div>
+                    <div className="text-xs text-[#9ca3af]">Scan a bill or add one by voice to get started</div>
+                  </div>
+                )}
                 {bills.map((bill) => {
                   const cfg = statusConfig[bill.status as keyof typeof statusConfig];
                   return (
@@ -1194,7 +1214,18 @@ export default function DashboardPage() {
 
           {/* ── Utilities view ────────────────────────────────────────── */}
           {activeNav === "utilities" && (
-            <AnimatedSection className="glass p-6">
+            <AnimatedSection className="space-y-4">
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.97 }}
+                onClick={() => isPremium ? setCameraMode("utility") : setShowUpgrade(true)}
+                className="w-full flex items-center justify-center gap-2 py-3 rounded-2xl font-semibold text-sm"
+                style={{ background: "linear-gradient(135deg, #f59e0b, #d97706)", color: "#0a0a0f" }}
+              >
+                <Camera className="w-4 h-4" />
+                📷 Scan Utility Statement to Add
+              </motion.button>
+            <div className="glass p-6">
               <div className="flex items-center justify-between mb-5">
                 <div className="flex items-center gap-2">
                   <Zap className="w-4 h-4 text-[#4F8EF7]" />
@@ -1226,6 +1257,7 @@ export default function DashboardPage() {
                   );
                 })}
               </div>
+            </div>
             </AnimatedSection>
           )}
 
@@ -1303,12 +1335,100 @@ export default function DashboardPage() {
             </AnimatedSection>
           )}
 
-          {/* ── Settings placeholder ──────────────────────────────────── */}
+          {/* ── Settings ──────────────────────────────────────────────── */}
           {activeNav === "settings" && (
-            <AnimatedSection className="glass p-8 text-center">
-              <Settings className="w-12 h-12 text-[#9ca3af] mx-auto mb-4" />
-              <h2 className="font-display text-xl font-bold text-[#E8E8E8] mb-2">Settings</h2>
-              <p className="text-[#9ca3af] text-sm">Preferences and account settings coming soon.</p>
+            <AnimatedSection className="space-y-6 max-w-2xl">
+              {/* Account Info */}
+              <div className="glass p-6 space-y-5">
+                <div className="flex items-center gap-2 mb-2">
+                  <Settings className="w-4 h-4 text-[#4F8EF7]" />
+                  <h2 className="font-semibold text-[#E8E8E8]">Account</h2>
+                </div>
+                <div className="flex items-center gap-4">
+                  <div className="w-14 h-14 rounded-full bg-gradient-to-br from-[#4F8EF7] to-[#D4AF37] flex items-center justify-center text-white text-lg font-bold shrink-0">
+                    {userInitials}
+                  </div>
+                  <div>
+                    <div className="font-medium text-[#E8E8E8]">{userProfile?.full_name || "—"}</div>
+                    <div className="text-sm text-[#9ca3af]">{userProfile?.email || "—"}</div>
+                    <div className={`text-xs mt-0.5 font-medium ${isPremium ? "text-[#D4AF37]" : "text-[#9ca3af]"}`}>{planName}</div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Subscription */}
+              <div className="glass p-6 space-y-4">
+                <div className="flex items-center gap-2 mb-2">
+                  <Crown className="w-4 h-4 text-[#D4AF37]" />
+                  <h2 className="font-semibold text-[#E8E8E8]">Subscription</h2>
+                </div>
+                <div className={`flex items-center justify-between p-4 rounded-2xl border ${isPremium ? "border-[#D4AF37]/30 bg-[#D4AF37]/[0.06]" : "border-white/10 bg-white/[0.04]"}`}>
+                  <div>
+                    <div className={`font-semibold ${isPremium ? "text-[#D4AF37]" : "text-[#E8E8E8]"}`}>{planName}</div>
+                    {isPremium && planPrice && <div className="text-xs text-[#9ca3af]">{planPrice}</div>}
+                    {!isPremium && <div className="text-xs text-[#9ca3af]">Free plan — limited features</div>}
+                  </div>
+                  <Link href="/pricing">
+                    <button className="px-4 py-2 rounded-xl text-sm font-semibold transition-colors"
+                      style={isPremium
+                        ? { border: "1px solid rgba(255,255,255,0.1)", color: "#9ca3af" }
+                        : { background: "linear-gradient(135deg, #D4AF37, #b8962e)", color: "#0a0a0f" }
+                      }>
+                      {isPremium ? "Manage Plan" : "Upgrade"}
+                    </button>
+                  </Link>
+                </div>
+              </div>
+
+              {/* Privacy */}
+              <div className="glass p-6 space-y-4">
+                <div className="flex items-center gap-2 mb-2">
+                  <Star className="w-4 h-4 text-[#4F8EF7]" />
+                  <h2 className="font-semibold text-[#E8E8E8]">Privacy</h2>
+                </div>
+                <div className="flex items-center justify-between py-2">
+                  <div>
+                    <div className="text-sm font-medium text-[#E8E8E8]">Privacy Mode</div>
+                    <div className="text-xs text-[#9ca3af]">Hide balances and amounts across the dashboard</div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Legal */}
+              <div className="glass p-6 space-y-3">
+                <div className="flex items-center gap-2 mb-2">
+                  <FileText className="w-4 h-4 text-[#9ca3af]" />
+                  <h2 className="font-semibold text-[#E8E8E8]">Legal</h2>
+                </div>
+                <Link href="/terms" className="flex items-center justify-between py-2 text-sm text-[#9ca3af] hover:text-[#E8E8E8] transition-colors">
+                  <span>Terms of Service</span>
+                  <ChevronRight className="w-4 h-4" />
+                </Link>
+                <Link href="/terms#privacy" className="flex items-center justify-between py-2 text-sm text-[#9ca3af] hover:text-[#E8E8E8] transition-colors">
+                  <span>Privacy Policy</span>
+                  <ChevronRight className="w-4 h-4" />
+                </Link>
+                <a href="mailto:support@lifefi.ai" className="flex items-center justify-between py-2 text-sm text-[#9ca3af] hover:text-[#E8E8E8] transition-colors">
+                  <span>Contact Support</span>
+                  <ChevronRight className="w-4 h-4" />
+                </a>
+              </div>
+
+              {/* Danger zone */}
+              <div className="glass p-6 space-y-4 border border-red-500/10">
+                <h2 className="font-semibold text-[#E8E8E8] mb-2">Account Actions</h2>
+                <button
+                  onClick={handleSignOut}
+                  className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-white/10 text-sm text-[#9ca3af] hover:text-[#E8E8E8] hover:border-white/20 transition-colors"
+                >
+                  <LogOut className="w-4 h-4" />
+                  Sign Out
+                </button>
+                <div className="text-xs text-[#9ca3af]">
+                  To delete your account, contact{" "}
+                  <a href="mailto:support@lifefi.ai" className="text-[#4F8EF7] hover:underline">support@lifefi.ai</a>
+                </div>
+              </div>
             </AnimatedSection>
           )}
 

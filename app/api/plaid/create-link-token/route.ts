@@ -1,11 +1,16 @@
 import { NextResponse } from "next/server";
 import { plaidClient } from "@/lib/plaid";
 import { Products, CountryCode } from "plaid";
+import { createClient } from "@/lib/supabase/server";
 
 export async function POST() {
   try {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    const userId = user?.id ?? "anonymous";
+
     const response = await plaidClient.linkTokenCreate({
-      user: { client_user_id: "lifefi-demo-user" },
+      user: { client_user_id: userId },
       client_name: "LifeFi",
       products: [Products.Transactions],
       country_codes: [CountryCode.Us],
