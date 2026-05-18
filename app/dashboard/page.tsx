@@ -11,7 +11,7 @@ import {
   LayoutDashboard, CreditCard, FileText, Zap, Bell, Settings, LogOut,
   TrendingUp, TrendingDown, CheckCircle2, Clock, AlertTriangle, Wallet,
   Menu, X, ChevronRight, Calendar, Droplets, Flame, Wifi, Lightbulb, Building2,
-  Mic, Camera, Crown, Star, Sparkles,
+  Mic, Camera, Crown, Star, Sparkles, ArrowDown,
 } from "lucide-react";
 
 import { CameraScanner } from "@/components/camera/CameraScanner";
@@ -359,7 +359,6 @@ export default function DashboardPage() {
   const [pendingBill, setPendingBill] = useState<typeof bills[0] | null>(null);
   const [cameraMode, setCameraMode]   = useState<"bill" | "card" | "utility" | null>(null);
   const [showUpgrade, setShowUpgrade] = useState(false);
-  const [showBanner, setShowBanner]   = useState(true);
   const [userProfile, setUserProfile] = useState<{ subscription_tier: string; email?: string; full_name?: string } | null>(null);
   const router = useRouter();
 
@@ -655,36 +654,7 @@ export default function DashboardPage() {
           {/* ── Overview ──────────────────────────────────────────────── */}
           {activeNav === "overview" && (
             <>
-              {/* ── Upgrade banner (free users only) ──────────────────── */}
-              {!isPremium && showBanner && (
-                <motion.div
-                  initial={{ opacity: 0, y: -8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -8 }}
-                  className="relative flex items-center justify-between gap-4 px-5 py-3.5 rounded-2xl overflow-hidden"
-                  style={{ background: "linear-gradient(135deg, #D4AF37 0%, #b8962e 50%, #8a6d1c 100%)" }}
-                >
-                  <div className="flex items-center gap-3">
-                    <Star className="w-5 h-5 text-[#0a0a0f] shrink-0" />
-                    <div>
-                      <div className="text-sm font-bold text-[#0a0a0f]">Upgrade to LifeFi Personal</div>
-                      <div className="text-xs text-[#0a0a0f]/70">Connect your bank, use voice &amp; camera features — $4.99/mo</div>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2 shrink-0">
-                    <Link href="/pricing">
-                      <button className="px-4 py-1.5 rounded-xl text-xs font-bold bg-[#0a0a0f] text-[#D4AF37] hover:bg-[#0a0a0f]/80 transition-colors whitespace-nowrap">
-                        Upgrade Now
-                      </button>
-                    </Link>
-                    <button onClick={() => setShowBanner(false)} className="text-[#0a0a0f]/60 hover:text-[#0a0a0f] transition-colors">
-                      <X className="w-4 h-4" />
-                    </button>
-                  </div>
-                </motion.div>
-              )}
-
-              {/* ── Take a Picture hero card ───────────────────────────── */}
+              {/* ── Add hero card ─────────────────────────────────────── */}
               <motion.div
                 initial={{ opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -705,14 +675,13 @@ export default function DashboardPage() {
                   <div className="flex justify-center mb-3">
                     <div className="w-16 h-16 rounded-2xl flex items-center justify-center"
                       style={{ background: "linear-gradient(135deg, #D4AF37, #b8962e)" }}>
-                      <Camera className="w-8 h-8 text-[#0a0a0f]" />
+                      <ArrowDown className="w-8 h-8 text-[#0a0a0f]" />
                     </div>
                   </div>
 
                   {/* Text */}
                   <div className="text-center mb-5">
-                    <h2 className="font-display text-xl font-bold text-[#E8E8E8] mb-1">📷 Take a Picture to Add</h2>
-                    <p className="text-sm text-[#9ca3af]">Snap a credit card, bill, or utility statement</p>
+                    <h2 className="font-display text-xl font-bold text-[#E8E8E8]">Simply click on any button to add</h2>
                   </div>
 
                   {/* Pill buttons */}
