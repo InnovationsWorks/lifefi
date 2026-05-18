@@ -43,19 +43,22 @@ const steps = [
 
 const plans = [
   {
-    name: "Free",    price: "$0",     period: "",       description: "Perfect for getting started",
-    features: ["Up to 2 credit cards", "5 recurring bills", "Basic spending chart", "Email alerts", "Financial Health Score"],
-    cta: "Get Started Free", href: "/signup",              highlight: false,
+    name: "LifeFi Personal", price: "$4.99",  period: "/month", description: "Your personal finances, finally under control",
+    badge: "First Month Free", comingSoon: false,
+    features: ["Unlimited bills & cards", "Voice input (AI add bills)", "Smart alerts & insights", "Camera bill scanning", "Financial health score", "Bank account sync (Plaid)", "Spending analytics + charts"],
+    cta: "Get Started", href: "/pricing", highlight: true,
   },
   {
-    name: "Premium", price: "$4.99",  period: "/month", description: "For serious financial management",
-    features: ["Unlimited credit cards", "Unlimited bills & utilities", "Advanced analytics", "Push + SMS alerts", "Bill pay reminders", "Export to CSV/PDF", "Priority support"],
-    cta: "Start Premium",    href: "/signup?plan=premium", highlight: true,
+    name: "LifeFi Business", price: "$7.99",  period: "/month", description: "Track, manage, and grow your business finances",
+    badge: "Coming Soon", comingSoon: true,
+    features: ["Business expense tracking", "Invoice & payment tracking", "Profit & loss summaries", "Tax category tagging", "Multi-bank business sync", "CSV / PDF export"],
+    cta: "Coming Soon", href: "/pricing", highlight: false,
   },
   {
-    name: "BizFi Bundle", price: "$12.99", period: "/month", description: "For entrepreneurs & freelancers",
-    features: ["Everything in Premium", "Business expense tracking", "Tax category tagging", "Multi-currency support", "Team member access", "API access", "Dedicated account manager"],
-    cta: "Start BizFi",  href: "/signup?plan=bizfi",    highlight: false,
+    name: "LifeFi Duo", price: "$9.99", period: "/month", description: "Why not have both, in one place, one subscription",
+    badge: "Coming Soon", comingSoon: true,
+    features: ["Everything in LifeFi Personal", "Everything in LifeFi Business", "Combined personal + biz view", "Multi-bank business sync", "CSV / PDF export", "Tax category tagging", "Profit & loss summaries"],
+    cta: "Coming Soon", href: "/pricing", highlight: false,
   },
 ];
 
@@ -380,7 +383,7 @@ export default function LandingPage() {
             <h2 className="font-display text-4xl md:text-5xl font-bold text-[#E8E8E8] mb-4">
               Simple, Transparent <span className="text-gradient-blue">Pricing</span>
             </h2>
-            <p className="text-[#9ca3af] text-lg">Start free. Upgrade when you&apos;re ready.</p>
+            <p className="text-[#9ca3af] text-lg">Simple pricing, no hidden fees. Cancel anytime.</p>
           </AnimatedSection>
 
           <div className="grid md:grid-cols-3 gap-6">
@@ -391,9 +394,16 @@ export default function LandingPage() {
                   transition={{ duration: 0.2 }}
                   className={`relative flex flex-col h-full ${plan.highlight ? "glass-gold scale-105 shadow-2xl shadow-[#D4AF37]/10" : "glass"} p-8`}
                 >
-                  {plan.highlight && (
-                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-gradient-to-r from-[#D4AF37] to-[#F5D76E] text-[#0a0a0f] text-xs font-bold px-4 py-1 rounded-full">
-                      MOST POPULAR
+                  {plan.badge && (
+                    <div
+                      className="absolute -top-3 left-1/2 -translate-x-1/2 text-xs font-bold px-4 py-1 rounded-full whitespace-nowrap"
+                      style={
+                        plan.badge === "Coming Soon"
+                          ? { background: "#374151", color: "#9ca3af" }
+                          : { background: "linear-gradient(135deg, #D4AF37, #b8962e)", color: "#0a0a0f" }
+                      }
+                    >
+                      {plan.badge}
                     </div>
                   )}
                   <div>
@@ -412,15 +422,26 @@ export default function LandingPage() {
                       ))}
                     </ul>
                   </div>
-                  <Link href={plan.href} className="mt-auto">
-                    <MotionButton
-                      variant={plan.highlight ? "gold" : "ghost"}
-                      className="w-full justify-center py-3 text-sm"
-                      onClick={() => {}}
-                    >
-                      {plan.cta}
-                    </MotionButton>
-                  </Link>
+                  <div className="mt-auto">
+                    {plan.comingSoon ? (
+                      <button
+                        disabled
+                        className="w-full py-3 rounded-xl text-sm font-semibold border border-white/10 text-[#6b7280] cursor-not-allowed"
+                      >
+                        {plan.cta}
+                      </button>
+                    ) : (
+                      <Link href={plan.href}>
+                        <MotionButton
+                          variant={plan.highlight ? "gold" : "ghost"}
+                          className="w-full justify-center py-3 text-sm"
+                          onClick={() => {}}
+                        >
+                          {plan.cta}
+                        </MotionButton>
+                      </Link>
+                    )}
+                  </div>
                 </motion.div>
               </AnimatedSection>
             ))}
