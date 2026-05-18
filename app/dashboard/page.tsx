@@ -480,10 +480,7 @@ export default function DashboardPage() {
       </AnimatePresence>
 
       {/* ── Sidebar ──────────────────────────────────────────────────────── */}
-      <motion.aside
-        initial={{ x: -20, opacity: 0 }}
-        animate={{ x: 0, opacity: 1 }}
-        transition={{ duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
+      <aside
         className={[
           "fixed md:static top-0 left-0 h-full z-40 md:z-auto",
           "w-64 flex flex-col bg-[#0d0d14] border-r border-white/5",
@@ -608,7 +605,7 @@ export default function DashboardPage() {
             Sign Out
           </button>
         </div>
-      </motion.aside>
+      </aside>
 
       {/* ── Main ──────────────────────────────────────────────────────────── */}
       <div className="flex-1 flex flex-col min-h-screen overflow-hidden">

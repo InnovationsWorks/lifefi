@@ -10,6 +10,20 @@ export async function GET(request: Request) {
     const supabase = await createClient()
     const { error } = await supabase.auth.exchangeCodeForSession(code)
     if (!error) {
+      // Ensure a profile row exists for this user (newly confirmed accounts may have none)
+      const { data: { user } } = await supabase.auth.getUser()
+      if (user) {
+        await supabase
+          .from('profiles')
+          .upsert(
+            {
+              id: user.id,
+              full_name: (user.user_metadata?.full_name as string) ?? '',
+              subscription_tier: 'free',
+            },
+            { onConflict: 'id', ignoreDuplicates: true }
+          )
+      }
       return NextResponse.redirect(`${origin}${next}`)
     }
   }

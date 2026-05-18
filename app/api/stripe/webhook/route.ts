@@ -53,8 +53,10 @@ export async function POST(req: Request) {
 
         await getSupabaseAdmin()
           .from('profiles')
-          .update({ subscription_tier: plan, stripe_customer_id: session.customer as string })
-          .eq('id', userId)
+          .upsert(
+            { id: userId, subscription_tier: plan, stripe_customer_id: session.customer as string, full_name: '' },
+            { onConflict: 'id' }
+          )
         break
       }
 
