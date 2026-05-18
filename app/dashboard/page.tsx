@@ -25,7 +25,6 @@ import { SpendingRing } from "@/components/ui/SpendingRing";
 import { DebtTracker } from "@/components/ui/DebtTracker";
 import { PaySuccessOverlay } from "@/components/ui/PaySuccessOverlay";
 import { PaymentMethodModal } from "@/components/ui/PaymentMethodModal";
-import { PlaidLink } from "@/components/plaid/PlaidLink";
 import { useApp } from "@/contexts/AppContext";
 import { useToast } from "@/contexts/ToastContext";
 
@@ -702,10 +701,10 @@ export default function DashboardPage() {
               <motion.div variants={staggerContainer} initial="hidden" animate="visible"
                 className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                 {[
-                  { label: "Total Balance",  value: totalBalance,  prefix: "$", sub: `Across ${cards.length} cards`,        trend: "up",      trendVal: "+2.3%" },
-                  { label: "Credit Used",    value: overallUtil,   suffix: "%", sub: `$${totalBalance.toLocaleString()} of limit`, trend: "neutral", trendVal: "utilization" },
-                  { label: "Bills Due",      value: unpaidCount,   prefix: "",  sub: "This month",                            trend: "down",    trendVal: `${bills.filter(b=>b.status==="paid").length} paid` },
-                  { label: "Monthly Spend",  value: 4360,          prefix: "$", sub: "vs $4,820 last month",                  trend: "up",      trendVal: "-9.5%" },
+                  { label: "Total Balance",  value: totalBalance,  prefix: "$", sub: `Across ${cards.length} card${cards.length !== 1 ? "s" : ""}`, trend: "neutral", trendVal: "—" },
+                  { label: "Credit Used",    value: overallUtil,   suffix: "%", sub: `$${totalBalance.toLocaleString()} of limit`,                   trend: "neutral", trendVal: "utilization" },
+                  { label: "Bills Due",      value: unpaidCount,   prefix: "",  sub: "This month",                                                   trend: "neutral", trendVal: `${bills.filter(b=>b.status==="paid").length} paid` },
+                  { label: "Monthly Spend",  value: 0,             prefix: "$", sub: "No data yet",                                                  trend: "neutral", trendVal: "—" },
                 ].map((kpi) => (
                   <motion.div key={kpi.label} variants={staggerItem} className="glass p-5">
                     <div className="text-xs text-[#9ca3af] mb-1">{kpi.label}</div>
@@ -726,12 +725,17 @@ export default function DashboardPage() {
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-2">
                     <Building2 className="w-4 h-4 text-[#D4AF37]" />
-                    <h2 className="font-semibold text-[#E8E8E8]">Connected Accounts</h2>
+                    <h2 className="font-semibold text-[#E8E8E8]">Your Connected Accounts</h2>
                   </div>
                   <Link href="/connect">
-                    <MotionButton variant="ghost" className="text-xs text-[#D4AF37] border-[#D4AF37]/30 py-1 px-3 flex items-center gap-1">
-                      {connectedBanks.length > 0 ? "Manage" : "+ Connect Bank"} <ChevronRight className="w-3 h-3" />
-                    </MotionButton>
+                    <motion.button
+                      whileHover={{ scale: 1.03 }}
+                      whileTap={{ scale: 0.97 }}
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold"
+                      style={{ background: "linear-gradient(135deg, #D4AF37, #b8962e)", color: "#0a0a0f" }}
+                    >
+                      {connectedBanks.length > 0 ? "Manage" : "+ Connect Bank"}
+                    </motion.button>
                   </Link>
                 </div>
 
@@ -1192,10 +1196,19 @@ export default function DashboardPage() {
                       <div className="font-semibold text-[#E8E8E8] mb-1">No banks connected yet</div>
                       <div className="text-sm text-[#9ca3af]">Connect your bank to see real balances and transactions.</div>
                     </div>
+                    <Link href="/connect">
+                      <motion.button
+                        whileHover={{ scale: 1.03 }}
+                        whileTap={{ scale: 0.97 }}
+                        className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-sm"
+                        style={{ background: "linear-gradient(135deg, #D4AF37, #b8962e)", color: "#0a0a0f" }}
+                      >
+                        <Building2 className="w-4 h-4" />
+                        + Connect Bank
+                      </motion.button>
+                    </Link>
                   </div>
                 )}
-
-                <PlaidLink />
 
                 {connectedBanks.length > 0 && (
                   <div className="pt-2 border-t border-white/08">
