@@ -8,51 +8,86 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 
-// ── Welcome screen copy ────────────────────────────────────────────────────
+// ── Design tokens ──────────────────────────────────────────────────────────
+
+const GOLD   = "#C9A84C";
+const NAVY   = "#0A1628";
+const WHITE  = "#F0F0F0";
+const MUTED  = "#7A8A9E";
+
+// Card glass style — dark navy with gold border, no brownish tint
+const cardStyle: React.CSSProperties = {
+  background:          "rgba(10, 22, 40, 0.80)",
+  backdropFilter:      "blur(20px)",
+  WebkitBackdropFilter: "blur(20px)",
+  border:              `1px solid rgba(201, 168, 76, 0.22)`,
+  borderRadius:        "24px",
+};
+
+// Overlay — dark navy
+const overlayStyle: React.CSSProperties = {
+  background:     `rgba(10, 22, 40, 0.96)`,
+  backdropFilter: "blur(16px)",
+};
+
+// Gold icon circle
+const iconCircle: React.CSSProperties = {
+  background: "rgba(201, 168, 76, 0.12)",
+  border:     `1px solid rgba(201, 168, 76, 0.30)`,
+};
+
+// Gold CTA button
+const btnGoldStyle: React.CSSProperties = {
+  background: `linear-gradient(135deg, ${GOLD}, #a8863a)`,
+  color:      NAVY,
+  padding:    "12px 20px",
+  borderRadius: "12px",
+  fontWeight:  700,
+  fontSize:    "0.9rem",
+  border:      "none",
+  cursor:      "pointer",
+  display:     "inline-flex",
+  alignItems:  "center",
+  gap:         "8px",
+  width:       "100%",
+  justifyContent: "center",
+};
+
+// ── Welcome copy ───────────────────────────────────────────────────────────
 
 const WELCOME = {
-  title: "Welcome to LifeFi",
-  subtitle: "Your personal and business finances, organized",
+  title:       "Welcome to LifeFi",
+  subtitle:    "Your personal and business finances, organized",
   description: "LifeFi simplifies life with bank-level safety.",
 };
 
-// ── Tour slides (placeholder content — update after review) ───────────────
+// ── Tour slides (placeholder — update content after review) ───────────────
 
 const TOUR_SLIDES = [
   {
-    icon: Wallet,
-    color: "#D4AF37",
-    title: "Slide 1 Title",
-    description:
-      "Placeholder description for slide 1. This is where the first key feature or benefit will be explained in a short, compelling sentence.",
+    icon:        Wallet,
+    title:       "Slide 1 Title",
+    description: "Placeholder description for slide 1. This is where the first key feature or benefit will be explained in a short, compelling sentence.",
   },
   {
-    icon: CreditCard,
-    color: "#4F8EF7",
-    title: "Slide 2 Title",
-    description:
-      "Placeholder description for slide 2. This is where the second key feature or benefit will be explained in a short, compelling sentence.",
+    icon:        CreditCard,
+    title:       "Slide 2 Title",
+    description: "Placeholder description for slide 2. This is where the second key feature or benefit will be explained in a short, compelling sentence.",
   },
   {
-    icon: FileText,
-    color: "#22c55e",
-    title: "Slide 3 Title",
-    description:
-      "Placeholder description for slide 3. This is where the third key feature or benefit will be explained in a short, compelling sentence.",
+    icon:        FileText,
+    title:       "Slide 3 Title",
+    description: "Placeholder description for slide 3. This is where the third key feature or benefit will be explained in a short, compelling sentence.",
   },
   {
-    icon: Zap,
-    color: "#f59e0b",
-    title: "Slide 4 Title",
-    description:
-      "Placeholder description for slide 4. This is where the fourth key feature or benefit will be explained in a short, compelling sentence.",
+    icon:        Zap,
+    title:       "Slide 4 Title",
+    description: "Placeholder description for slide 4. This is where the fourth key feature or benefit will be explained in a short, compelling sentence.",
   },
   {
-    icon: Bell,
-    color: "#8b5cf6",
-    title: "Slide 5 Title",
-    description:
-      "Placeholder description for slide 5. This is where the fifth key feature or benefit will be explained in a short, compelling sentence.",
+    icon:        Bell,
+    title:       "Slide 5 Title",
+    description: "Placeholder description for slide 5. This is where the fifth key feature or benefit will be explained in a short, compelling sentence.",
   },
 ] as const;
 
@@ -61,9 +96,9 @@ const STORAGE_KEY = "lifefi_onboarding_done";
 // ── Slide transition variants ──────────────────────────────────────────────
 
 const slideVariants = {
-  enter: (dir: number) => ({ x: dir > 0 ? 280 : -280, opacity: 0 }),
+  enter: (dir: number) => ({ x: dir > 0 ? 260 : -260, opacity: 0 }),
   center: { x: 0, opacity: 1 },
-  exit: (dir: number) => ({ x: dir > 0 ? -280 : 280, opacity: 0 }),
+  exit:  (dir: number) => ({ x: dir > 0 ? -260 : 260, opacity: 0 }),
 };
 
 // ── Component ──────────────────────────────────────────────────────────────
@@ -110,8 +145,8 @@ export function OnboardingFlow() {
   if (!visible) return null;
 
   const current = TOUR_SLIDES[slide];
-  const Icon = current.icon;
-  const isLast = slide === TOUR_SLIDES.length - 1;
+  const Icon    = current.icon;
+  const isLast  = slide === TOUR_SLIDES.length - 1;
 
   return (
     <AnimatePresence>
@@ -123,66 +158,81 @@ export function OnboardingFlow() {
           exit={{ opacity: 0 }}
           transition={{ duration: 0.3 }}
           className="fixed inset-0 z-[500] flex items-center justify-center p-4"
-          style={{ background: "rgba(10,10,15,0.92)", backdropFilter: "blur(14px)" }}
+          style={overlayStyle}
         >
           <AnimatePresence mode="wait">
-            {!showTour ? (
-              /* ── Welcome screen ───────────────────────────────────────── */
+
+            {/* ── Welcome screen ─────────────────────────────────────────── */}
+            {!showTour && (
               <motion.div
                 key="welcome"
-                initial={{ scale: 0.92, opacity: 0, y: 24 }}
-                animate={{ scale: 1, opacity: 1, y: 0 }}
-                exit={{ scale: 0.94, opacity: 0, y: -16 }}
+                initial={{ scale: 0.93, opacity: 0, y: 24 }}
+                animate={{ scale: 1,    opacity: 1, y: 0 }}
+                exit={{   scale: 0.95,  opacity: 0, y: -16 }}
                 transition={{ type: "spring", stiffness: 300, damping: 28 }}
-                className="glass-gold w-full max-w-sm rounded-3xl p-8 relative text-center"
+                className="w-full max-w-sm p-8 relative text-center"
+                style={cardStyle}
               >
                 {/* Close */}
                 <button
                   onClick={dismiss}
                   aria-label="Close"
-                  className="absolute top-4 right-4 text-[#9ca3af] hover:text-[#E8E8E8] transition-colors"
+                  className="absolute top-4 right-4 transition-colors"
+                  style={{ color: MUTED }}
+                  onMouseEnter={e => (e.currentTarget.style.color = WHITE)}
+                  onMouseLeave={e => (e.currentTarget.style.color = MUTED)}
                 >
                   <X className="w-4 h-4" />
                 </button>
 
                 {/* Logo mark */}
                 <motion.div
-                  initial={{ scale: 0.7, opacity: 0, rotate: -12 }}
+                  initial={{ scale: 0.7, opacity: 0, rotate: -10 }}
                   animate={{ scale: 1,   opacity: 1, rotate: 0 }}
                   transition={{ delay: 0.1, type: "spring", stiffness: 360, damping: 24 }}
                   className="w-20 h-20 rounded-3xl mx-auto mb-6 flex items-center justify-center"
-                  style={{ background: "rgba(212,175,55,0.18)", border: "1px solid rgba(212,175,55,0.35)" }}
+                  style={iconCircle}
                 >
-                  <Wallet className="w-9 h-9 text-[#D4AF37]" />
+                  <Wallet className="w-9 h-9" style={{ color: GOLD }} />
                 </motion.div>
 
                 <motion.div
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.18 }}
+                  transition={{ delay: 0.16 }}
                 >
-                  <h2 className="font-display text-2xl font-bold text-[#E8E8E8] mb-2">
+                  <h2
+                    className="font-display text-2xl font-bold mb-2"
+                    style={{ color: WHITE }}
+                  >
                     {WELCOME.title}
                   </h2>
-                  <div className="text-sm font-semibold text-[#D4AF37] mb-4">
+                  <div
+                    className="text-sm font-semibold mb-4"
+                    style={{ color: GOLD }}
+                  >
                     {WELCOME.subtitle}
                   </div>
-                  <p className="text-sm text-[#9ca3af] leading-relaxed mb-8">
+                  <p
+                    className="text-sm leading-relaxed mb-8"
+                    style={{ color: MUTED }}
+                  >
                     {WELCOME.description}
                   </p>
                 </motion.div>
 
-                {/* Get Started → /signup */}
                 <motion.div
                   initial={{ opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.26 }}
+                  transition={{ delay: 0.24 }}
                 >
+                  {/* Get Started → /signup */}
                   <Link href="/signup" onClick={dismiss}>
                     <motion.button
-                      whileHover={{ scale: 1.03 }}
+                      whileHover={{ scale: 1.03, boxShadow: `0 8px 28px rgba(201,168,76,0.30)` }}
                       whileTap={{ scale: 0.97 }}
-                      className="btn-gold w-full justify-center gap-2 mb-4"
+                      style={btnGoldStyle}
+                      className="mb-4"
                     >
                       Get Started <ArrowRight className="w-4 h-4" />
                     </motion.button>
@@ -191,27 +241,36 @@ export function OnboardingFlow() {
                   {/* Tour the site */}
                   <button
                     onClick={() => setShowTour(true)}
-                    className="w-full text-center text-xs text-[#9ca3af] hover:text-[#E8E8E8] transition-colors py-1"
+                    className="w-full text-center text-xs py-1 transition-colors"
+                    style={{ color: MUTED }}
+                    onMouseEnter={e => (e.currentTarget.style.color = WHITE)}
+                    onMouseLeave={e => (e.currentTarget.style.color = MUTED)}
                   >
                     Tour the site
                   </button>
                 </motion.div>
               </motion.div>
-            ) : (
-              /* ── Tour slides ──────────────────────────────────────────── */
+            )}
+
+            {/* ── Tour slides ────────────────────────────────────────────── */}
+            {showTour && (
               <motion.div
                 key="tour"
-                initial={{ scale: 0.92, opacity: 0, y: 24 }}
-                animate={{ scale: 1, opacity: 1, y: 0 }}
-                exit={{ scale: 0.94, opacity: 0, y: -16 }}
+                initial={{ scale: 0.93, opacity: 0, y: 24 }}
+                animate={{ scale: 1,    opacity: 1, y: 0 }}
+                exit={{   scale: 0.95,  opacity: 0, y: -16 }}
                 transition={{ type: "spring", stiffness: 300, damping: 28 }}
-                className="glass-gold w-full max-w-sm rounded-3xl p-8 relative overflow-hidden"
+                className="w-full max-w-sm p-8 relative overflow-hidden"
+                style={cardStyle}
               >
                 {/* Close */}
                 <button
                   onClick={dismiss}
                   aria-label="Close"
-                  className="absolute top-4 right-4 z-10 text-[#9ca3af] hover:text-[#E8E8E8] transition-colors"
+                  className="absolute top-4 right-4 z-10 transition-colors"
+                  style={{ color: MUTED }}
+                  onMouseEnter={e => (e.currentTarget.style.color = WHITE)}
+                  onMouseLeave={e => (e.currentTarget.style.color = MUTED)}
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -219,8 +278,11 @@ export function OnboardingFlow() {
                 {/* Back to welcome */}
                 <button
                   onClick={() => { setShowTour(false); setSlide(0); setDirection(1); }}
-                  aria-label="Back"
-                  className="absolute top-4 left-4 z-10 text-[#9ca3af] hover:text-[#E8E8E8] transition-colors"
+                  aria-label="Back to welcome"
+                  className="absolute top-4 left-4 z-10 transition-colors"
+                  style={{ color: MUTED }}
+                  onMouseEnter={e => (e.currentTarget.style.color = WHITE)}
+                  onMouseLeave={e => (e.currentTarget.style.color = MUTED)}
                 >
                   <ChevronLeft className="w-4 h-4" />
                 </button>
@@ -233,21 +295,20 @@ export function OnboardingFlow() {
                       aria-label={`Go to slide ${i + 1}`}
                       onClick={() => jumpSlide(i)}
                       animate={{
-                        width: i === slide ? 24 : 8,
-                        background:
-                          i === slide
-                            ? current.color
-                            : i < slide
-                            ? "#22c55e"
-                            : "rgba(255,255,255,0.2)",
+                        width:      i === slide ? 24 : 8,
+                        background: i === slide
+                          ? GOLD
+                          : i < slide
+                          ? `rgba(201, 168, 76, 0.45)`
+                          : "rgba(255, 255, 255, 0.15)",
                       }}
-                      transition={{ duration: 0.3 }}
+                      transition={{ duration: 0.28 }}
                       className="h-2 rounded-full"
                     />
                   ))}
                 </div>
 
-                {/* Swipeable slide */}
+                {/* Swipeable slide content */}
                 <AnimatePresence mode="wait" custom={direction}>
                   <motion.div
                     key={slide}
@@ -259,34 +320,37 @@ export function OnboardingFlow() {
                     transition={{ type: "spring", stiffness: 340, damping: 32 }}
                     drag="x"
                     dragConstraints={{ left: 0, right: 0 }}
-                    dragElastic={0.18}
+                    dragElastic={0.16}
                     onDragEnd={handleDragEnd}
                     className="cursor-grab active:cursor-grabbing select-none touch-pan-y"
                   >
                     {/* Icon */}
                     <div
                       className="w-20 h-20 rounded-3xl mx-auto mb-6 flex items-center justify-center"
-                      style={{
-                        background: `${current.color}20`,
-                        border: `1px solid ${current.color}35`,
-                      }}
+                      style={iconCircle}
                     >
-                      <Icon className="w-9 h-9" style={{ color: current.color }} />
+                      <Icon className="w-9 h-9" style={{ color: GOLD }} />
                     </div>
 
                     {/* Text */}
                     <div className="text-center mb-8">
-                      <h2 className="font-display text-2xl font-bold text-[#E8E8E8] mb-3">
+                      <h2
+                        className="font-display text-2xl font-bold mb-3"
+                        style={{ color: WHITE }}
+                      >
                         {current.title}
                       </h2>
-                      <p className="text-sm text-[#9ca3af] leading-relaxed">
+                      <p
+                        className="text-sm leading-relaxed"
+                        style={{ color: MUTED }}
+                      >
                         {current.description}
                       </p>
                     </div>
                   </motion.div>
                 </AnimatePresence>
 
-                {/* Navigation row: ← [Next/Get Started] → */}
+                {/* Navigation row: ← [Next / Get Started] → */}
                 <div className="flex items-center gap-3">
                   {/* Left arrow */}
                   <motion.button
@@ -295,7 +359,13 @@ export function OnboardingFlow() {
                     onClick={() => goSlide(-1)}
                     disabled={slide === 0}
                     aria-label="Previous slide"
-                    className="w-10 h-10 shrink-0 rounded-full border border-white/15 flex items-center justify-center text-[#9ca3af] hover:text-[#E8E8E8] hover:border-white/30 transition-colors disabled:opacity-25 disabled:cursor-not-allowed"
+                    className="w-10 h-10 shrink-0 rounded-full flex items-center justify-center transition-colors disabled:opacity-20 disabled:cursor-not-allowed"
+                    style={{
+                      border: `1px solid rgba(201, 168, 76, 0.25)`,
+                      color:  MUTED,
+                    }}
+                    onMouseEnter={e => !e.currentTarget.disabled && (e.currentTarget.style.color = WHITE)}
+                    onMouseLeave={e => (e.currentTarget.style.color = MUTED)}
                   >
                     <ChevronLeft className="w-4 h-4" />
                   </motion.button>
@@ -303,19 +373,19 @@ export function OnboardingFlow() {
                   {/* Center CTA */}
                   {!isLast ? (
                     <motion.button
-                      whileHover={{ scale: 1.02 }}
+                      whileHover={{ scale: 1.02, boxShadow: `0 8px 28px rgba(201,168,76,0.28)` }}
                       whileTap={{ scale: 0.97 }}
                       onClick={() => goSlide(1)}
-                      className="btn-gold flex-1 justify-center gap-2"
+                      style={{ ...btnGoldStyle, flex: 1 }}
                     >
                       Next <ChevronRight className="w-4 h-4" />
                     </motion.button>
                   ) : (
-                    <Link href="/signup" className="flex-1" onClick={dismiss}>
+                    <Link href="/signup" style={{ flex: 1 }} onClick={dismiss}>
                       <motion.button
-                        whileHover={{ scale: 1.02 }}
+                        whileHover={{ scale: 1.02, boxShadow: `0 8px 28px rgba(201,168,76,0.28)` }}
                         whileTap={{ scale: 0.97 }}
-                        className="btn-gold w-full justify-center gap-2"
+                        style={btnGoldStyle}
                       >
                         Get Started <ArrowRight className="w-4 h-4" />
                       </motion.button>
@@ -329,21 +399,31 @@ export function OnboardingFlow() {
                     onClick={() => goSlide(1)}
                     disabled={isLast}
                     aria-label="Next slide"
-                    className="w-10 h-10 shrink-0 rounded-full border border-white/15 flex items-center justify-center text-[#9ca3af] hover:text-[#E8E8E8] hover:border-white/30 transition-colors disabled:opacity-25 disabled:cursor-not-allowed"
+                    className="w-10 h-10 shrink-0 rounded-full flex items-center justify-center transition-colors disabled:opacity-20 disabled:cursor-not-allowed"
+                    style={{
+                      border: `1px solid rgba(201, 168, 76, 0.25)`,
+                      color:  MUTED,
+                    }}
+                    onMouseEnter={e => !e.currentTarget.disabled && (e.currentTarget.style.color = WHITE)}
+                    onMouseLeave={e => (e.currentTarget.style.color = MUTED)}
                   >
                     <ChevronRight className="w-4 h-4" />
                   </motion.button>
                 </div>
 
-                {/* Close / dismiss */}
+                {/* Close */}
                 <button
                   onClick={dismiss}
-                  className="w-full text-center text-xs text-[#9ca3af] hover:text-[#E8E8E8] mt-4 transition-colors py-1"
+                  className="w-full text-center text-xs mt-4 py-1 transition-colors"
+                  style={{ color: MUTED }}
+                  onMouseEnter={e => (e.currentTarget.style.color = WHITE)}
+                  onMouseLeave={e => (e.currentTarget.style.color = MUTED)}
                 >
                   Close
                 </button>
               </motion.div>
             )}
+
           </AnimatePresence>
         </motion.div>
       )}
