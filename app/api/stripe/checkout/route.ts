@@ -13,8 +13,8 @@ export async function POST(req: Request) {
       payment_method_types: ['card'],
       line_items: [{ price: priceId, quantity: 1 }],
       mode: 'subscription',
-      success_url: `${process.env.NEXT_PUBLIC_APP_URL || 'https://lifefi.vercel.app'}/dashboard?upgraded=true`,
-      cancel_url: `${process.env.NEXT_PUBLIC_APP_URL || 'https://lifefi.vercel.app'}/pricing`,
+      success_url: `${process.env.NEXT_PUBLIC_APP_URL || 'https://lifefi.ai'}/dashboard?upgraded=true`,
+      cancel_url: `${process.env.NEXT_PUBLIC_APP_URL || 'https://lifefi.ai'}/pricing`,
       metadata: { userId },
     });
 
