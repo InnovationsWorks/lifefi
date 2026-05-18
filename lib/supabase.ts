@@ -14,7 +14,7 @@ export type Database = {
           email: string;
           full_name: string | null;
           avatar_url: string | null;
-          plan: "free" | "premium" | "bizfi";
+          plan: "personal" | "bizfi" | "duo";
           created_at: string;
         };
         Insert: Omit<Database["public"]["Tables"]["profiles"]["Row"], "created_at">;
