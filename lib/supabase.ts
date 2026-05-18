@@ -11,14 +11,13 @@ export type Database = {
       profiles: {
         Row: {
           id: string;
-          email: string;
           full_name: string | null;
-          avatar_url: string | null;
-          plan: "free" | "personal" | "bizfi" | "duo";
+          subscription_tier: "free" | "personal" | "bizfi" | "duo";
           stripe_customer_id: string | null;
           created_at: string;
+          updated_at: string;
         };
-        Insert: Omit<Database["public"]["Tables"]["profiles"]["Row"], "created_at">;
+        Insert: Omit<Database["public"]["Tables"]["profiles"]["Row"], "created_at" | "updated_at">;
         Update: Partial<Database["public"]["Tables"]["profiles"]["Insert"]>;
       };
       credit_cards: {

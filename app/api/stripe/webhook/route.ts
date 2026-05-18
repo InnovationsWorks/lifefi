@@ -23,7 +23,7 @@ const PRICE_TO_PLAN: Record<string, string> = {
 async function updatePlanByCustomer(customerId: string, plan: string) {
   await getSupabaseAdmin()
     .from('profiles')
-    .update({ plan })
+    .update({ subscription_tier: plan })
     .eq('stripe_customer_id', customerId)
 }
 
@@ -53,7 +53,7 @@ export async function POST(req: Request) {
 
         await getSupabaseAdmin()
           .from('profiles')
-          .update({ plan, stripe_customer_id: session.customer as string })
+          .update({ subscription_tier: plan, stripe_customer_id: session.customer as string })
           .eq('id', userId)
         break
       }

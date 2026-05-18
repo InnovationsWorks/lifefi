@@ -360,7 +360,7 @@ export default function DashboardPage() {
   const [cameraMode, setCameraMode]   = useState<"bill" | "card" | "utility" | null>(null);
   const [showUpgrade, setShowUpgrade] = useState(false);
   const [showBanner, setShowBanner]   = useState(true);
-  const [userProfile, setUserProfile] = useState<{ plan: string; email: string; full_name?: string } | null>(null);
+  const [userProfile, setUserProfile] = useState<{ subscription_tier: string; email?: string; full_name?: string } | null>(null);
   const router = useRouter();
 
   useEffect(() => {
@@ -370,8 +370,8 @@ export default function DashboardPage() {
       .catch(() => {});
   }, []);
 
-  const isPremium   = ['personal', 'bizfi', 'duo'].includes(userProfile?.plan ?? '');
-  const currentPlan = PLAN_CONFIG[userProfile?.plan as PlanKey] ?? null;
+  const isPremium   = ['personal', 'bizfi', 'duo'].includes(userProfile?.subscription_tier ?? '');
+  const currentPlan = PLAN_CONFIG[userProfile?.subscription_tier as PlanKey] ?? null;
   const planName    = currentPlan?.name  ?? 'Free Plan';
   const planPrice   = currentPlan?.price ?? '';
   const planBadge   = currentPlan?.badge ?? 'FREE';

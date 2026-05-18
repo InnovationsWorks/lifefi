@@ -12,12 +12,14 @@ export async function GET() {
 
     const { data: profile } = await supabase
       .from('profiles')
-      .select('id, email, full_name, plan, stripe_customer_id, created_at')
+      .select('id, full_name, subscription_tier, stripe_customer_id, created_at')
       .eq('id', user.id)
       .single()
 
     return NextResponse.json({
-      profile: profile ?? { id: user.id, email: user.email, full_name: '', plan: 'free' },
+      profile: profile
+        ? { ...profile, email: user.email }
+        : { id: user.id, email: user.email, full_name: '', subscription_tier: 'free' },
       user: { id: user.id, email: user.email },
     })
   } catch {
