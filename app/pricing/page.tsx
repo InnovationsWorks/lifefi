@@ -55,7 +55,7 @@ const PLANS: Plan[] = [
   },
   {
     id: "bizfi",
-    name: "BizFi Business",
+    name: "LifeFi Business",
     price: "$7.99",
     period: "/ month",
     tagline: "Full financial control for entrepreneurs & small biz",
@@ -78,7 +78,7 @@ const PLANS: Plan[] = [
   },
   {
     id: "duo",
-    name: "LifeFi/BizFi Duo",
+    name: "LifeFi Duo",
     price: "$9.99",
     period: "/ month",
     tagline: "Personal + business finances, one subscription",
@@ -89,7 +89,7 @@ const PLANS: Plan[] = [
     savings: "Saves $2.99/mo",
     features: [
       { text: "Everything in LifeFi Personal", included: true  },
-      { text: "Everything in BizFi Business",  included: true  },
+      { text: "Everything in LifeFi Business",  included: true  },
       { text: "Combined personal + biz view",  included: true  },
       { text: "Team/employee accounts",        included: true  },
       { text: "Multi-bank business sync",      included: true  },
