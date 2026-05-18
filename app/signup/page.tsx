@@ -39,7 +39,7 @@ function SignupForm() {
       password: form.password,
       options: {
         data: { full_name: form.name },
-        emailRedirectTo: `${window.location.origin}/auth/callback`,
+        emailRedirectTo: `https://lifefi.ai/auth/callback?next=/auth/confirm`,
       },
     });
 
