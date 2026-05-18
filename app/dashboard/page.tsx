@@ -360,13 +360,43 @@ export default function DashboardPage() {
   const [cameraMode, setCameraMode]   = useState<"bill" | "card" | "utility" | null>(null);
   const [showUpgrade, setShowUpgrade] = useState(false);
   const [userProfile, setUserProfile] = useState<{ subscription_tier: string; email?: string; full_name?: string } | null>(null);
+  const [activating, setActivating]   = useState(false);
   const router = useRouter();
 
   useEffect(() => {
-    fetch('/api/user/profile')
-      .then(r => r.ok ? r.json() : null)
-      .then(data => { if (data?.profile) setUserProfile(data.profile); })
-      .catch(() => {});
+    const params = new URLSearchParams(window.location.search);
+    const upgraded = params.get('upgraded') === 'true';
+    if (upgraded) setActivating(true);
+
+    const fetchProfile = () =>
+      fetch('/api/user/profile')
+        .then(r => r.ok ? r.json() : null)
+        .then(data => {
+          if (data?.profile) {
+            setUserProfile(data.profile);
+            return data.profile.subscription_tier as string;
+          }
+          return 'free';
+        })
+        .catch(() => 'free');
+
+    if (upgraded) {
+      // Poll until subscription_tier changes from 'free' (webhook may lag)
+      let attempts = 0;
+      const poll = async () => {
+        const tier = await fetchProfile();
+        attempts++;
+        if (tier !== 'free' || attempts >= 10) {
+          setActivating(false);
+          window.history.replaceState({}, '', '/dashboard');
+        } else {
+          setTimeout(poll, 2000);
+        }
+      };
+      setTimeout(poll, 1500);
+    } else {
+      fetchProfile();
+    }
   }, []);
 
   const isPremium   = ['personal', 'bizfi', 'duo'].includes(userProfile?.subscription_tier ?? '');
@@ -636,6 +666,23 @@ export default function DashboardPage() {
 
         {/* Body */}
         <main className="flex-1 overflow-y-auto p-6 space-y-6">
+
+          {/* ── Activating plan banner ────────────────────────────────── */}
+          {activating && (
+            <motion.div
+              initial={{ opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="flex items-center gap-3 px-5 py-3 rounded-2xl border border-[#D4AF37]/40"
+              style={{ background: "rgba(212,175,55,0.08)" }}
+            >
+              <motion.div
+                animate={{ rotate: 360 }}
+                transition={{ duration: 1.2, repeat: Infinity, ease: "linear" }}
+                className="w-4 h-4 rounded-full border-2 border-[#D4AF37] border-t-transparent shrink-0"
+              />
+              <span className="text-sm font-medium text-[#D4AF37]">Activating your plan — this takes a few seconds…</span>
+            </motion.div>
+          )}
 
           {/* ── Calendar view ─────────────────────────────────────────── */}
           {activeNav === "calendar" && (
