@@ -25,43 +25,21 @@ interface Plan {
   color: string;
   badge?: string;
   comingSoon?: boolean;
+  savings?: string;
   features: PlanFeature[];
   cta: string;
 }
 
 const PLANS: Plan[] = [
   {
-    id: "starter",
-    name: "Starter",
-    price: "$2.99",
+    id: "personal",
+    name: "LifeFi Personal",
+    price: "$4.99",
     period: "/ month",
-    tagline: "Perfect for getting your finances under control",
-    icon: Zap,
-    color: "#22c55e",
-    badge: "First Month Free",
-    features: [
-      { text: "Unlimited bills & cards",      included: true  },
-      { text: "Due-date reminders",           included: true  },
-      { text: "Basic spending overview",       included: true  },
-      { text: "Financial health score",       included: true  },
-      { text: "Voice input (AI add bills)",   included: false },
-      { text: "Smart alerts & insights",      included: false },
-      { text: "Camera bill scanning",         included: false },
-      { text: "Bank account sync (Plaid)",    included: false },
-      { text: "Spending analytics + charts",  included: false },
-      { text: "Business expense tracking",    included: false },
-    ],
-    cta: "Get Started",
-  },
-  {
-    id: "premium",
-    name: "Premium",
-    price: "$7.99",
-    period: "/ month",
-    tagline: "Everything you need to stay on top of finances",
+    tagline: "Everything you need to master your personal finances",
     icon: Crown,
     color: GOLD,
-    badge: "Most Popular",
+    badge: "First Month Free",
     features: [
       { text: "Unlimited bills & cards",      included: true  },
       { text: "Voice input (AI add bills)",   included: true  },
@@ -73,12 +51,12 @@ const PLANS: Plan[] = [
       { text: "Business expense tracking",    included: false },
       { text: "Team/employee accounts",       included: false },
     ],
-    cta: "Upgrade to Premium",
+    cta: "Get Started",
   },
   {
     id: "bizfi",
-    name: "BizFi Bundle",
-    price: "$14.99",
+    name: "BizFi Business",
+    price: "$7.99",
     period: "/ month",
     tagline: "Full financial control for entrepreneurs & small biz",
     icon: Briefcase,
@@ -86,14 +64,38 @@ const PLANS: Plan[] = [
     badge: "Coming Soon",
     comingSoon: true,
     features: [
-      { text: "Everything in Premium",        included: true  },
       { text: "Business expense tracking",    included: true  },
-      { text: "Team/employee accounts",       included: true  },
       { text: "Invoice & payment tracking",   included: true  },
       { text: "Profit & loss summaries",      included: true  },
       { text: "Tax category tagging",         included: true  },
       { text: "Multi-bank business sync",     included: true  },
       { text: "CSV / PDF export",             included: true  },
+      { text: "Team/employee accounts",       included: true  },
+      { text: "Personal finance tracking",    included: false },
+      { text: "Bank account sync (Plaid)",    included: false },
+    ],
+    cta: "Coming Soon",
+  },
+  {
+    id: "duo",
+    name: "LifeFi/BizFi Duo",
+    price: "$9.99",
+    period: "/ month",
+    tagline: "Personal + business finances, one subscription",
+    icon: Zap,
+    color: "#8B5CF6",
+    badge: "Best Value",
+    comingSoon: true,
+    savings: "Saves $2.99/mo",
+    features: [
+      { text: "Everything in LifeFi Personal", included: true  },
+      { text: "Everything in BizFi Business",  included: true  },
+      { text: "Combined personal + biz view",  included: true  },
+      { text: "Team/employee accounts",        included: true  },
+      { text: "Multi-bank business sync",      included: true  },
+      { text: "CSV / PDF export",              included: true  },
+      { text: "Tax category tagging",          included: true  },
+      { text: "Profit & loss summaries",       included: true  },
     ],
     cta: "Coming Soon",
   },
@@ -116,13 +118,13 @@ export default function PricingPage() {
   const [checkoutError, setCheckoutError] = useState<string | null>(null);
 
   const handleCheckout = async (planId: string) => {
-    if (planId === 'bizfi') return;
+    if (planId === 'bizfi' || planId === 'duo') return;
     setCheckoutError(null);
     setLoading(true);
     const PRICE_IDS: Record<string, string> = {
-      starter: process.env.NEXT_PUBLIC_STRIPE_STARTER_PRICE_ID ?? '',
-      premium: process.env.NEXT_PUBLIC_STRIPE_PREMIUM_PRICE_ID ?? '',
-      bizfi:   process.env.NEXT_PUBLIC_STRIPE_BIZFI_PRICE_ID   ?? '',
+      personal: process.env.NEXT_PUBLIC_STRIPE_PERSONAL_PRICE_ID ?? '',
+      bizfi:    process.env.NEXT_PUBLIC_STRIPE_BIZFI_PRICE_ID    ?? '',
+      duo:      process.env.NEXT_PUBLIC_STRIPE_DUO_PRICE_ID      ?? '',
     };
     const priceId = PRICE_IDS[planId];
     if (!priceId || priceId.startsWith('price_YOUR_')) {
@@ -225,10 +227,10 @@ export default function PricingPage() {
           className="grid grid-cols-1 md:grid-cols-3 gap-6"
         >
           {PLANS.map((plan) => {
-            const isPremium = plan.id === "premium";
+            const isPersonal = plan.id === "personal";
             const isSelected = selected === plan.id;
 
-            const displayPrice = billing === "annual" && plan.price !== "$0"
+            const displayPrice = billing === "annual"
               ? `$${(parseFloat(plan.price.replace("$", "")) * 0.8).toFixed(2)}`
               : plan.price;
 
@@ -237,18 +239,18 @@ export default function PricingPage() {
                 key={plan.id}
                 variants={cardVariant}
                 className={`relative flex flex-col rounded-3xl border transition-all duration-300 ${
-                  isPremium
+                  isPersonal
                     ? "border-[#D4AF37]/40 bg-[#D4AF37]/[0.04]"
                     : "border-white/10 bg-white/[0.03]"
                 } ${isSelected ? "ring-2 ring-[#D4AF37]" : ""}`}
               >
-                {/* Popular badge */}
+                {/* Badge */}
                 {plan.badge && (
                   <div className="absolute -top-3.5 left-1/2 -translate-x-1/2">
                     <div
                       className="px-3 py-1 rounded-full text-xs font-bold whitespace-nowrap"
                       style={
-                        plan.comingSoon
+                        plan.badge === "Coming Soon"
                           ? { background: "#374151", color: "#9ca3af" }
                           : { background: "linear-gradient(135deg, #D4AF37, #b8962e)", color: "#0a0a0f" }
                       }
@@ -269,39 +271,29 @@ export default function PricingPage() {
                   </div>
 
                   {/* Price */}
-                  <div className="mb-2">
+                  <div className="mb-1">
                     <span className="font-display text-4xl font-bold text-[#E8E8E8]">{displayPrice}</span>
-                    {plan.period !== "forever" && (
-                      <span className="text-[#9ca3af] text-sm ml-1">{plan.period}</span>
-                    )}
-                    {plan.price === "$0" && (
-                      <span className="text-[#9ca3af] text-sm ml-1">forever</span>
-                    )}
+                    <span className="text-[#9ca3af] text-sm ml-1">{plan.period}</span>
                   </div>
+                  {plan.savings && (
+                    <div className="text-xs font-medium text-[#22c55e] mb-1">{plan.savings}</div>
+                  )}
                   <div className="text-xs text-[#9ca3af] mb-6 leading-relaxed">{plan.tagline}</div>
 
                   {/* CTA */}
                   <button
                     onClick={() => { setSelected(plan.id); handleCheckout(plan.id); }}
                     className={`w-full py-3 rounded-xl font-semibold text-sm mb-6 transition-all ${
-                      plan.id === "free"
-                        ? "border border-white/15 text-[#9ca3af] cursor-default"
-                        : plan.comingSoon
+                      plan.comingSoon
                         ? "border border-white/10 text-[#6b7280] cursor-not-allowed"
-                        : plan.id === "starter"
-                        ? "text-white"
-                        : isPremium
-                        ? "text-[#0a0a0f]"
-                        : "border border-[#4F8EF7]/40 text-[#4F8EF7] hover:bg-[#4F8EF7]/10"
+                        : "text-white"
                     }`}
                     style={
-                      plan.id === "starter"
+                      !plan.comingSoon
                         ? { background: "linear-gradient(135deg, #22c55e, #16a34a)" }
-                        : isPremium
-                        ? { background: "linear-gradient(135deg, #D4AF37, #b8962e)" }
                         : undefined
                     }
-                    disabled={plan.id === "free" || !!plan.comingSoon || loading}
+                    disabled={!!plan.comingSoon || loading}
                   >
                     {plan.cta}
                   </button>
