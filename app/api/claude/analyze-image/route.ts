@@ -70,10 +70,16 @@ export async function POST(request: NextRequest) {
     });
 
     const text = response.content[0].type === "text" ? response.content[0].text : "";
-    const jsonMatch = text.match(/\{[\s\S]*\}/);
+    // Strip markdown code fences if present, then extract JSON object
+    const stripped = text.replace(/```(?:json)?\s*/gi, "").replace(/```/g, "").trim();
+    const jsonMatch = stripped.match(/\{[\s\S]*\}/);
     if (!jsonMatch) return NextResponse.json({ error: "Parse failed" }, { status: 500 });
 
     const extracted = JSON.parse(jsonMatch[0]);
+    // Coerce nulls to undefined so the client can detect missing fields
+    for (const key of Object.keys(extracted)) {
+      if (extracted[key] === null) extracted[key] = undefined;
+    }
     return NextResponse.json(extracted);
   } catch (err) {
     console.error("Claude analyze-image error:", err);
