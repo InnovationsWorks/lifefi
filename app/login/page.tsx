@@ -3,7 +3,8 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { Mail, Lock, Eye, EyeOff, Wallet, AlertCircle } from "lucide-react";
+import Image from "next/image";
+import { Mail, Lock, Eye, EyeOff, AlertCircle } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 import { createClient } from "@/lib/supabase/client";
@@ -159,11 +160,8 @@ export default function LoginPage() {
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-10"
         >
-          <Link href="/" className="inline-flex items-center gap-3 mb-6">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#4F8EF7] to-[#D4AF37] flex items-center justify-center">
-              <Wallet className="w-5 h-5 text-white" />
-            </div>
-            <span className="font-display text-2xl font-bold text-[#E8E8E8]">LifeFi</span>
+          <Link href="/" className="inline-block mb-6">
+            <Image src="/images/logos/LifeFi_Web_512.webp" alt="LifeFi" width={180} height={180} />
           </Link>
           <h1 className="font-display text-3xl font-bold text-[#E8E8E8] mb-2">
             Welcome back

@@ -4,6 +4,10 @@ import { ClientProviders } from "./client-providers";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://lifefi.ai"),
+  icons: {
+    icon: "/images/logos/LifeFi_Icon_Only_TRUE.svg",
+    shortcut: "/images/logos/LifeFi_Icon_Only_TRUE.svg",
+  },
   title: "LifeFi — Your Financial Life, Finally in Order",
   description:
     "LifeFi is a luxury personal financial organizer. Track cards, pay bills, monitor utilities, and get smart alerts — all in one beautiful dashboard.",

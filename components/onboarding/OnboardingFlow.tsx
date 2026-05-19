@@ -3,8 +3,8 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence, type PanInfo } from "framer-motion";
+import Image from "next/image";
 import {
-  Wallet,
   ChevronRight, ChevronLeft, X, ArrowRight,
 } from "lucide-react";
 
@@ -185,15 +185,14 @@ export function OnboardingFlow() {
                   <X className="w-4 h-4" />
                 </button>
 
-                {/* Logo mark */}
+                {/* Logo */}
                 <motion.div
                   initial={{ scale: 0.7, opacity: 0, rotate: -10 }}
                   animate={{ scale: 1,   opacity: 1, rotate: 0 }}
                   transition={{ delay: 0.1, type: "spring", stiffness: 360, damping: 24 }}
-                  className="w-20 h-20 rounded-3xl mx-auto mb-6 flex items-center justify-center"
-                  style={iconCircle}
+                  className="flex justify-center mb-6"
                 >
-                  <Wallet className="w-9 h-9" style={{ color: GOLD }} />
+                  <Image src="/images/logos/LifeFi_Web_512.webp" alt="LifeFi" width={160} height={160} />
                 </motion.div>
 
                 <motion.div

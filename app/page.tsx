@@ -2,10 +2,11 @@
 
 import { motion } from "framer-motion";
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import {
   CreditCard, FileText, Bell, BarChart3, Shield, Zap, ChevronRight,
-  Check, Star, TrendingUp, Wallet, ArrowRight,
+  Check, Star, TrendingUp, ArrowRight,
 } from "lucide-react";
 import { AnimatedSection } from "@/components/ui/AnimatedSection";
 import { MotionButton } from "@/components/ui/MotionButton";
@@ -79,12 +80,7 @@ export default function LandingPage() {
       {/* ── Nav ──────────────────────────────────────────────────────────── */}
       <nav className="fixed top-0 left-0 right-0 z-50 px-6 py-4">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#4F8EF7] to-[#D4AF37] flex items-center justify-center">
-              <Wallet className="w-4 h-4 text-white" />
-            </div>
-            <span className="font-display font-bold text-xl text-[#E8E8E8]">LifeFi</span>
-          </div>
+          <Image src="/images/logos/LifeFi_Icon_Only_TRUE.svg" alt="LifeFi" width={36} height={36} />
           <div className="hidden md:flex items-center gap-8 text-sm text-[#9ca3af]">
             <a href="#features"    className="hover:text-[#E8E8E8] transition-colors">Features</a>
             <a href="#how-it-works" className="hover:text-[#E8E8E8] transition-colors">How It Works</a>
@@ -466,12 +462,7 @@ export default function LandingPage() {
       {/* ── Footer ───────────────────────────────────────────────────────── */}
       <footer className="border-t border-white/5 py-12 px-6">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#4F8EF7] to-[#D4AF37] flex items-center justify-center">
-              <Wallet className="w-4 h-4 text-white" />
-            </div>
-            <span className="font-display font-bold text-lg text-[#E8E8E8]">LifeFi</span>
-          </div>
+          <Image src="/images/logos/LifeFi_Icon_Only_TRUE.svg" alt="LifeFi" width={36} height={36} />
           <div className="flex items-center gap-6 text-sm text-[#9ca3af]">
             <Link href="/terms#privacy" className="hover:text-[#E8E8E8] transition-colors">Privacy</Link>
             <Link href="/terms" className="hover:text-[#E8E8E8] transition-colors">Terms</Link>

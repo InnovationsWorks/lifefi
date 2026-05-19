@@ -9,7 +9,7 @@ import {
 } from "recharts";
 import {
   LayoutDashboard, CreditCard, FileText, Zap, Bell, Settings, LogOut,
-  TrendingUp, TrendingDown, CheckCircle2, Clock, AlertTriangle, Wallet,
+  TrendingUp, TrendingDown, CheckCircle2, Clock, AlertTriangle,
   Menu, X, ChevronRight, Calendar, Droplets, Flame, Wifi, Lightbulb, Building2,
   Mic, Crown, Star, Sparkles, ArrowDown,
 } from "lucide-react";
@@ -17,6 +17,7 @@ import {
 import confetti from "canvas-confetti";
 
 import Link from "next/link";
+import Image from "next/image";
 import { CountUp } from "@/components/ui/CountUp";
 import { AnimatedSection, staggerItem } from "@/components/ui/AnimatedSection";
 import { MotionButton } from "@/components/ui/MotionButton";
@@ -475,11 +476,8 @@ export default function DashboardPage() {
       >
         {/* Logo */}
         <div className="p-6 flex items-center justify-between border-b border-white/5">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#4F8EF7] to-[#D4AF37] flex items-center justify-center">
-              <Wallet className="w-4 h-4 text-white" />
-            </div>
-            <span className="font-display text-xl font-bold text-[#E8E8E8]">LifeFi</span>
+          <div className="flex items-center">
+            <Image src="/images/logos/LifeFi_Icon_Only_TRUE.svg" alt="LifeFi" width={36} height={36} />
           </div>
           <button onClick={() => setSidebarOpen(false)} className="md:hidden text-[#9ca3af] hover:text-[#E8E8E8]">
             <X className="w-5 h-5" />
