@@ -435,7 +435,9 @@ export default function DashboardPage() {
     if (cameraMode === "card") {
       addCard({ name: result.name, last4: result.last4 ?? "0000", balance: 0, limit: result.amount, dueDate: dueDateStr, dueDay: day, color: "#4F8EF7", utilization: 0 });
     } else if (cameraMode === "utility") {
-      addUtility({ name: result.name, amount: result.amount, trend: 0, color: "#f59e0b", category: "other" });
+      const validUtilCats = ["electric","water","gas","internet","phone","other"] as const;
+      const utilCat = validUtilCats.includes(result.category as typeof validUtilCats[number]) ? result.category as typeof validUtilCats[number] : "other";
+      addUtility({ name: result.name, amount: result.amount, trend: 0, color: "#f59e0b", category: utilCat });
     } else {
       addBill({ name: result.name, amount: result.amount, dueDate: dueDateStr, dueDay: day, status: "unpaid", category: result.category, frequency: "monthly" });
     }
