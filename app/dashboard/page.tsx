@@ -11,7 +11,7 @@ import {
   LayoutDashboard, CreditCard, FileText, Zap, Bell, Settings, LogOut,
   TrendingUp, TrendingDown, CheckCircle2, Clock, AlertTriangle,
   Menu, X, ChevronRight, Calendar, Droplets, Flame, Wifi, Lightbulb, Building2,
-  Mic, Crown, Star, Sparkles, ArrowDown,
+  Mic, Crown, Star, Sparkles,
 } from "lucide-react";
 
 import confetti from "canvas-confetti";
@@ -454,6 +454,12 @@ export default function DashboardPage() {
 
   return (
     <div className="h-screen bg-[#0a0a0f] flex overflow-hidden">
+
+      {/* ── Fixed mobile logo — always top-left, above sidebar ──────────── */}
+      <div className="fixed top-0 left-0 p-3 z-[70] md:hidden pointer-events-none">
+        <Image src="/images/logos/LifeFi_Icon_Only_TRUE.svg" alt="LifeFi" width={64} height={64} />
+      </div>
+
       {/* Mobile backdrop */}
       <AnimatePresence>
         {sidebarOpen && (
@@ -476,9 +482,7 @@ export default function DashboardPage() {
       >
         {/* Logo */}
         <div className="p-6 flex items-center justify-between border-b border-white/5">
-          <div className="flex items-center">
-            <Image src="/images/logos/LifeFi_Icon_Only_TRUE.svg" alt="LifeFi" width={36} height={36} />
-          </div>
+          <Image src="/images/logos/LifeFi_Icon_Only_TRUE.svg" alt="LifeFi" width={56} height={56} />
           <button onClick={() => setSidebarOpen(false)} className="md:hidden text-[#9ca3af] hover:text-[#E8E8E8]">
             <X className="w-5 h-5" />
           </button>
@@ -595,21 +599,42 @@ export default function DashboardPage() {
 
         {/* Header */}
         <header className="sticky top-0 z-20 bg-[#0a0a0f]/90 backdrop-blur-md border-b border-white/5 px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
+
+          {/* ── Mobile: greeting shifted right of fixed logo, hamburger right ── */}
+          <div className="flex md:hidden items-center justify-between">
+            {/* pl-[60px] clears the fixed 64px logo + its 12px left padding */}
+            <div className="flex-1 min-w-0 pl-[60px]">
+              <h1 className="font-display text-base font-bold text-[#E8E8E8] truncate">{`Hello, ${userProfile?.full_name?.split(" ")[0] || userName?.split(" ")[0] || "there"} 👋`}</h1>
+              <p className="text-xs text-[#9ca3af]">{new Date().toLocaleDateString("en-US", { weekday: "long", month: "short", day: "numeric" })}</p>
+            </div>
+            <div className="flex items-center gap-2 shrink-0">
+              <MotionButton variant="ghost" className="relative p-2 border-white/10 rounded-xl !py-2 !px-2">
+                <Bell className="w-4 h-4 text-[#9ca3af]" />
+                {notifications > 0 && (
+                  <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-[#ef4444] text-white text-xs flex items-center justify-center font-bold">
+                    {notifications}
+                  </span>
+                )}
+              </MotionButton>
+              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#4F8EF7] to-[#D4AF37] flex items-center justify-center text-white text-xs font-bold">
+                {userInitials}
+              </div>
               <motion.button
                 whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
                 onClick={() => setSidebarOpen(true)}
-                className="md:hidden text-[#9ca3af] hover:text-[#E8E8E8] p-1"
+                className="text-[#9ca3af] hover:text-[#E8E8E8] p-1"
               >
                 <Menu className="w-5 h-5" />
               </motion.button>
-              <div>
-                <h1 className="font-display text-xl font-bold text-[#E8E8E8]">{`Hello, ${userProfile?.full_name?.split(" ")[0] || userName?.split(" ")[0] || "there"} 👋`}</h1>
-                <p className="text-xs text-[#9ca3af]">{new Date().toLocaleDateString("en-US", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}</p>
-              </div>
             </div>
-            <div className="flex items-center gap-2.5">
+          </div>
+
+          {/* ── Desktop: full logo centered above greeting, right actions absolute ── */}
+          <div className="hidden md:block relative text-center pb-1">
+            <Image src="/images/logos/LifeFi_Web_512.webp" alt="LifeFi" width={120} height={120} className="mx-auto mb-1" />
+            <h1 className="font-display text-lg font-bold text-[#E8E8E8]">{`Hello, ${userProfile?.full_name?.split(" ")[0] || userName?.split(" ")[0] || "there"} 👋`}</h1>
+            <p className="text-xs text-[#9ca3af]">{new Date().toLocaleDateString("en-US", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}</p>
+            <div className="absolute right-0 top-0 flex items-center gap-2.5">
               <Link href="/pricing" className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-[#D4AF37]/30 hover:bg-[#D4AF37]/10 transition-colors">
                 <Sparkles className="w-3.5 h-3.5 text-[#D4AF37]" />
                 <span className="text-xs font-semibold text-[#D4AF37]">Plans</span>
@@ -627,6 +652,7 @@ export default function DashboardPage() {
               </div>
             </div>
           </div>
+
         </header>
 
         {/* Body */}
@@ -666,55 +692,31 @@ export default function DashboardPage() {
           {/* ── Overview ──────────────────────────────────────────────── */}
           {activeNav === "overview" && (
             <>
-              {/* ── Add hero card ─────────────────────────────────────── */}
+              {/* ── Add quick-add strip ───────────────────────────────── */}
               <motion.div
                 initial={{ opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.05 }}
-                className="relative rounded-3xl overflow-hidden border border-[#D4AF37]/40 p-6"
+                className="rounded-3xl border border-[#D4AF37]/40 px-6 py-4"
                 style={{ background: "linear-gradient(135deg, rgba(212,175,55,0.08) 0%, rgba(79,142,247,0.05) 100%)" }}
               >
-                {/* Pulse glow */}
-                <motion.div
-                  animate={{ scale: [1, 1.15, 1], opacity: [0.15, 0.35, 0.15] }}
-                  transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-                  className="absolute inset-0 rounded-3xl"
-                  style={{ background: "radial-gradient(circle at 50% 40%, #D4AF37 0%, transparent 65%)", pointerEvents: "none" }}
-                />
-
-                <div className="relative z-10">
-                  {/* Icon */}
-                  <div className="flex justify-center mb-3">
-                    <div className="w-16 h-16 rounded-2xl flex items-center justify-center"
-                      style={{ background: "linear-gradient(135deg, #D4AF37, #b8962e)" }}>
-                      <ArrowDown className="w-8 h-8 text-[#0a0a0f]" />
-                    </div>
-                  </div>
-
-                  {/* Text */}
-                  <div className="text-center mb-5">
-                    <h2 className="font-display text-xl font-bold text-[#E8E8E8]">Simply click on any button to add</h2>
-                  </div>
-
-                  {/* Pill buttons */}
-                  <div className="flex gap-3 justify-center flex-wrap">
-                    {[
-                      { label: "💳 Credit Card", mode: "card"    as const, color: "#4F8EF7" },
-                      { label: "🧾 Bill",         mode: "bill"    as const, color: "#D4AF37" },
-                      { label: "⚡ Utility",      mode: "utility" as const, color: "#f59e0b" },
-                    ].map(({ label, mode, color }) => (
-                      <motion.button
-                        key={mode}
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        onClick={() => window.dispatchEvent(new CustomEvent("lifefi:openAdd", { detail: { sheet: mode } }))}
-                        className="flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold border transition-all"
-                        style={{ borderColor: `${color}50`, background: `${color}15`, color }}
-                      >
-                        {label}
-                      </motion.button>
-                    ))}
-                  </div>
+                <div className="flex gap-3 justify-center flex-wrap">
+                  {[
+                    { label: "💳 Credit Card", mode: "card"    as const, color: "#4F8EF7" },
+                    { label: "🧾 Bill",         mode: "bill"    as const, color: "#D4AF37" },
+                    { label: "⚡ Utility",      mode: "utility" as const, color: "#f59e0b" },
+                  ].map(({ label, mode, color }) => (
+                    <motion.button
+                      key={mode}
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={() => window.dispatchEvent(new CustomEvent("lifefi:openAdd", { detail: { sheet: mode } }))}
+                      className="flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold border transition-all"
+                      style={{ borderColor: `${color}50`, background: `${color}15`, color }}
+                    >
+                      {label}
+                    </motion.button>
+                  ))}
                 </div>
               </motion.div>
 
