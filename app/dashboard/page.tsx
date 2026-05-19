@@ -633,7 +633,7 @@ export default function DashboardPage() {
               <motion.button
                 whileHover={{ scale: 1.04 }}
                 whileTap={{ scale: 0.95 }}
-                onClick={() => isPremium ? setCameraMode("card") : setShowUpgrade(true)}
+                onClick={() => setCameraMode("card")}
                 className="flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-sm"
                 style={{
                   background: "linear-gradient(135deg, #D4AF37, #b8962e)",
@@ -742,7 +742,7 @@ export default function DashboardPage() {
                         key={mode}
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
-                        onClick={() => isPremium ? setCameraMode(mode) : setShowUpgrade(true)}
+                        onClick={() => setCameraMode(mode)}
                         className="flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold border transition-all"
                         style={{ borderColor: `${color}50`, background: `${color}15`, color }}
                       >
@@ -902,7 +902,7 @@ export default function DashboardPage() {
                     {upcomingBills.length === 0 && (
                       <div className="text-center py-6 text-sm text-[#9ca3af]">
                         No upcoming bills.{" "}
-                        <button onClick={() => isPremium ? setCameraMode("bill") : setShowUpgrade(true)} className="text-[#4F8EF7] hover:underline">Add a bill</button>
+                        <button onClick={() => setCameraMode("bill")} className="text-[#4F8EF7] hover:underline">Add a bill</button>
                       </div>
                     )}
                     {upcomingBills.map((bill) => {
@@ -943,7 +943,7 @@ export default function DashboardPage() {
                     <CreditCard className="w-4 h-4 text-[#4F8EF7]" />
                     <h2 className="font-semibold text-[#E8E8E8]">Your Cards</h2>
                   </div>
-                  <MotionButton variant="ghost" className="text-xs text-[#4F8EF7] border-0 py-1 px-2" onClick={() => isPremium ? setCameraMode("card") : setShowUpgrade(true)}>
+                  <MotionButton variant="ghost" className="text-xs text-[#4F8EF7] border-0 py-1 px-2" onClick={() => setCameraMode("card")}>
                     + Add Card
                   </MotionButton>
                 </div>
@@ -992,7 +992,7 @@ export default function DashboardPage() {
                       <FileText className="w-4 h-4 text-[#4F8EF7]" />
                       <h2 className="font-semibold text-[#E8E8E8]">Monthly Bills</h2>
                     </div>
-                    <MotionButton variant="ghost" className="text-xs text-[#4F8EF7] border-0 py-1 px-2" onClick={() => isPremium ? setCameraMode("bill") : setShowUpgrade(true)}>
+                    <MotionButton variant="ghost" className="text-xs text-[#4F8EF7] border-0 py-1 px-2" onClick={() => setCameraMode("bill")}>
                       + Add Bill
                     </MotionButton>
                   </div>
@@ -1001,7 +1001,7 @@ export default function DashboardPage() {
                     {bills.length === 0 && (
                       <div className="text-center py-6 text-sm text-[#9ca3af]">
                         No bills yet.{" "}
-                        <button onClick={() => isPremium ? setCameraMode("bill") : setShowUpgrade(true)} className="text-[#4F8EF7] hover:underline">Add your first bill</button>
+                        <button onClick={() => setCameraMode("bill")} className="text-[#4F8EF7] hover:underline">Add your first bill</button>
                       </div>
                     )}
                     {bills.map((bill) => {
@@ -1105,7 +1105,7 @@ export default function DashboardPage() {
               <motion.button
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.97 }}
-                onClick={() => isPremium ? setCameraMode("card") : setShowUpgrade(true)}
+                onClick={() => setCameraMode("card")}
                 className="w-full flex items-center justify-center gap-2 py-3 rounded-2xl font-semibold text-sm"
                 style={{ background: "linear-gradient(135deg, #D4AF37, #b8962e)", color: "#0a0a0f" }}
               >
@@ -1150,7 +1150,7 @@ export default function DashboardPage() {
                 <motion.button
                   whileHover={{ scale: 1.03 }}
                   whileTap={{ scale: 0.96 }}
-                  onClick={() => isPremium ? setCameraMode("bill") : setShowUpgrade(true)}
+                  onClick={() => setCameraMode("bill")}
                   className="flex-1 flex items-center justify-center gap-2 py-3 rounded-2xl font-bold text-sm"
                   style={{ background: "linear-gradient(135deg, #4F8EF7, #3a6fd8)", color: "#fff" }}
                 >
@@ -1223,7 +1223,7 @@ export default function DashboardPage() {
               <motion.button
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.97 }}
-                onClick={() => isPremium ? setCameraMode("utility") : setShowUpgrade(true)}
+                onClick={() => setCameraMode("utility")}
                 className="w-full flex items-center justify-center gap-2 py-3 rounded-2xl font-semibold text-sm"
                 style={{ background: "linear-gradient(135deg, #f59e0b, #d97706)", color: "#0a0a0f" }}
               >

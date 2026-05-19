@@ -27,12 +27,6 @@ const MODE_LABEL: Record<string, string> = {
   utility: "Scan Utility Statement",
 };
 
-const MODE_HINT: Record<string, string> = {
-  card:    "Take a photo or upload an image of the front of your card",
-  bill:    "Take a photo or upload your bill — Claude AI will extract amount, date, and category",
-  utility: "Take a photo or upload your utility statement",
-};
-
 const BILL_CATEGORIES = [
   "Housing", "Entertainment", "Insurance", "Health",
   "Transport", "Software", "Shopping", "Phone", "Internet", "Other",
@@ -289,18 +283,6 @@ export function CameraScanner({ mode, onConfirm, onClose }: CameraScannerProps) 
             {/* ── CHOOSE phase ── */}
             {phase === "choose" && (
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="p-5 space-y-4">
-                {mode !== "card" && (
-                  <p className="text-xs text-[#9ca3af] text-center leading-relaxed">{MODE_HINT[mode]}</p>
-                )}
-
-                {mode !== "card" && (
-                  <div className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs text-[#9ca3af]"
-                    style={{ background: "rgba(212,175,55,0.06)", border: "1px solid rgba(212,175,55,0.18)" }}>
-                    <Sparkles className="w-3 h-3 text-[#D4AF37] shrink-0" />
-                    Claude AI will automatically read and fill in all the details
-                  </div>
-                )}
-
                 {isMobile ? (
                   /* ── MOBILE: camera + gallery buttons ── */
                   <div className="space-y-3">
