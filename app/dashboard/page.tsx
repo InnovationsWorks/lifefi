@@ -629,12 +629,26 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          {/* ── Desktop: full logo centered above greeting, right actions absolute ── */}
-          <div className="hidden md:block relative text-center pb-1">
-            <Image src="/images/logos/LifeFi_Web_512.webp" alt="LifeFi" width={120} height={120} className="mx-auto mb-1" />
-            <h1 className="font-display text-lg font-bold text-[#E8E8E8]">{`Hello, ${userProfile?.full_name?.split(" ")[0] || userName?.split(" ")[0] || "there"} 👋`}</h1>
-            <p className="text-xs text-[#9ca3af]">{new Date().toLocaleDateString("en-US", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}</p>
-            <div className="absolute right-0 top-0 flex items-center gap-2.5">
+          {/* ── Desktop: 3-col grid — greeting left | logo+tagline center | actions right ── */}
+          <div className="hidden md:grid grid-cols-3 items-start">
+            {/* Col 1: greeting top-left */}
+            <div className="flex flex-col justify-start pt-1">
+              <h1 className="font-display text-base font-bold text-[#E8E8E8]">{`Hello, ${userProfile?.full_name?.split(" ")[0] || userName?.split(" ")[0] || "there"} 👋`}</h1>
+              <p className="text-xs text-[#9ca3af]">{new Date().toLocaleDateString("en-US", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}</p>
+            </div>
+            {/* Col 2: logo + tagline centered */}
+            <div className="flex flex-col items-center">
+              <Image
+                src="/images/logos/LifeFi_Web_512.webp"
+                alt="LifeFi"
+                width={120}
+                height={120}
+                style={{ mixBlendMode: "lighten" }}
+              />
+              <p className="text-sm text-[#E8E8E8] mt-1" style={{ fontFamily: "sans-serif" }}>Your Financial Freedom, In One Place</p>
+            </div>
+            {/* Col 3: right actions */}
+            <div className="flex items-center justify-end gap-2.5 pt-1">
               <Link href="/pricing" className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-[#D4AF37]/30 hover:bg-[#D4AF37]/10 transition-colors">
                 <Sparkles className="w-3.5 h-3.5 text-[#D4AF37]" />
                 <span className="text-xs font-semibold text-[#D4AF37]">Plans</span>
@@ -697,7 +711,7 @@ export default function DashboardPage() {
                 initial={{ opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.05 }}
-                className="rounded-3xl border border-[#D4AF37]/40 px-6 py-4"
+                className="rounded-3xl border border-[#D4AF37]/40 px-6 py-4 max-w-[480px] mx-auto w-full"
                 style={{ background: "linear-gradient(135deg, rgba(212,175,55,0.08) 0%, rgba(79,142,247,0.05) 100%)" }}
               >
                 <div className="flex gap-3 justify-center flex-wrap">

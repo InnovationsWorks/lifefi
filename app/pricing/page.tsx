@@ -3,9 +3,10 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import {
-  Check, X, Zap, Crown, Briefcase, ArrowLeft, Star,
+  Check, X, Zap, Crown, Briefcase, ArrowLeft,
 } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 
 const GOLD = "#D4AF37";
 const BLUE = "#4F8EF7";
@@ -170,9 +171,14 @@ export default function PricingPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
         >
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-[#D4AF37]/30 bg-[#D4AF37]/10 mb-5">
-            <Star className="w-3.5 h-3.5 text-[#D4AF37]" />
-            <span className="text-xs font-medium text-[#D4AF37]">Simple, transparent pricing</span>
+          <div className="flex justify-center mb-5">
+            <Image
+              src="/images/logos/LifeFi_Web_512.webp"
+              alt="LifeFi"
+              width={120}
+              height={120}
+              style={{ mixBlendMode: "lighten" }}
+            />
           </div>
           <h1 className="font-display text-4xl md:text-5xl font-bold text-[#E8E8E8] mb-4">
             Choose your plan
@@ -288,11 +294,11 @@ export default function PricingPage() {
                     className={`w-full py-3 rounded-xl font-semibold text-sm mb-6 transition-all ${
                       plan.comingSoon
                         ? "border border-white/10 text-[#6b7280] cursor-not-allowed"
-                        : "text-white"
+                        : ""
                     }`}
                     style={
                       !plan.comingSoon
-                        ? { background: "linear-gradient(135deg, #22c55e, #16a34a)" }
+                        ? { background: "#C9A84C", color: "#0A1628" }
                         : undefined
                     }
                     disabled={!!plan.comingSoon || loading}
