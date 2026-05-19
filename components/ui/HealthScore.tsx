@@ -4,7 +4,7 @@ import { useEffect, useState, useRef } from "react";
 import { motion, useInView } from "framer-motion";
 
 interface HealthScoreProps {
-  score: number;
+  score: number | null;
 }
 
 function scoreColor(s: number) {
@@ -28,7 +28,7 @@ export function HealthScore({ score }: HealthScoreProps) {
   const started = useRef(false);
 
   useEffect(() => {
-    if (!inView || started.current) return;
+    if (score === null || !inView || started.current) return;
     started.current = true;
     const dur = 1600;
     const start = performance.now();
@@ -44,11 +44,31 @@ export function HealthScore({ score }: HealthScoreProps) {
   const radius = 70;
   const stroke = 12;
   const circumference = 2 * Math.PI * radius;
-  // Arc covers 240° (from 150° to 390°), so offset for current value
-  const color = scoreColor(displayed);
-
-  // Needle angle: -120° at 0, +120° at 100
+  const color = score === null ? "rgba(255,255,255,0.15)" : scoreColor(displayed);
   const needleAngle = -120 + (displayed / 100) * 240;
+
+  if (score === null) {
+    return (
+      <div ref={ref} className="flex flex-col items-center">
+        <div className="relative" style={{ width: 200, height: 160 }}>
+          <svg width="200" height="160" viewBox="0 0 200 160" className="overflow-visible">
+            <circle cx="100" cy="110" r={radius} fill="none" stroke="rgba(255,255,255,0.07)"
+              strokeWidth={stroke} strokeLinecap="round"
+              strokeDasharray={`${circumference * (240 / 360)} ${circumference}`}
+              strokeDashoffset={0} transform="rotate(150 100 110)" />
+          </svg>
+          <div className="absolute bottom-2 left-1/2 -translate-x-1/2 text-center">
+            <div className="font-display text-4xl font-bold text-[#4a5568]">--</div>
+            <div className="text-xs text-[#4a5568] mt-0.5">/ 100</div>
+          </div>
+        </div>
+        <div className="mt-1 text-center">
+          <div className="text-sm text-[#4a5568]">No data yet</div>
+          <div className="text-xs text-[#4a5568] mt-0.5">Add bills or cards to calculate</div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div ref={ref} className="flex flex-col items-center">
@@ -150,7 +170,7 @@ export function HealthScore({ score }: HealthScoreProps) {
         >
           {scoreLabel(displayed)}
         </motion.div>
-        <div className="text-[#9ca3af] text-xs mt-0.5">↑ +3 pts this month</div>
+        <div className="text-[#9ca3af] text-xs mt-0.5">Based on your bills &amp; cards</div>
       </div>
     </div>
   );

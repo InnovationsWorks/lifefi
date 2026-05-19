@@ -232,7 +232,7 @@ export default function SignupPage() {
             Start Your Journey
           </h1>
           <p className="text-[#9ca3af] text-sm">
-            Join 50,000+ people managing their finances smarter
+            Your finances, organized in one place
           </p>
         </motion.div>
 

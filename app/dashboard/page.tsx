@@ -5,9 +5,6 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
-} from "recharts";
-import {
   LayoutDashboard, CreditCard, FileText, Zap, Bell, Settings, LogOut,
   TrendingUp, TrendingDown, CheckCircle2, Clock, AlertTriangle, Wallet,
   Menu, X, ChevronRight, Calendar, Droplets, Flame, Wifi, Lightbulb, Building2,
@@ -30,24 +27,13 @@ import { PaymentMethodModal } from "@/components/ui/PaymentMethodModal";
 import { useApp } from "@/contexts/AppContext";
 import { useToast } from "@/contexts/ToastContext";
 
-// ── Static chart data ──────────────────────────────────────────────────────
+// ── Category colours for spending ring ────────────────────────────────────
 
-const spendingData = [
-  { month: "Dec", Housing: 2200, Food: 680, Entertainment: 320, Transport: 180, Shopping: 440 },
-  { month: "Jan", Housing: 2200, Food: 720, Entertainment: 280, Transport: 210, Shopping: 390 },
-  { month: "Feb", Housing: 2200, Food: 650, Entertainment: 410, Transport: 160, Shopping: 520 },
-  { month: "Mar", Housing: 2200, Food: 780, Entertainment: 350, Transport: 230, Shopping: 310 },
-  { month: "Apr", Housing: 2200, Food: 710, Entertainment: 290, Transport: 200, Shopping: 470 },
-  { month: "May", Housing: 2200, Food: 640, Entertainment: 380, Transport: 190, Shopping: 350 },
-];
-
-const ringSegments = [
-  { label: "Housing",       value: 2200, color: "#4F8EF7" },
-  { label: "Food",          value: 640,  color: "#22c55e" },
-  { label: "Entertainment", value: 380,  color: "#D4AF37" },
-  { label: "Transport",     value: 190,  color: "#8b5cf6" },
-  { label: "Shopping",      value: 350,  color: "#f97316" },
-];
+const CATEGORY_COLORS: Record<string, string> = {
+  Housing: "#4F8EF7", Entertainment: "#D4AF37", Insurance: "#22c55e",
+  Health: "#ef4444", Transport: "#8b5cf6", Software: "#f59e0b",
+  Shopping: "#f97316", Utilities: "#06b6d4", Other: "#9ca3af",
+};
 
 const navItems = [
   { id: "overview",  label: "Overview",  icon: LayoutDashboard, link: null  },
@@ -88,32 +74,6 @@ const staggerContainer = {
   hidden: {},
   visible: { transition: { staggerChildren: 0.08, delayChildren: 0.05 } },
 };
-
-// ── Custom chart tooltip ───────────────────────────────────────────────────
-
-function CustomTooltip({ active, payload, label }: {
-  active?: boolean;
-  payload?: { value: number; name: string; color: string }[];
-  label?: string;
-}) {
-  if (!active || !payload?.length) return null;
-  const total = payload.reduce((s, p) => s + p.value, 0);
-  return (
-    <div className="glass p-4 text-sm">
-      <div className="font-semibold text-[#E8E8E8] mb-2">{label}</div>
-      {payload.map((p) => (
-        <div key={p.name} className="flex items-center gap-2 text-[#9ca3af] mb-1">
-          <div className="w-2 h-2 rounded-full" style={{ background: p.color }} />
-          <span>{p.name}:</span>
-          <span className="text-[#E8E8E8]">${p.value.toLocaleString()}</span>
-        </div>
-      ))}
-      <div className="border-t border-white/10 mt-2 pt-2 text-[#E8E8E8] font-semibold">
-        Total: ${total.toLocaleString()}
-      </div>
-    </div>
-  );
-}
 
 // ── Financial Calendar ─────────────────────────────────────────────────────
 
@@ -428,6 +388,31 @@ export default function DashboardPage() {
   const overallUtil   = totalLimit > 0 ? Math.round((totalBalance / totalLimit) * 100) : 0;
   const unpaidCount   = bills.filter((b) => b.status !== "paid").length;
   const upcomingBills = bills.filter((b) => b.status !== "paid").slice(0, 4);
+
+  // Real health score — computed from actual user data, null when no data exists
+  const paymentScore = bills.length > 0
+    ? Math.round((bills.filter(b => b.status === "paid").length / bills.length) * 100)
+    : null;
+  const cardScore = totalLimit > 0 ? Math.max(0, 100 - overallUtil) : null;
+  const nonNullScores = [paymentScore, cardScore].filter((s): s is number => s !== null);
+  const healthScore: number | null = nonNullScores.length > 0
+    ? Math.round(nonNullScores.reduce((a, b) => a + b, 0) / nonNullScores.length)
+    : null;
+
+  // Real spending ring — computed from bills and utilities by category
+  const realRingSegments = (() => {
+    const catTotals: Record<string, number> = {};
+    bills.forEach(b => {
+      const cat = b.category in CATEGORY_COLORS ? b.category : "Other";
+      catTotals[cat] = (catTotals[cat] ?? 0) + b.amount;
+    });
+    utilities.forEach(u => {
+      catTotals["Utilities"] = (catTotals["Utilities"] ?? 0) + u.amount;
+    });
+    return Object.entries(catTotals)
+      .filter(([, v]) => v > 0)
+      .map(([label, value]) => ({ label, value, color: CATEGORY_COLORS[label] ?? "#9ca3af" }));
+  })();
 
   function handleCameraConfirm(result: { name: string; amount: number; dueDay: number; category: string; last4?: string; expiry?: string }) {
     const day = result.dueDay;
@@ -848,32 +833,39 @@ export default function DashboardPage() {
               <div className="grid lg:grid-cols-3 gap-6">
                 <AnimatedSection className="glass-gold p-6 flex flex-col items-center text-center">
                   <div className="text-sm font-medium text-[#D4AF37] mb-4">Financial Health Score</div>
-                  <HealthScore score={87} />
+                  <HealthScore score={healthScore} />
                   <div className="w-full mt-5 space-y-2 text-left">
                     {[
-                      { label: "Payment History", val: 95, color: "#22c55e" },
-                      { label: "Utilization",      val: overallUtil, color: "#4F8EF7" },
-                      { label: "Account Age",      val: 80, color: "#D4AF37" },
-                    ].map((item) => (
-                      <div key={item.label}>
-                        <div className="flex justify-between text-xs text-[#9ca3af] mb-1">
-                          <span>{item.label}</span>
-                          <span className="font-medium" style={{ color: item.color }}>
-                            <CountUp to={item.val} suffix="%" duration={1.4} />
-                          </span>
+                      paymentScore !== null && { label: "Payment History", val: paymentScore, color: "#22c55e" },
+                      totalLimit > 0      && { label: "Utilization",      val: cardScore!,   color: "#4F8EF7" },
+                    ].filter(Boolean).map((item) => {
+                      const it = item as { label: string; val: number; color: string };
+                      return (
+                        <div key={it.label}>
+                          <div className="flex justify-between text-xs text-[#9ca3af] mb-1">
+                            <span>{it.label}</span>
+                            <span className="font-medium" style={{ color: it.color }}>
+                              <CountUp to={it.val} suffix="%" duration={1.4} />
+                            </span>
+                          </div>
+                          <div className="h-1.5 rounded-full bg-white/10">
+                            <motion.div
+                              initial={{ width: 0 }}
+                              whileInView={{ width: `${it.val}%` }}
+                              viewport={{ once: true }}
+                              transition={{ duration: 1, delay: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                              className="h-full rounded-full"
+                              style={{ background: it.color }}
+                            />
+                          </div>
                         </div>
-                        <div className="h-1.5 rounded-full bg-white/10">
-                          <motion.div
-                            initial={{ width: 0 }}
-                            whileInView={{ width: `${item.val}%` }}
-                            viewport={{ once: true }}
-                            transition={{ duration: 1, delay: 0.5, ease: [0.22, 1, 0.36, 1] }}
-                            className="h-full rounded-full"
-                            style={{ background: item.color }}
-                          />
-                        </div>
-                      </div>
-                    ))}
+                      );
+                    })}
+                    {healthScore === null && (
+                      <p className="text-xs text-[#4a5568] text-center pt-1">
+                        Add bills or cards to see your breakdown
+                      </p>
+                    )}
                   </div>
                 </AnimatedSection>
 
@@ -952,28 +944,37 @@ export default function DashboardPage() {
                     </div>
                     <span className="text-xs text-[#9ca3af]">{new Date().toLocaleString("default", { month: "long", year: "numeric" })}</span>
                   </div>
-                  <SpendingRing segments={ringSegments} />
+                  {realRingSegments.length > 0 ? (
+                    <SpendingRing segments={realRingSegments} />
+                  ) : (
+                    <div className="flex flex-col items-center justify-center py-8 text-center gap-2">
+                      <TrendingUp className="w-8 h-8 text-[#4a5568]" />
+                      <p className="text-sm text-[#9ca3af]">No spending data yet</p>
+                      <button
+                        onClick={() => isPremium ? setCameraMode("bill") : setShowUpgrade(true)}
+                        className="text-xs text-[#4F8EF7] hover:underline"
+                      >
+                        Add your first bill
+                      </button>
+                    </div>
+                  )}
                   <div className="mt-6">
                     <div className="text-xs text-[#9ca3af] mb-3">6-Month History</div>
-                    <ResponsiveContainer width="100%" height={160}>
-                      <BarChart data={spendingData} barSize={6} barCategoryGap="30%">
-                        <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
-                        <XAxis dataKey="month" tick={{ fill: "#9ca3af", fontSize: 10 }} axisLine={false} tickLine={false} />
-                        <YAxis tick={{ fill: "#9ca3af", fontSize: 10 }} axisLine={false} tickLine={false}
-                          tickFormatter={(v) => `$${(v / 1000).toFixed(0)}k`} />
-                        <Tooltip content={<CustomTooltip />} cursor={{ fill: "rgba(255,255,255,0.03)" }} />
-                        {[
-                          { key: "Housing",       color: "#4F8EF7" },
-                          { key: "Food",          color: "#22c55e" },
-                          { key: "Entertainment", color: "#D4AF37" },
-                          { key: "Transport",     color: "#8b5cf6" },
-                          { key: "Shopping",      color: "#f97316" },
-                        ].map((cat, i, arr) => (
-                          <Bar key={cat.key} dataKey={cat.key} stackId="a" fill={cat.color}
-                            radius={i === arr.length - 1 ? [4, 4, 0, 0] : [0, 0, 0, 0]} />
-                        ))}
-                      </BarChart>
-                    </ResponsiveContainer>
+                    {connectedBanks.length === 0 ? (
+                      <div className="flex flex-col items-center justify-center h-[160px] rounded-xl border border-dashed border-white/10 gap-2">
+                        <Building2 className="w-6 h-6 text-[#4a5568]" />
+                        <p className="text-xs text-[#9ca3af] text-center px-4">
+                          Connect your bank to see spending history
+                        </p>
+                        <Link href="/connect" className="text-xs text-[#4F8EF7] hover:underline">
+                          Connect bank →
+                        </Link>
+                      </div>
+                    ) : (
+                      <div className="flex flex-col items-center justify-center h-[160px] rounded-xl border border-dashed border-white/10 gap-2">
+                        <p className="text-xs text-[#9ca3af]">Spending history syncing…</p>
+                      </div>
+                    )}
                   </div>
                 </AnimatedSection>
 

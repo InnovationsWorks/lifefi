@@ -164,7 +164,7 @@ export default function LandingPage() {
             style={{ background: "rgba(212,175,55,0.08)", border: "1px solid rgba(212,175,55,0.25)", borderRadius: 100 }}
           >
             <Star className="w-3.5 h-3.5 fill-[#D4AF37]" />
-            Trusted by 50,000+ users worldwide
+            Bank-level security &amp; privacy
           </motion.div>
 
           {/* Shimmer headline */}
@@ -292,6 +292,9 @@ export default function LandingPage() {
                   </div>
                 </div>
               ))}
+            </div>
+            <div className="mt-3 text-center">
+              <span className="text-[10px] text-[#4a5568] italic">Sample data for illustration</span>
             </div>
           </div>
         </motion.div>
@@ -458,7 +461,7 @@ export default function LandingPage() {
             Take Control of Your <span className="text-gradient-gold">Financial Future</span>
           </h2>
           <p className="text-[#9ca3af] text-lg mb-8 max-w-xl mx-auto">
-            Join 50,000+ people who have transformed their relationship with money using LifeFi.
+            Take control of your finances — all your cards, bills, and utilities in one place.
           </p>
           <Link href="/signup">
             <MotionButton variant="gold" className="text-base px-10 py-4" onClick={() => {}}>
