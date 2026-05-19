@@ -853,7 +853,7 @@ export default function DashboardPage() {
               {/* Health Score + Upcoming */}
               <div className="grid lg:grid-cols-3 gap-6">
                 <AnimatedSection className="glass-gold p-6 flex flex-col items-center text-center">
-                  <div className="text-sm font-medium text-[#D4AF37] mb-4">Financial Health Score</div>
+                  <div className="text-sm font-medium text-[#D4AF37] mb-4">LifeFi Financial Meter</div>
                   <HealthScore score={87} />
                   <div className="w-full mt-5 space-y-2 text-left">
                     {[

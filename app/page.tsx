@@ -37,7 +37,7 @@ const features = [
 
 const steps = [
   { number: "01", title: "Connect Your Accounts",  description: "Securely link your credit cards, bank accounts, and recurring bills in minutes." },
-  { number: "02", title: "Get Your Health Score",   description: "Receive your personalized Financial Health Score and actionable insights to improve it." },
+  { number: "02", title: "Get Your Financial Meter", description: "Receive your personalized LifeFi Financial Meter and actionable insights to improve it." },
   { number: "03", title: "Stay in Control",         description: "Set payment reminders, track spending, and make smarter financial decisions effortlessly." },
 ];
 
@@ -267,7 +267,7 @@ export default function LandingPage() {
             </div>
             <div className="grid grid-cols-3 gap-4">
               <div className="glass-gold p-4">
-                <div className="text-xs text-[#9ca3af] mb-1">Health Score</div>
+                <div className="text-xs text-[#9ca3af] mb-1">Financial Meter</div>
                 <div className="font-display text-3xl font-bold text-gradient-gold">87</div>
                 <div className="text-xs text-[#22c55e] mt-1">↑ +3 this month</div>
               </div>
