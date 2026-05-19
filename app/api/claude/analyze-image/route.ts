@@ -5,16 +5,27 @@ import { createClient } from "@/lib/supabase/server";
 const client = new Anthropic();
 
 const PROMPTS: Record<string, string> = {
-  card: `You are analyzing a credit card image. Extract the following and respond ONLY with valid JSON, no other text:
+  card: `You are analyzing an image of a credit or debit card — it may be the front or the back. Some cards (e.g. Wells Fargo, certain Visa cards) print the full card number on the back. Look carefully at ALL visible text, numbers, and logos on the entire card.
+
+Respond ONLY with valid JSON, no other text:
 {
-  "name": "full card name e.g. Chase Sapphire Preferred",
-  "last4": "last 4 digits as string e.g. 4242",
-  "expiry": "expiry date as MM/YY e.g. 12/27",
-  "amount": credit limit as number (estimate if not visible: Sapphire=10000, Amex Gold=15000, Capital One=5000, generic=5000),
-  "dueDay": payment due day as number (use 15 if not visible),
+  "name": "Bank name + card product name e.g. 'Wells Fargo Active Cash' or 'Chase Sapphire Preferred' or 'Amex Gold'",
+  "last4": "last 4 digits of the card number as a string — check front AND back",
+  "expiry": "expiry date in MM/YY format e.g. '12/27'",
+  "network": "Visa, Mastercard, Amex, Discover, or null",
+  "amount": estimated credit limit as a number,
+  "dueDay": 15,
   "category": "card"
 }
-If a field is not visible, use a reasonable default or null for name/last4/expiry.`,
+
+Rules:
+- last4: find any 16-digit (or 15-digit Amex) number anywhere on the card — take the last 4 digits. The number may be split into groups of 4.
+- name: combine the bank/issuer name (from logo or text) with the card product name if visible. If only the bank is visible, use just the bank name.
+- expiry: look for MM/YY or MM/YYYY anywhere — convert to MM/YY.
+- network: identify from logo (Visa logo, Mastercard circles, Amex, Discover) or card number prefix.
+- amount: estimate based on card tier — premium/travel cards (Sapphire, Amex Platinum/Gold, Venture X) = 15000, cashback cards = 8000, basic/student = 3000, unknown = 5000.
+- Always return your best partial result — never return all nulls if ANY card details are visible.
+- If this is clearly not a payment card at all, set name to null.`,
 
   bill: `You are analyzing a bill or statement image. Extract the following and respond ONLY with valid JSON, no other text:
 {

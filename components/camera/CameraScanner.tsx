@@ -93,6 +93,7 @@ export function CameraScanner({ mode, onConfirm, onClose }: CameraScannerProps) 
   const [progress, setProgress]         = useState(0);
   const [statusMsg, setStatusMsg]       = useState("Analyzing…");
   const [scanError, setScanError]       = useState<string | null>(null);
+  const [scanInfo, setScanInfo]         = useState<string | null>(null);
   const [dragOver, setDragOver]         = useState(false);
   const [isMobile, setIsMobile]         = useState(false);
 
@@ -129,6 +130,7 @@ export function CameraScanner({ mode, onConfirm, onClose }: CameraScannerProps) 
     setAnalyzing(true);
     setProgress(0);
     setScanError(null);
+    setScanInfo(null);
     setStatusMsg("Reading image…");
 
     // Progress animation: fast to 65%, slow crawl after
@@ -161,7 +163,11 @@ export function CameraScanner({ mode, onConfirm, onClose }: CameraScannerProps) 
       if (res.ok) {
         const data = await res.json();
         if (data.error) {
-          setScanError(errorMessage(null));
+          if (mode === "card") {
+            setScanInfo("We could partially read your card — please verify the details below");
+          } else {
+            setScanError(errorMessage(null));
+          }
         } else {
           setFormName(data.name ?? "");
           setFormAmount(data.amount != null ? String(data.amount) : "");
@@ -173,14 +179,25 @@ export function CameraScanner({ mode, onConfirm, onClose }: CameraScannerProps) 
             (mode === "card" ? "card" : mode === "utility" ? "other" : "Other")
           );
           setStatusMsg("Done!");
+          if (mode === "card" && (!data.last4 || !data.expiry || !data.name)) {
+            setScanInfo("We could partially read your card — please verify the details below");
+          }
         }
       } else {
-        setScanError(errorMessage(httpStatus));
+        if (mode === "card") {
+          setScanInfo("We could partially read your card — please verify the details below");
+        } else {
+          setScanError(errorMessage(httpStatus));
+        }
       }
     } catch {
       if (tickerRef.current) clearInterval(tickerRef.current);
       setProgress(1);
-      setScanError(errorMessage(httpStatus));
+      if (mode === "card") {
+        setScanInfo("We could partially read your card — please verify the details below");
+      } else {
+        setScanError(errorMessage(httpStatus));
+      }
     }
 
     setTimeout(() => {
@@ -221,6 +238,7 @@ export function CameraScanner({ mode, onConfirm, onClose }: CameraScannerProps) 
     setPhase("choose");
     setProgress(0);
     setScanError(null);
+    setScanInfo(null);
     setFormName(""); setFormAmount(""); setFormDueDay("");
     setFormLast4(""); setFormExpiry("");
     setFormCategory(mode === "card" ? "card" : mode === "utility" ? "other" : "Other");
@@ -271,13 +289,17 @@ export function CameraScanner({ mode, onConfirm, onClose }: CameraScannerProps) 
             {/* ── CHOOSE phase ── */}
             {phase === "choose" && (
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="p-5 space-y-4">
-                <p className="text-xs text-[#9ca3af] text-center leading-relaxed">{MODE_HINT[mode]}</p>
+                {mode !== "card" && (
+                  <p className="text-xs text-[#9ca3af] text-center leading-relaxed">{MODE_HINT[mode]}</p>
+                )}
 
-                <div className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs text-[#9ca3af]"
-                  style={{ background: "rgba(212,175,55,0.06)", border: "1px solid rgba(212,175,55,0.18)" }}>
-                  <Sparkles className="w-3 h-3 text-[#D4AF37] shrink-0" />
-                  Claude AI will automatically read and fill in all the details
-                </div>
+                {mode !== "card" && (
+                  <div className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs text-[#9ca3af]"
+                    style={{ background: "rgba(212,175,55,0.06)", border: "1px solid rgba(212,175,55,0.18)" }}>
+                    <Sparkles className="w-3 h-3 text-[#D4AF37] shrink-0" />
+                    Claude AI will automatically read and fill in all the details
+                  </div>
+                )}
 
                 {isMobile ? (
                   /* ── MOBILE: camera + gallery buttons ── */
@@ -430,6 +452,13 @@ export function CameraScanner({ mode, onConfirm, onClose }: CameraScannerProps) 
                           </div>
                           <span className="text-xs text-white font-medium">Enter details manually</span>
                         </>
+                      ) : scanInfo ? (
+                        <>
+                          <div className="w-4 h-4 rounded-full bg-[#60a5fa] flex items-center justify-center">
+                            <AlertCircle className="w-2.5 h-2.5 text-white" />
+                          </div>
+                          <span className="text-xs text-white font-medium">Partial read — please verify</span>
+                        </>
                       ) : (
                         <>
                           <div className="w-4 h-4 rounded-full bg-[#D4AF37] flex items-center justify-center">
@@ -456,8 +485,20 @@ export function CameraScanner({ mode, onConfirm, onClose }: CameraScannerProps) 
                   </div>
                 )}
 
+                {/* Partial-read info banner (card mode) */}
+                {scanInfo && !scanError && (
+                  <div className="flex items-start gap-2 px-4 py-3 rounded-xl text-xs text-[#60a5fa]"
+                    style={{ background: "rgba(96,165,250,0.08)", border: "1px solid rgba(96,165,250,0.2)" }}>
+                    <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+                    <div>
+                      <div className="font-semibold mb-0.5">{scanInfo}</div>
+                      <div className="text-[#9ca3af]">Please fill in or correct any missing details below.</div>
+                    </div>
+                  </div>
+                )}
+
                 <div className="text-xs text-[#D4AF37] font-semibold uppercase tracking-wider">
-                  {scanError ? "Enter Details" : "Confirm Details — Edit if Needed"}
+                  {scanError ? "Enter Details" : scanInfo ? "Verify Details" : "Confirm Details — Edit if Needed"}
                 </div>
 
                 <div className="space-y-3">
