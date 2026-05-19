@@ -145,35 +145,52 @@ function AddBillSheet({ onClose }: { onClose: () => void }) {
 function AddCardSheet({ onClose }: { onClose: () => void }) {
   const { addCard } = useApp();
   const { addToast } = useToast();
-  const [name, setName]   = useState("");
-  const [last4, setLast4] = useState("");
-  const [limit, setLimit] = useState("");
-  const [dueDay, setDueDay] = useState("1");
+  const [name,    setName]    = useState("");
+  const [last4,   setLast4]   = useState("");
+  const [limit,   setLimit]   = useState("");
+  const [balance, setBalance] = useState("");
+  const [dueDay,  setDueDay]  = useState("1");
 
   const CARD_COLORS = ["#1a56db", "#D4AF37", "#6366f1", "#f97316", "#22c55e", "#ef4444"];
   const [color, setColor] = useState(CARD_COLORS[0]);
 
   function handleSubmit() {
     if (!name.trim()) return;
-    const day = parseInt(dueDay) || 1;
-    addCard({ name: name.trim(), last4: last4 || "0000", balance: 0, limit: parseFloat(limit) || 0, dueDate: `Due ${day}${ordSuffix(day)}`, dueDay: day, color, utilization: 0 });
+    const day         = parseInt(dueDay)       || 1;
+    const parsedLimit = parseFloat(limit)      || 0;
+    const parsedBal   = parseFloat(balance)    || 0;
+    const util        = parsedLimit > 0 ? Math.min(100, Math.round((parsedBal / parsedLimit) * 100)) : 0;
+    addCard({ name: name.trim(), last4: last4 || "0000", balance: parsedBal, limit: parsedLimit, dueDate: `Due ${day}${ordSuffix(day)}`, dueDay: day, color, utilization: util });
     addToast({ type: "success", title: "Card Added", message: `${name.trim()} added successfully.` });
     onClose();
   }
 
   return (
     <div className="p-5">
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="font-semibold text-[#E8E8E8]">Add Credit Card</h3>
+      <div className="flex items-center justify-between mb-1">
+        <h3 className="font-semibold text-[#E8E8E8]">Add a Credit Card to Track</h3>
         <button onClick={onClose} className="text-[#9ca3af] hover:text-[#E8E8E8] transition-colors">
           <X className="w-4 h-4" />
         </button>
       </div>
+      <p className="text-xs text-[#9ca3af] mb-4">Track your credit utilization and never miss a payment</p>
       <div className="space-y-3">
         <FormInput label="Card Name" value={name} onChange={setName} placeholder="e.g. Chase Sapphire" />
-        <FormInput label="Last 4 Digits" value={last4} onChange={setLast4} placeholder="0000" maxLength={4} />
-        <FormInput label="Credit Limit ($)" value={limit} onChange={setLimit} placeholder="0" type="number" />
-        <FormInput label="Due Day (1-31)" value={dueDay} onChange={setDueDay} placeholder="1" type="number" />
+        <div>
+          <label className="text-xs text-[#9ca3af] mb-1 block">Last 4 digits on your card</label>
+          <input
+            type="text"
+            value={last4}
+            onChange={(e) => setLast4(e.target.value.replace(/\D/g, ""))}
+            placeholder="0000"
+            maxLength={4}
+            className="w-full bg-white/[0.06] border border-white/10 rounded-xl px-3 py-2.5 text-sm text-[#E8E8E8] placeholder-[#6b7280] outline-none focus:border-[#D4AF37]/50 transition-colors"
+          />
+          <p className="text-[10px] text-[#4a5568] mt-1 ml-1">Used to identify your card on the dashboard</p>
+        </div>
+        <FormInput label="Card Limit ($)" value={limit} onChange={setLimit} placeholder="0" type="number" />
+        <FormInput label="Current Balance on Card ($)" value={balance} onChange={setBalance} placeholder="0.00" type="number" />
+        <FormInput label="Choose Payment Date (day 1–31)" value={dueDay} onChange={setDueDay} placeholder="e.g. 15" type="number" />
         <div>
           <div className="text-xs text-[#9ca3af] mb-2">Card Color</div>
           <div className="flex gap-2">
