@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   CreditCard, FileText, Bell, BarChart3, Shield, Zap, ChevronRight,
   Check, Star, TrendingUp, Wallet, ArrowRight,
@@ -71,6 +72,7 @@ const stats = [
 
 // ── Component ──────────────────────────────────────────────────────────────
 export default function LandingPage() {
+  const router = useRouter();
   return (
     <div className="min-h-screen bg-[#0a0a0f] overflow-x-hidden">
 
@@ -90,11 +92,9 @@ export default function LandingPage() {
           </div>
           <div className="flex items-center gap-3">
             <Link href="/login"  className="text-sm text-[#9ca3af] hover:text-[#E8E8E8] transition-colors px-4 py-2">Sign In</Link>
-            <Link href="/signup">
-              <MotionButton variant="primary" className="text-sm py-2 px-5" onClick={() => {}}>
-                Get Started
-              </MotionButton>
-            </Link>
+            <MotionButton variant="primary" className="text-sm py-2 px-5" onClick={() => router.push("/signup")}>
+              Get Started
+            </MotionButton>
           </div>
         </div>
       </nav>
@@ -216,16 +216,12 @@ export default function LandingPage() {
             transition={{ delay: 0.45, duration: 0.6 }}
             className="flex flex-col sm:flex-row items-center justify-center gap-4"
           >
-            <Link href="/signup">
-              <MotionButton variant="gold" className="text-base px-8 py-3.5" onClick={() => {}}>
-                Start for Free <ArrowRight className="w-4 h-4" />
-              </MotionButton>
-            </Link>
-            <Link href="/login">
-              <MotionButton variant="ghost" className="text-base px-8 py-3.5 text-[#E8E8E8]" onClick={() => {}}>
-                Sign In
-              </MotionButton>
-            </Link>
+            <MotionButton variant="gold" className="text-base px-8 py-3.5" onClick={() => router.push("/signup")}>
+              Start for Free <ArrowRight className="w-4 h-4" />
+            </MotionButton>
+            <MotionButton variant="ghost" className="text-base px-8 py-3.5 text-[#E8E8E8]" onClick={() => router.push("/login")}>
+              Sign In
+            </MotionButton>
           </motion.div>
 
           {/* Stats */}
@@ -436,15 +432,13 @@ export default function LandingPage() {
                         {plan.cta}
                       </button>
                     ) : (
-                      <Link href={plan.href}>
-                        <MotionButton
-                          variant={plan.highlight ? "gold" : "ghost"}
-                          className="w-full justify-center py-3 text-sm"
-                          onClick={() => {}}
-                        >
-                          {plan.cta}
-                        </MotionButton>
-                      </Link>
+                      <MotionButton
+                        variant={plan.highlight ? "gold" : "ghost"}
+                        className="w-full justify-center py-3 text-sm"
+                        onClick={() => router.push(plan.href)}
+                      >
+                        {plan.cta}
+                      </MotionButton>
                     )}
                   </div>
                 </motion.div>
@@ -463,11 +457,9 @@ export default function LandingPage() {
           <p className="text-[#9ca3af] text-lg mb-8 max-w-xl mx-auto">
             Join 50,000+ people who have transformed their relationship with money using LifeFi. <span className="opacity-50 text-sm">(illustrative figures)</span>
           </p>
-          <Link href="/signup">
-            <MotionButton variant="gold" className="text-base px-10 py-4" onClick={() => {}}>
-              Get Started — It&apos;s Free <ArrowRight className="w-5 h-5" />
-            </MotionButton>
-          </Link>
+          <MotionButton variant="gold" className="text-base px-10 py-4" onClick={() => router.push("/signup")}>
+            Get Started — It&apos;s Free <ArrowRight className="w-5 h-5" />
+          </MotionButton>
         </AnimatedSection>
       </section>
 

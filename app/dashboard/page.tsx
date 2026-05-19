@@ -11,10 +11,9 @@ import {
   LayoutDashboard, CreditCard, FileText, Zap, Bell, Settings, LogOut,
   TrendingUp, TrendingDown, CheckCircle2, Clock, AlertTriangle, Wallet,
   Menu, X, ChevronRight, Calendar, Droplets, Flame, Wifi, Lightbulb, Building2,
-  Mic, Camera, Crown, Star, Sparkles, ArrowDown,
+  Mic, Crown, Star, Sparkles, ArrowDown,
 } from "lucide-react";
 
-import { CameraScanner } from "@/components/camera/CameraScanner";
 import confetti from "canvas-confetti";
 
 import Link from "next/link";
@@ -353,12 +352,11 @@ function UpgradeModal({ onClose }: { onClose: () => void }) {
 }
 
 export default function DashboardPage() {
-  const { bills, cards, utilities, connectedBanks, payBill, addBill, addCard, addUtility, userName } = useApp();
+  const { bills, cards, utilities, connectedBanks, payBill, userName } = useApp();
   const [activeNav, setActiveNav]     = useState("overview");
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [payOverlay, setPayOverlay]   = useState<{ name: string; amount: number; method?: string } | null>(null);
   const [pendingBill, setPendingBill] = useState<typeof bills[0] | null>(null);
-  const [cameraMode, setCameraMode]   = useState<"bill" | "card" | "utility" | null>(null);
   const [showUpgrade, setShowUpgrade] = useState(false);
   const [userProfile, setUserProfile] = useState<{ subscription_tier: string; email?: string; full_name?: string } | null>(null);
   const [activating, setActivating]   = useState(false);
@@ -429,21 +427,6 @@ export default function DashboardPage() {
   const unpaidCount   = bills.filter((b) => b.status !== "paid").length;
   const upcomingBills = bills.filter((b) => b.status !== "paid").slice(0, 4);
 
-  function handleCameraConfirm(result: { name: string; amount: number; dueDay: number; category: string; last4?: string; expiry?: string }) {
-    const day = result.dueDay;
-    const dueDateStr = `Due ${day}${["th","st","nd","rd"][((day%100)-20)%10]||["th","st","nd","rd"][day%100]||"th"}`;
-    if (cameraMode === "card") {
-      addCard({ name: result.name, last4: result.last4 ?? "0000", balance: 0, limit: result.amount, dueDate: dueDateStr, dueDay: day, color: "#4F8EF7", utilization: 0 });
-    } else if (cameraMode === "utility") {
-      const validUtilCats = ["electric","water","gas","internet","phone","other"] as const;
-      const utilCat = validUtilCats.includes(result.category as typeof validUtilCats[number]) ? result.category as typeof validUtilCats[number] : "other";
-      addUtility({ name: result.name, amount: result.amount, trend: 0, color: "#f59e0b", category: utilCat });
-    } else {
-      addBill({ name: result.name, amount: result.amount, dueDate: dueDateStr, dueDay: day, status: "unpaid", category: result.category, frequency: "monthly" });
-    }
-    setCameraMode(null);
-  }
-
   const fireConfetti = useCallback(() => {
     const opts = { particleCount: 120, spread: 80, origin: { y: 0.55 } };
     confetti({ ...opts, colors: ["#4F8EF7", "#D4AF37", "#22c55e", "#fff"] });
@@ -469,7 +452,7 @@ export default function DashboardPage() {
   }));
 
   return (
-    <div className="min-h-screen bg-[#0a0a0f] flex">
+    <div className="h-screen bg-[#0a0a0f] flex overflow-hidden">
       {/* Mobile backdrop */}
       <AnimatePresence>
         {sidebarOpen && (
@@ -610,7 +593,7 @@ export default function DashboardPage() {
       </aside>
 
       {/* ── Main ──────────────────────────────────────────────────────────── */}
-      <div className="flex-1 flex flex-col min-h-screen overflow-hidden">
+      <div className="flex-1 flex flex-col overflow-hidden">
 
         {/* Header */}
         <header className="sticky top-0 z-20 bg-[#0a0a0f]/90 backdrop-blur-md border-b border-white/5 px-6 py-4">
@@ -624,27 +607,11 @@ export default function DashboardPage() {
                 <Menu className="w-5 h-5" />
               </motion.button>
               <div>
-                <h1 className="font-display text-xl font-bold text-[#E8E8E8]">{`Good ${new Date().getHours() < 12 ? "morning" : new Date().getHours() < 18 ? "afternoon" : "evening"}, ${userProfile?.full_name?.split(" ")[0] || userName?.split(" ")[0] || "there"} 👋`}</h1>
+                <h1 className="font-display text-xl font-bold text-[#E8E8E8]">{`Hello, ${userProfile?.full_name?.split(" ")[0] || userName?.split(" ")[0] || "there"} 👋`}</h1>
                 <p className="text-xs text-[#9ca3af]">{new Date().toLocaleDateString("en-US", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}</p>
               </div>
             </div>
             <div className="flex items-center gap-2.5">
-              {/* BIG CAMERA BUTTON */}
-              <motion.button
-                whileHover={{ scale: 1.04 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => setCameraMode("card")}
-                className="flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-sm"
-                style={{
-                  background: "linear-gradient(135deg, #D4AF37, #b8962e)",
-                  color: "#0a0a0f",
-                  boxShadow: "0 0 18px rgba(212,175,55,0.40)",
-                }}
-              >
-                <Camera className="w-4 h-4" />
-                <span className="hidden sm:inline">📷 Add a Card</span>
-                <span className="sm:hidden">📷</span>
-              </motion.button>
               <Link href="/pricing" className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-[#D4AF37]/30 hover:bg-[#D4AF37]/10 transition-colors">
                 <Sparkles className="w-3.5 h-3.5 text-[#D4AF37]" />
                 <span className="text-xs font-semibold text-[#D4AF37]">Plans</span>
@@ -665,7 +632,7 @@ export default function DashboardPage() {
         </header>
 
         {/* Body */}
-        <main className="flex-1 overflow-y-auto p-6 space-y-6">
+        <main className="flex-1 overflow-y-auto p-6 space-y-6" style={{ WebkitOverflowScrolling: "touch" }}>
 
           {/* ── Activating plan banner ────────────────────────────────── */}
           {activating && (
@@ -742,7 +709,7 @@ export default function DashboardPage() {
                         key={mode}
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
-                        onClick={() => setCameraMode(mode)}
+                        onClick={() => window.dispatchEvent(new CustomEvent("lifefi:openAdd", { detail: { sheet: mode } }))}
                         className="flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold border transition-all"
                         style={{ borderColor: `${color}50`, background: `${color}15`, color }}
                       >
@@ -902,7 +869,7 @@ export default function DashboardPage() {
                     {upcomingBills.length === 0 && (
                       <div className="text-center py-6 text-sm text-[#9ca3af]">
                         No upcoming bills.{" "}
-                        <button onClick={() => setCameraMode("bill")} className="text-[#4F8EF7] hover:underline">Add a bill</button>
+                        <button onClick={() => window.dispatchEvent(new CustomEvent("lifefi:openAdd", { detail: { sheet: "bill" } }))} className="text-[#4F8EF7] hover:underline">Add a bill</button>
                       </div>
                     )}
                     {upcomingBills.map((bill) => {
@@ -943,7 +910,7 @@ export default function DashboardPage() {
                     <CreditCard className="w-4 h-4 text-[#4F8EF7]" />
                     <h2 className="font-semibold text-[#E8E8E8]">Your Cards</h2>
                   </div>
-                  <MotionButton variant="ghost" className="text-xs text-[#4F8EF7] border-0 py-1 px-2" onClick={() => setCameraMode("card")}>
+                  <MotionButton variant="ghost" className="text-xs text-[#4F8EF7] border-0 py-1 px-2" onClick={() => window.dispatchEvent(new CustomEvent("lifefi:openAdd", { detail: { sheet: "card" } }))}>
                     + Add Card
                   </MotionButton>
                 </div>
@@ -992,7 +959,7 @@ export default function DashboardPage() {
                       <FileText className="w-4 h-4 text-[#4F8EF7]" />
                       <h2 className="font-semibold text-[#E8E8E8]">Monthly Bills</h2>
                     </div>
-                    <MotionButton variant="ghost" className="text-xs text-[#4F8EF7] border-0 py-1 px-2" onClick={() => setCameraMode("bill")}>
+                    <MotionButton variant="ghost" className="text-xs text-[#4F8EF7] border-0 py-1 px-2" onClick={() => window.dispatchEvent(new CustomEvent("lifefi:openAdd", { detail: { sheet: "bill" } }))}>
                       + Add Bill
                     </MotionButton>
                   </div>
@@ -1001,7 +968,7 @@ export default function DashboardPage() {
                     {bills.length === 0 && (
                       <div className="text-center py-6 text-sm text-[#9ca3af]">
                         No bills yet.{" "}
-                        <button onClick={() => setCameraMode("bill")} className="text-[#4F8EF7] hover:underline">Add your first bill</button>
+                        <button onClick={() => window.dispatchEvent(new CustomEvent("lifefi:openAdd", { detail: { sheet: "bill" } }))} className="text-[#4F8EF7] hover:underline">Add your first bill</button>
                       </div>
                     )}
                     {bills.map((bill) => {
@@ -1101,18 +1068,6 @@ export default function DashboardPage() {
           {/* ── Cards view ────────────────────────────────────────────── */}
           {activeNav === "cards" && (
             <AnimatedSection className="space-y-4">
-              {/* Camera scan button */}
-              <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.97 }}
-                onClick={() => setCameraMode("card")}
-                className="w-full flex items-center justify-center gap-2 py-3 rounded-2xl font-semibold text-sm"
-                style={{ background: "linear-gradient(135deg, #D4AF37, #b8962e)", color: "#0a0a0f" }}
-              >
-                <Camera className="w-4 h-4" />
-                📷 Scan Credit Card to Add
-              </motion.button>
-
               <div className="glass p-6">
                 <div className="flex items-center justify-between mb-6">
                   <div className="flex items-center gap-2">
@@ -1135,7 +1090,7 @@ export default function DashboardPage() {
           {/* ── Bills view ────────────────────────────────────────────── */}
           {activeNav === "bills" && (
             <AnimatedSection className="space-y-4">
-              {/* Voice + Camera row */}
+              {/* Voice row */}
               <div className="flex gap-3">
                 <motion.button
                   whileHover={{ scale: 1.02 }}
@@ -1146,16 +1101,6 @@ export default function DashboardPage() {
                 >
                   <Mic className="w-4 h-4" />
                   Add Bills by Voice
-                </motion.button>
-                <motion.button
-                  whileHover={{ scale: 1.03 }}
-                  whileTap={{ scale: 0.96 }}
-                  onClick={() => setCameraMode("bill")}
-                  className="flex-1 flex items-center justify-center gap-2 py-3 rounded-2xl font-bold text-sm"
-                  style={{ background: "linear-gradient(135deg, #4F8EF7, #3a6fd8)", color: "#fff" }}
-                >
-                  <Camera className="w-4 h-4" />
-                  📷 Scan a Bill
                 </motion.button>
               </div>
 
@@ -1174,7 +1119,7 @@ export default function DashboardPage() {
                   <div className="text-center py-10 space-y-3">
                     <div className="text-4xl">🧾</div>
                     <div className="text-sm font-medium text-[#E8E8E8]">No bills added yet</div>
-                    <div className="text-xs text-[#9ca3af]">Scan a bill or add one by voice to get started</div>
+                    <div className="text-xs text-[#9ca3af]">Add a bill by voice or use the + button to get started</div>
                   </div>
                 )}
                 {bills.map((bill) => {
@@ -1220,16 +1165,6 @@ export default function DashboardPage() {
           {/* ── Utilities view ────────────────────────────────────────── */}
           {activeNav === "utilities" && (
             <AnimatedSection className="space-y-4">
-              <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.97 }}
-                onClick={() => setCameraMode("utility")}
-                className="w-full flex items-center justify-center gap-2 py-3 rounded-2xl font-semibold text-sm"
-                style={{ background: "linear-gradient(135deg, #f59e0b, #d97706)", color: "#0a0a0f" }}
-              >
-                <Camera className="w-4 h-4" />
-                📷 Scan Utility Statement to Add
-              </motion.button>
             <div className="glass p-6">
               <div className="flex items-center justify-between mb-5">
                 <div className="flex items-center gap-2">
@@ -1457,15 +1392,6 @@ export default function DashboardPage() {
         method={payOverlay?.method}
         onDone={() => setPayOverlay(null)}
       />
-
-      {/* ── Camera Scanner ───────────────────────────────────────────────── */}
-      {cameraMode && (
-        <CameraScanner
-          mode={cameraMode}
-          onConfirm={handleCameraConfirm}
-          onClose={() => setCameraMode(null)}
-        />
-      )}
 
       {/* ── Upgrade Modal ────────────────────────────────────────────────── */}
       {showUpgrade && <UpgradeModal onClose={() => setShowUpgrade(false)} />}

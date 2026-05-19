@@ -1,12 +1,12 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { motion, AnimatePresence, type PanInfo } from "framer-motion";
 import {
-  Wallet, CreditCard, FileText, Zap, Bell,
+  Wallet,
   ChevronRight, ChevronLeft, X, ArrowRight,
 } from "lucide-react";
-import Link from "next/link";
 
 // ── Design tokens ──────────────────────────────────────────────────────────
 
@@ -61,33 +61,33 @@ const WELCOME = {
   description: "LifeFi simplifies life with bank-level safety.",
 };
 
-// ── Tour slides (placeholder — update content after review) ───────────────
+// ── Tour slides ────────────────────────────────────────────────────────────
 
 const TOUR_SLIDES = [
   {
-    icon:        Wallet,
-    title:       "Slide 1 Title",
-    description: "Placeholder description for slide 1. This is where the first key feature or benefit will be explained in a short, compelling sentence.",
+    emoji:       "💳",
+    title:       "Everything in one place",
+    description: "Your cards, bills, and due dates — all in one clean dashboard. No spreadsheets. No guessing. No missed payments.",
   },
   {
-    icon:        CreditCard,
-    title:       "Slide 2 Title",
-    description: "Placeholder description for slide 2. This is where the second key feature or benefit will be explained in a short, compelling sentence.",
+    emoji:       "📋",
+    title:       "Your cards, under control",
+    description: "Add any credit card and LifeFi tracks your balance, limit, utilization, and next due date. Always know where you stand.",
   },
   {
-    icon:        FileText,
-    title:       "Slide 3 Title",
-    description: "Placeholder description for slide 3. This is where the third key feature or benefit will be explained in a short, compelling sentence.",
+    emoji:       "🔔",
+    title:       "Never miss a payment again",
+    description: "Add your monthly bills and utilities. LifeFi color-codes what's coming up so nothing sneaks up on you.",
   },
   {
-    icon:        Zap,
-    title:       "Slide 4 Title",
-    description: "Placeholder description for slide 4. This is where the fourth key feature or benefit will be explained in a short, compelling sentence.",
+    emoji:       "🔒",
+    title:       "Safe and private by design",
+    description: "We don't see and don't store your bank data. Your credentials stay with Plaid — a bank-level secure service trusted by millions.",
   },
   {
-    icon:        Bell,
-    title:       "Slide 5 Title",
-    description: "Placeholder description for slide 5. This is where the fifth key feature or benefit will be explained in a short, compelling sentence.",
+    emoji:       "📊",
+    title:       "Know your financial health",
+    description: "The LifeFi Financial Meter shows you how you're doing right now and what to focus on. Simple, honest, no jargon.",
   },
 ] as const;
 
@@ -104,6 +104,7 @@ const slideVariants = {
 // ── Component ──────────────────────────────────────────────────────────────
 
 export function OnboardingFlow() {
+  const router = useRouter();
   const [visible,   setVisible]   = useState(false);
   const [showTour,  setShowTour]  = useState(false);
   const [slide,     setSlide]     = useState(0);
@@ -145,7 +146,6 @@ export function OnboardingFlow() {
   if (!visible) return null;
 
   const current = TOUR_SLIDES[slide];
-  const Icon    = current.icon;
   const isLast  = slide === TOUR_SLIDES.length - 1;
 
   return (
@@ -227,16 +227,15 @@ export function OnboardingFlow() {
                   transition={{ delay: 0.24 }}
                 >
                   {/* Get Started → /signup */}
-                  <Link href="/signup" onClick={dismiss}>
-                    <motion.button
-                      whileHover={{ scale: 1.03, boxShadow: `0 8px 28px rgba(201,168,76,0.30)` }}
-                      whileTap={{ scale: 0.97 }}
-                      style={btnGoldStyle}
-                      className="mb-4"
-                    >
-                      Get Started <ArrowRight className="w-4 h-4" />
-                    </motion.button>
-                  </Link>
+                  <motion.button
+                    whileHover={{ scale: 1.03, boxShadow: `0 8px 28px rgba(201,168,76,0.30)` }}
+                    whileTap={{ scale: 0.97 }}
+                    onClick={() => { dismiss(); router.push("/signup"); }}
+                    style={btnGoldStyle}
+                    className="mb-4"
+                  >
+                    Get Started <ArrowRight className="w-4 h-4" />
+                  </motion.button>
 
                   {/* Tour the site */}
                   <button
@@ -329,7 +328,7 @@ export function OnboardingFlow() {
                       className="w-20 h-20 rounded-3xl mx-auto mb-6 flex items-center justify-center"
                       style={iconCircle}
                     >
-                      <Icon className="w-9 h-9" style={{ color: GOLD }} />
+                      <span className="text-4xl">{current.emoji}</span>
                     </div>
 
                     {/* Text */}
@@ -381,15 +380,14 @@ export function OnboardingFlow() {
                       Next <ChevronRight className="w-4 h-4" />
                     </motion.button>
                   ) : (
-                    <Link href="/signup" style={{ flex: 1 }} onClick={dismiss}>
-                      <motion.button
-                        whileHover={{ scale: 1.02, boxShadow: `0 8px 28px rgba(201,168,76,0.28)` }}
-                        whileTap={{ scale: 0.97 }}
-                        style={btnGoldStyle}
-                      >
-                        Get Started <ArrowRight className="w-4 h-4" />
-                      </motion.button>
-                    </Link>
+                    <motion.button
+                      whileHover={{ scale: 1.02, boxShadow: `0 8px 28px rgba(201,168,76,0.28)` }}
+                      whileTap={{ scale: 0.97 }}
+                      onClick={() => { dismiss(); router.push("/signup"); }}
+                      style={{ ...btnGoldStyle, flex: 1 }}
+                    >
+                      Get Started <ArrowRight className="w-4 h-4" />
+                    </motion.button>
                   )}
 
                   {/* Right arrow */}

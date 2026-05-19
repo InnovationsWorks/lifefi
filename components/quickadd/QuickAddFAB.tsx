@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Plus, X, CreditCard, FileText, Zap, List,
@@ -303,6 +303,15 @@ const MAIN_ACTIONS = [
 export function QuickAddFAB() {
   const [open, setOpen]     = useState(false);
   const [sheet, setSheet]   = useState<Sheet>("main");
+
+  useEffect(() => {
+    function handler(e: Event) {
+      const s = (e as CustomEvent<{ sheet: Sheet }>).detail?.sheet;
+      if (s && s !== "main") { setSheet(s); setOpen(true); }
+    }
+    window.addEventListener("lifefi:openAdd", handler);
+    return () => window.removeEventListener("lifefi:openAdd", handler);
+  }, []);
 
   function close() { setOpen(false); setTimeout(() => setSheet("main"), 300); }
 
