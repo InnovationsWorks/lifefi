@@ -11,7 +11,7 @@ import {
   LayoutDashboard, CreditCard, FileText, Zap, Bell, Settings, LogOut,
   TrendingUp, TrendingDown, CheckCircle2, Clock, AlertTriangle,
   ChevronRight, Calendar, Droplets, Flame, Wifi, Lightbulb, Building2,
-  Mic, Crown, Star, Sparkles,
+  Mic, Crown, Star, Sparkles, Menu, X,
 } from "lucide-react";
 
 import confetti from "canvas-confetti";
@@ -355,6 +355,7 @@ function UpgradeModal({ onClose }: { onClose: () => void }) {
 export default function DashboardPage() {
   const { bills, cards, utilities, connectedBanks, payBill, userName } = useApp();
   const [activeNav, setActiveNav]     = useState("overview");
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [payOverlay, setPayOverlay]   = useState<{ name: string; amount: number; method?: string } | null>(null);
   const [pendingBill, setPendingBill] = useState<typeof bills[0] | null>(null);
   const [showUpgrade, setShowUpgrade] = useState(false);
@@ -454,16 +455,56 @@ export default function DashboardPage() {
   return (
     <div className="h-screen bg-[#0a0a0f] flex overflow-hidden">
 
-      {/* ── Sidebar — always visible on mobile and desktop ───────────────── */}
-      <aside className="w-14 md:w-64 flex-shrink-0 flex flex-col bg-[#0d0d14] border-r border-white/5">
-        {/* Logo */}
-        <div className="flex items-center justify-center md:justify-start p-2 md:p-6 border-b border-white/5">
-          <Image src="/images/logos/LifeFi_Icon_Only_TRUE.svg" alt="LifeFi" width={44} height={44} className="md:hidden" />
-          <Image src="/images/logos/LifeFi_Icon_Only_TRUE.svg" alt="LifeFi" width={56} height={56} className="hidden md:block" />
+      {/* ── Mobile: fixed logo + hamburger top-left ──────────────────────── */}
+      <div className="fixed top-0 left-0 z-[70] md:hidden flex flex-col items-center gap-1 p-3">
+        <Image src="/images/logos/LifeFi_Icon_Only_TRUE.svg" alt="LifeFi" width={44} height={44} />
+        <motion.button
+          whileTap={{ scale: 0.92 }}
+          onClick={() => setSidebarOpen(true)}
+          className="text-[#9ca3af] hover:text-[#E8E8E8] transition-colors p-1"
+          aria-label="Open menu"
+        >
+          <Menu className="w-5 h-5" />
+        </motion.button>
+      </div>
+
+      {/* ── Mobile backdrop ───────────────────────────────────────────────── */}
+      <AnimatePresence>
+        {sidebarOpen && (
+          <motion.div
+            key="backdrop"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="fixed inset-0 z-30 bg-black/60 md:hidden"
+            onClick={() => setSidebarOpen(false)}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* ── Sidebar ───────────────────────────────────────────────────────── */}
+      <aside className={`
+        fixed md:static inset-y-0 left-0 z-40 w-64 flex-shrink-0 flex flex-col
+        bg-[#0d0d14] border-r border-white/5
+        transform transition-transform duration-300 ease-in-out
+        md:translate-x-0
+        ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}
+      `}>
+        {/* Logo + close on mobile */}
+        <div className="flex items-center justify-between p-4 md:p-6 border-b border-white/5">
+          <Image src="/images/logos/LifeFi_Icon_Only_TRUE.svg" alt="LifeFi" width={56} height={56} />
+          <button
+            onClick={() => setSidebarOpen(false)}
+            className="md:hidden text-[#9ca3af] hover:text-[#E8E8E8] transition-colors p-1"
+            aria-label="Close menu"
+          >
+            <X className="w-5 h-5" />
+          </button>
         </div>
 
         {/* Nav */}
-        <nav className="flex-1 p-2 md:p-4 space-y-1 overflow-y-auto">
+        <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
           {navItems.map((item, i) => {
             const active = activeNav === item.id;
             return (
@@ -477,15 +518,15 @@ export default function DashboardPage() {
                   )}
                 </AnimatePresence>
                 {item.link ? (
-                  <Link href={item.link} className="block">
+                  <Link href={item.link} className="block" onClick={() => setSidebarOpen(false)}>
                     <motion.div
                       whileHover={{ backgroundColor: "rgba(212,175,55,0.08)" }}
                       whileTap={{ scale: 0.97 }}
-                      className="w-full flex items-center justify-center md:justify-start gap-3 md:pl-4 md:pr-3 py-3 px-1 rounded-xl text-sm font-medium transition-colors text-[#D4AF37] border border-[#D4AF37]/20 bg-[#D4AF37]/[0.06]"
+                      className="w-full flex items-center justify-start gap-3 pl-4 pr-3 py-3 rounded-xl text-sm font-medium transition-colors text-[#D4AF37] border border-[#D4AF37]/20 bg-[#D4AF37]/[0.06]"
                     >
                       <item.icon className="w-4 h-4 shrink-0" />
-                      <span className="hidden md:inline">{isPremium ? "My Plan" : item.label}</span>
-                      <span className="hidden md:inline ml-auto text-[10px] font-bold bg-[#D4AF37] text-[#0a0a0f] px-1.5 py-0.5 rounded-full">
+                      <span>{isPremium ? "My Plan" : item.label}</span>
+                      <span className="ml-auto text-[10px] font-bold bg-[#D4AF37] text-[#0a0a0f] px-1.5 py-0.5 rounded-full">
                         {planBadge}
                       </span>
                     </motion.div>
@@ -494,18 +535,18 @@ export default function DashboardPage() {
                   <motion.button
                     whileHover={{ backgroundColor: "rgba(255,255,255,0.05)" }}
                     whileTap={{ scale: 0.97 }}
-                    onClick={() => setActiveNav(item.id)}
+                    onClick={() => { setActiveNav(item.id); setSidebarOpen(false); }}
                     className={[
-                      "w-full flex items-center justify-center md:justify-start gap-3 md:pl-4 md:pr-3 py-3 px-1 rounded-xl text-sm font-medium transition-colors",
+                      "w-full flex items-center justify-start gap-3 pl-4 pr-3 py-3 rounded-xl text-sm font-medium transition-colors",
                       active
                         ? "bg-[#4F8EF7]/10 text-[#4F8EF7] border border-[#4F8EF7]/20"
                         : "text-[#9ca3af] hover:text-[#E8E8E8]",
                     ].join(" ")}
                   >
                     <item.icon className="w-4 h-4 shrink-0" />
-                    <span className="hidden md:inline">{item.label}</span>
+                    <span>{item.label}</span>
                     {item.id === "alerts" && notifications > 0 && (
-                      <span className="hidden md:flex ml-auto w-5 h-5 rounded-full bg-[#ef4444] text-white text-xs items-center justify-center font-bold">
+                      <span className="ml-auto w-5 h-5 rounded-full bg-[#ef4444] text-white text-xs flex items-center justify-center font-bold">
                         {notifications}
                       </span>
                     )}
@@ -518,18 +559,8 @@ export default function DashboardPage() {
 
         {/* User + Plan Card */}
         <div className="border-t border-white/5">
-          {/* Mobile: icon-only avatar + sign-out */}
-          <div className="flex flex-col items-center gap-2 py-3 md:hidden">
-            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#4F8EF7] to-[#D4AF37] flex items-center justify-center text-white text-xs font-bold">
-              {userInitials}
-            </div>
-            <button onClick={handleSignOut} className="text-[#9ca3af] hover:text-[#E8E8E8] transition-colors p-1">
-              <LogOut className="w-4 h-4" />
-            </button>
-          </div>
-
-          {/* Desktop: full user row + plan card */}
-          <div className="hidden md:block p-4 space-y-3">
+          {/* Full user row + plan card on all sizes */}
+          <div className="p-4 space-y-3">
             <div className="flex items-center gap-3 px-2">
               <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[#4F8EF7] to-[#D4AF37] flex items-center justify-center text-white text-sm font-bold shrink-0">
                 {userInitials}
@@ -570,8 +601,8 @@ export default function DashboardPage() {
         {/* Header — identical layout on mobile and desktop */}
         <header className="sticky top-0 z-20 bg-[#0a0a0f]/90 backdrop-blur-md border-b border-white/5 px-3 md:px-6 py-3 md:py-4">
           <div className="grid grid-cols-3 items-start gap-1">
-            {/* Col 1: greeting top-left */}
-            <div className="flex flex-col justify-start pt-1">
+            {/* Col 1: greeting top-left — pl-16 on mobile clears fixed logo+hamburger */}
+            <div className="flex flex-col justify-start pt-1 pl-16 md:pl-0">
               <h1 className="font-display text-sm md:text-base font-bold text-[#E8E8E8] leading-tight">{`Hello, ${userProfile?.full_name?.split(" ")[0] || userName?.split(" ")[0] || "there"} 👋`}</h1>
               <p className="text-[10px] md:text-xs text-[#9ca3af] leading-tight">{new Date().toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" })}</p>
             </div>
