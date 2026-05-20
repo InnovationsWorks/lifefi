@@ -602,10 +602,6 @@ export default function DashboardPage() {
             </div>
             {/* Col 2: logo + tagline centered */}
             <div className="flex flex-col items-center">
-              <style>{`
-                @keyframes lf-rise { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
-                @keyframes lf-rise-sm { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
-              `}</style>
               <div style={{ animation: "lf-rise 0.8s ease-out both" }}>
                 <Image
                   src="/images/logos/LifeFi_Logo_text_SVG.svg"
