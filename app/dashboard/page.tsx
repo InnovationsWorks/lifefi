@@ -616,7 +616,10 @@ export default function DashboardPage() {
                 height={160}
                 style={{ mixBlendMode: "lighten", width: "auto", height: "160px" }}
               />
-              <p className="text-[#E8E8E8] text-center leading-snug mt-0.5" style={{ fontFamily: "sans-serif", fontSize: "18px" }}>Your Financial Freedom,<br />In One Place</p>
+              <p className="text-[#E8E8E8] text-center leading-snug mt-0.5" style={{ fontFamily: "sans-serif", fontSize: "18px" }}>
+                <span style={{ display: "block", whiteSpace: "nowrap" }}>Your Financial Freedom,</span>
+                <span style={{ display: "block", whiteSpace: "nowrap" }}>In One Place</span>
+              </p>
             </div>
             {/* Col 3: right actions */}
             <div className="flex items-center justify-end gap-1.5 md:gap-2.5 pt-1">
