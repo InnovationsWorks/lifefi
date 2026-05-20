@@ -602,11 +602,11 @@ export default function DashboardPage() {
             </div>
             {/* Col 2: logo + tagline centered */}
             <div className="flex flex-col items-center">
-              <motion.div
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, ease: "easeOut" }}
-              >
+              <style>{`
+                @keyframes lf-rise { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
+                @keyframes lf-rise-sm { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
+              `}</style>
+              <div style={{ animation: "lf-rise 0.8s ease-out both" }}>
                 <Image
                   src="/images/logos/LifeFi_Logo_text_SVG.svg"
                   alt="LifeFi"
@@ -614,17 +614,14 @@ export default function DashboardPage() {
                   height={160}
                   style={{ mixBlendMode: "lighten", width: "auto", height: "160px" }}
                 />
-              </motion.div>
-              <motion.p
-                initial={{ opacity: 0, y: 6 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, ease: "easeOut", delay: 1.0 }}
+              </div>
+              <p
                 className="text-[#E8E8E8] text-center leading-snug mt-0.5"
-                style={{ fontFamily: "sans-serif", fontSize: "18px" }}
+                style={{ fontFamily: "sans-serif", fontSize: "18px", animation: "lf-rise-sm 0.6s ease-out 0.8s both" }}
               >
                 <span style={{ display: "block", whiteSpace: "nowrap" }}>Your Financial Freedom,</span>
                 <span style={{ display: "block", whiteSpace: "nowrap" }}>In One Place</span>
-              </motion.p>
+              </p>
             </div>
             {/* Col 3: right actions */}
             <div className="flex items-center justify-end gap-1.5 md:gap-2.5 pt-1">
