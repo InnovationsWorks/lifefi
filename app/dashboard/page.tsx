@@ -10,7 +10,7 @@ import {
 import {
   LayoutDashboard, CreditCard, FileText, Zap, Bell, Settings, LogOut,
   TrendingUp, TrendingDown, CheckCircle2, Clock, AlertTriangle,
-  Menu, X, ChevronRight, Calendar, Droplets, Flame, Wifi, Lightbulb, Building2,
+  ChevronRight, Calendar, Droplets, Flame, Wifi, Lightbulb, Building2,
   Mic, Crown, Star, Sparkles,
 } from "lucide-react";
 
@@ -355,7 +355,6 @@ function UpgradeModal({ onClose }: { onClose: () => void }) {
 export default function DashboardPage() {
   const { bills, cards, utilities, connectedBanks, payBill, userName } = useApp();
   const [activeNav, setActiveNav]     = useState("overview");
-  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [payOverlay, setPayOverlay]   = useState<{ name: string; amount: number; method?: string } | null>(null);
   const [pendingBill, setPendingBill] = useState<typeof bills[0] | null>(null);
   const [showUpgrade, setShowUpgrade] = useState(false);
@@ -455,41 +454,16 @@ export default function DashboardPage() {
   return (
     <div className="h-screen bg-[#0a0a0f] flex overflow-hidden">
 
-      {/* ── Fixed mobile logo — always top-left, above sidebar ──────────── */}
-      <div className="fixed top-0 left-0 p-3 z-[70] md:hidden pointer-events-none">
-        <Image src="/images/logos/LifeFi_Icon_Only_TRUE.svg" alt="LifeFi" width={64} height={64} />
-      </div>
-
-      {/* Mobile backdrop */}
-      <AnimatePresence>
-        {sidebarOpen && (
-          <motion.div
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/60 z-30 md:hidden"
-            onClick={() => setSidebarOpen(false)}
-          />
-        )}
-      </AnimatePresence>
-
-      {/* ── Sidebar ──────────────────────────────────────────────────────── */}
-      <aside
-        className={[
-          "fixed md:static top-0 left-0 h-full z-40 md:z-auto",
-          "w-64 flex flex-col bg-[#0d0d14] border-r border-white/5",
-          "transition-transform duration-300 ease-in-out",
-          sidebarOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0",
-        ].join(" ")}
-      >
+      {/* ── Sidebar — always visible on mobile and desktop ───────────────── */}
+      <aside className="w-14 md:w-64 flex-shrink-0 flex flex-col bg-[#0d0d14] border-r border-white/5">
         {/* Logo */}
-        <div className="p-6 flex items-center justify-between border-b border-white/5">
-          <Image src="/images/logos/LifeFi_Icon_Only_TRUE.svg" alt="LifeFi" width={56} height={56} />
-          <button onClick={() => setSidebarOpen(false)} className="md:hidden text-[#9ca3af] hover:text-[#E8E8E8]">
-            <X className="w-5 h-5" />
-          </button>
+        <div className="flex items-center justify-center md:justify-start p-2 md:p-6 border-b border-white/5">
+          <Image src="/images/logos/LifeFi_Icon_Only_TRUE.svg" alt="LifeFi" width={44} height={44} className="md:hidden" />
+          <Image src="/images/logos/LifeFi_Icon_Only_TRUE.svg" alt="LifeFi" width={56} height={56} className="hidden md:block" />
         </div>
 
         {/* Nav */}
-        <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
+        <nav className="flex-1 p-2 md:p-4 space-y-1 overflow-y-auto">
           {navItems.map((item, i) => {
             const active = activeNav === item.id;
             return (
@@ -507,12 +481,11 @@ export default function DashboardPage() {
                     <motion.div
                       whileHover={{ backgroundColor: "rgba(212,175,55,0.08)" }}
                       whileTap={{ scale: 0.97 }}
-                      onClick={() => setSidebarOpen(false)}
-                      className="w-full flex items-center gap-3 pl-4 pr-3 py-3 rounded-xl text-sm font-medium transition-colors text-[#D4AF37] border border-[#D4AF37]/20 bg-[#D4AF37]/[0.06]"
+                      className="w-full flex items-center justify-center md:justify-start gap-3 md:pl-4 md:pr-3 py-3 px-1 rounded-xl text-sm font-medium transition-colors text-[#D4AF37] border border-[#D4AF37]/20 bg-[#D4AF37]/[0.06]"
                     >
                       <item.icon className="w-4 h-4 shrink-0" />
-                      {isPremium ? "My Plan" : item.label}
-                      <span className="ml-auto text-[10px] font-bold bg-[#D4AF37] text-[#0a0a0f] px-1.5 py-0.5 rounded-full">
+                      <span className="hidden md:inline">{isPremium ? "My Plan" : item.label}</span>
+                      <span className="hidden md:inline ml-auto text-[10px] font-bold bg-[#D4AF37] text-[#0a0a0f] px-1.5 py-0.5 rounded-full">
                         {planBadge}
                       </span>
                     </motion.div>
@@ -521,18 +494,18 @@ export default function DashboardPage() {
                   <motion.button
                     whileHover={{ backgroundColor: "rgba(255,255,255,0.05)" }}
                     whileTap={{ scale: 0.97 }}
-                    onClick={() => { setActiveNav(item.id); setSidebarOpen(false); }}
+                    onClick={() => setActiveNav(item.id)}
                     className={[
-                      "w-full flex items-center gap-3 pl-4 pr-3 py-3 rounded-xl text-sm font-medium transition-colors",
+                      "w-full flex items-center justify-center md:justify-start gap-3 md:pl-4 md:pr-3 py-3 px-1 rounded-xl text-sm font-medium transition-colors",
                       active
                         ? "bg-[#4F8EF7]/10 text-[#4F8EF7] border border-[#4F8EF7]/20"
                         : "text-[#9ca3af] hover:text-[#E8E8E8]",
                     ].join(" ")}
                   >
                     <item.icon className="w-4 h-4 shrink-0" />
-                    {item.label}
+                    <span className="hidden md:inline">{item.label}</span>
                     {item.id === "alerts" && notifications > 0 && (
-                      <span className="ml-auto w-5 h-5 rounded-full bg-[#ef4444] text-white text-xs flex items-center justify-center font-bold">
+                      <span className="hidden md:flex ml-auto w-5 h-5 rounded-full bg-[#ef4444] text-white text-xs items-center justify-center font-bold">
                         {notifications}
                       </span>
                     )}
@@ -544,116 +517,83 @@ export default function DashboardPage() {
         </nav>
 
         {/* User + Plan Card */}
-        <div className="p-4 border-t border-white/5 space-y-3">
-          {/* User row */}
-          <div className="flex items-center gap-3 px-2">
-            <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[#4F8EF7] to-[#D4AF37] flex items-center justify-center text-white text-sm font-bold shrink-0">
+        <div className="border-t border-white/5">
+          {/* Mobile: icon-only avatar + sign-out */}
+          <div className="flex flex-col items-center gap-2 py-3 md:hidden">
+            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#4F8EF7] to-[#D4AF37] flex items-center justify-center text-white text-xs font-bold">
               {userInitials}
             </div>
-            <div className="min-w-0">
-              <div className="text-sm font-medium text-[#E8E8E8] truncate">{userProfile?.full_name || userProfile?.email || userName || "My Account"}</div>
-              <div className={`text-xs font-medium ${isPremium ? "text-[#D4AF37]" : "text-[#9ca3af]"}`}>
-                {planName}
-              </div>
-            </div>
+            <button onClick={handleSignOut} className="text-[#9ca3af] hover:text-[#E8E8E8] transition-colors p-1">
+              <LogOut className="w-4 h-4" />
+            </button>
           </div>
 
-          {/* Plan card */}
-          <div className={`rounded-2xl p-3 border ${isPremium ? "border-[#D4AF37]/30 bg-[#D4AF37]/[0.06]" : "border-white/10 bg-white/[0.04]"}`}>
-            <div className="flex items-center gap-2 mb-2">
-              <div className={`w-7 h-7 rounded-lg flex items-center justify-center ${isPremium ? "bg-[#D4AF37]/20" : "bg-white/10"}`}>
-                <Crown className={`w-3.5 h-3.5 ${isPremium ? "text-[#D4AF37]" : "text-[#9ca3af]"}`} />
+          {/* Desktop: full user row + plan card */}
+          <div className="hidden md:block p-4 space-y-3">
+            <div className="flex items-center gap-3 px-2">
+              <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[#4F8EF7] to-[#D4AF37] flex items-center justify-center text-white text-sm font-bold shrink-0">
+                {userInitials}
               </div>
-              <div>
-                <div className={`text-xs font-bold ${isPremium ? "text-[#D4AF37]" : "text-[#E8E8E8]"}`}>
-                  {planName}
+              <div className="min-w-0">
+                <div className="text-sm font-medium text-[#E8E8E8] truncate">{userProfile?.full_name || userProfile?.email || userName || "My Account"}</div>
+                <div className={`text-xs font-medium ${isPremium ? "text-[#D4AF37]" : "text-[#9ca3af]"}`}>{planName}</div>
+              </div>
+            </div>
+            <div className={`rounded-2xl p-3 border ${isPremium ? "border-[#D4AF37]/30 bg-[#D4AF37]/[0.06]" : "border-white/10 bg-white/[0.04]"}`}>
+              <div className="flex items-center gap-2 mb-2">
+                <div className={`w-7 h-7 rounded-lg flex items-center justify-center ${isPremium ? "bg-[#D4AF37]/20" : "bg-white/10"}`}>
+                  <Crown className={`w-3.5 h-3.5 ${isPremium ? "text-[#D4AF37]" : "text-[#9ca3af]"}`} />
                 </div>
-                {isPremium && planPrice && <div className="text-[10px] text-[#9ca3af]">{planPrice}</div>}
+                <div>
+                  <div className={`text-xs font-bold ${isPremium ? "text-[#D4AF37]" : "text-[#E8E8E8]"}`}>{planName}</div>
+                  {isPremium && planPrice && <div className="text-[10px] text-[#9ca3af]">{planPrice}</div>}
+                </div>
               </div>
+              <Link href="/pricing">
+                <button className={`w-full py-1.5 rounded-xl text-xs font-semibold transition-colors ${isPremium ? "border border-white/10 text-[#9ca3af] hover:text-[#E8E8E8]" : "text-[#0a0a0f]"}`}
+                  style={!isPremium ? { background: "linear-gradient(135deg, #D4AF37, #b8962e)" } : undefined}>
+                  {isPremium ? "Manage Plan" : "⭐ Upgrade to Premium"}
+                </button>
+              </Link>
             </div>
-            <Link href="/pricing">
-              <button className={`w-full py-1.5 rounded-xl text-xs font-semibold transition-colors ${
-                isPremium
-                  ? "border border-white/10 text-[#9ca3af] hover:text-[#E8E8E8]"
-                  : "text-[#0a0a0f]"
-              }`}
-                style={!isPremium ? { background: "linear-gradient(135deg, #D4AF37, #b8962e)" } : undefined}
-              >
-                {isPremium ? "Manage Plan" : "⭐ Upgrade to Premium"}
-              </button>
-            </Link>
+            <button onClick={handleSignOut} className="w-full flex items-center gap-3 px-4 py-2 text-sm text-[#9ca3af] hover:text-[#E8E8E8] rounded-xl transition-colors">
+              <LogOut className="w-4 h-4" />
+              Sign Out
+            </button>
           </div>
-
-          <button
-            onClick={handleSignOut}
-            className="w-full flex items-center gap-3 px-4 py-2 text-sm text-[#9ca3af] hover:text-[#E8E8E8] rounded-xl transition-colors"
-          >
-            <LogOut className="w-4 h-4" />
-            Sign Out
-          </button>
         </div>
       </aside>
 
       {/* ── Main ──────────────────────────────────────────────────────────── */}
       <div className="flex-1 flex flex-col overflow-hidden">
 
-        {/* Header */}
-        <header className="sticky top-0 z-20 bg-[#0a0a0f]/90 backdrop-blur-md border-b border-white/5 px-6 py-4">
-
-          {/* ── Mobile: greeting shifted right of fixed logo, hamburger right ── */}
-          <div className="flex md:hidden items-center justify-between">
-            {/* pl-[60px] clears the fixed 64px logo + its 12px left padding */}
-            <div className="flex-1 min-w-0 pl-[60px]">
-              <h1 className="font-display text-base font-bold text-[#E8E8E8] truncate">{`Hello, ${userProfile?.full_name?.split(" ")[0] || userName?.split(" ")[0] || "there"} 👋`}</h1>
-              <p className="text-xs text-[#9ca3af]">{new Date().toLocaleDateString("en-US", { weekday: "long", month: "short", day: "numeric" })}</p>
-            </div>
-            <div className="flex items-center gap-2 shrink-0">
-              <MotionButton variant="ghost" className="relative p-2 border-white/10 rounded-xl !py-2 !px-2">
-                <Bell className="w-4 h-4 text-[#9ca3af]" />
-                {notifications > 0 && (
-                  <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-[#ef4444] text-white text-xs flex items-center justify-center font-bold">
-                    {notifications}
-                  </span>
-                )}
-              </MotionButton>
-              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#4F8EF7] to-[#D4AF37] flex items-center justify-center text-white text-xs font-bold">
-                {userInitials}
-              </div>
-              <motion.button
-                whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
-                onClick={() => setSidebarOpen(true)}
-                className="text-[#9ca3af] hover:text-[#E8E8E8] p-1"
-              >
-                <Menu className="w-5 h-5" />
-              </motion.button>
-            </div>
-          </div>
-
-          {/* ── Desktop: 3-col grid — greeting left | logo+tagline center | actions right ── */}
-          <div className="hidden md:grid grid-cols-3 items-start">
+        {/* Header — identical layout on mobile and desktop */}
+        <header className="sticky top-0 z-20 bg-[#0a0a0f]/90 backdrop-blur-md border-b border-white/5 px-3 md:px-6 py-3 md:py-4">
+          <div className="grid grid-cols-3 items-start gap-1">
             {/* Col 1: greeting top-left */}
             <div className="flex flex-col justify-start pt-1">
-              <h1 className="font-display text-base font-bold text-[#E8E8E8]">{`Hello, ${userProfile?.full_name?.split(" ")[0] || userName?.split(" ")[0] || "there"} 👋`}</h1>
-              <p className="text-xs text-[#9ca3af]">{new Date().toLocaleDateString("en-US", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}</p>
+              <h1 className="font-display text-sm md:text-base font-bold text-[#E8E8E8] leading-tight">{`Hello, ${userProfile?.full_name?.split(" ")[0] || userName?.split(" ")[0] || "there"} 👋`}</h1>
+              <p className="text-[10px] md:text-xs text-[#9ca3af] leading-tight">{new Date().toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" })}</p>
             </div>
             {/* Col 2: logo + tagline centered */}
             <div className="flex flex-col items-center">
               <Image
                 src="/images/logos/LifeFi_Web_512.webp"
                 alt="LifeFi"
-                width={120}
-                height={120}
+                width={80}
+                height={80}
+                className="md:w-[110px] md:h-[110px]"
                 style={{ mixBlendMode: "lighten" }}
               />
-              <p className="text-sm text-[#E8E8E8] mt-1" style={{ fontFamily: "sans-serif" }}>Your Financial Freedom, In One Place</p>
+              <p className="text-[10px] md:text-sm text-[#E8E8E8] text-center leading-tight mt-0.5" style={{ fontFamily: "sans-serif" }}>Your Financial Freedom, In One Place</p>
             </div>
             {/* Col 3: right actions */}
-            <div className="flex items-center justify-end gap-2.5 pt-1">
-              <Link href="/pricing" className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-[#D4AF37]/30 hover:bg-[#D4AF37]/10 transition-colors">
+            <div className="flex items-center justify-end gap-1.5 md:gap-2.5 pt-1">
+              <Link href="/pricing" className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-[#D4AF37]/30 hover:bg-[#D4AF37]/10 transition-colors">
                 <Sparkles className="w-3.5 h-3.5 text-[#D4AF37]" />
                 <span className="text-xs font-semibold text-[#D4AF37]">Plans</span>
               </Link>
-              <MotionButton variant="ghost" className="relative p-2 border-white/10 rounded-xl !py-2 !px-2">
+              <MotionButton variant="ghost" className="relative p-1.5 md:p-2 border-white/10 rounded-xl !py-1.5 !px-1.5 md:!py-2 md:!px-2">
                 <Bell className="w-4 h-4 text-[#9ca3af]" />
                 {notifications > 0 && (
                   <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-[#ef4444] text-white text-xs flex items-center justify-center font-bold">
@@ -661,12 +601,11 @@ export default function DashboardPage() {
                   </span>
                 )}
               </MotionButton>
-              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#4F8EF7] to-[#D4AF37] flex items-center justify-center text-white text-xs font-bold">
+              <div className="w-7 h-7 md:w-8 md:h-8 rounded-full bg-gradient-to-br from-[#4F8EF7] to-[#D4AF37] flex items-center justify-center text-white text-xs font-bold shrink-0">
                 {userInitials}
               </div>
             </div>
           </div>
-
         </header>
 
         {/* Body */}
@@ -714,7 +653,7 @@ export default function DashboardPage() {
                 className="rounded-3xl border border-[#D4AF37]/40 px-6 py-4 max-w-[480px] mx-auto w-full"
                 style={{ background: "linear-gradient(135deg, rgba(212,175,55,0.08) 0%, rgba(79,142,247,0.05) 100%)" }}
               >
-                <div className="flex gap-3 justify-center flex-wrap">
+                <div className="flex gap-2 justify-center flex-nowrap">
                   {[
                     { label: "💳 Credit Card", mode: "card"    as const, color: "#4F8EF7" },
                     { label: "🧾 Bill",         mode: "bill"    as const, color: "#D4AF37" },
@@ -725,8 +664,8 @@ export default function DashboardPage() {
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
                       onClick={() => window.dispatchEvent(new CustomEvent("lifefi:openAdd", { detail: { sheet: mode } }))}
-                      className="flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold border transition-all"
-                      style={{ borderColor: `${color}50`, background: `${color}15`, color }}
+                      className="flex items-center gap-1.5 px-3 md:px-5 py-1.5 md:py-2.5 rounded-full font-semibold border transition-all whitespace-nowrap"
+                      style={{ borderColor: `${color}50`, background: `${color}15`, color, fontSize: "12px" }}
                     >
                       {label}
                     </motion.button>
