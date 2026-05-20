@@ -7,11 +7,6 @@
      aria-label="LifeFi logo">
 
   <defs>
-    <radialGradient id="blackBg" cx="50%" cy="42%" r="76%">
-      <stop offset="0%" stop-color="#171717"/>
-      <stop offset="100%" stop-color="#000000"/>
-    </radialGradient>
-
     <linearGradient id="gold" x1="25%" y1="5%" x2="75%" y2="98%">
       <stop offset="0%" stop-color="#fff176"/>
       <stop offset="35%" stop-color="#ffd23f"/>
@@ -20,14 +15,6 @@
     </linearGradient>
   </defs>
 
-  <rect x="15.05"
-        y="15.05"
-        width="1223.90"
-        height="1223.90"
-        rx="137.94"
-        fill="url(#blackBg)"
-        stroke="#2a2a2a"
-        stroke-width="3.76"/>
 
   <g fill="url(#gold)">
     <path d="M 972.00 1154.00 L 973.00 1156.00 L 994.00 1156.00 Z" fill-rule="evenodd"/>

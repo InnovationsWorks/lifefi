@@ -559,31 +559,24 @@ export default function DashboardPage() {
 
         {/* User + Plan Card */}
         <div className="border-t border-white/5">
-          {/* Full user row + plan card on all sizes */}
-          <div className="p-4 space-y-3">
-            <div className="flex items-center gap-3 px-2">
-              <div className="w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold shrink-0" style={{ background: "linear-gradient(135deg, #E8834A, #D4601A)", color: "#FFF8F0" }}>
-                {userInitials}
+          {/* Consolidated plan card + sign out */}
+          <div className="p-4 space-y-2">
+            <div className="rounded-2xl p-3 border border-[#D4AF37]/30 bg-[#D4AF37]/[0.06]">
+              {/* Row 1: Star + My Plan + LifeFi Personal + badge */}
+              <div className="flex items-center gap-2 mb-1">
+                <Star className="w-3.5 h-3.5 text-[#D4AF37] shrink-0" />
+                <span className="text-xs font-bold text-[#D4AF37]">My Plan</span>
+                <span className="text-xs text-[#E8E8E8] font-medium">{planName}</span>
+                <span className="ml-auto text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-[#D4AF37] text-[#0a0a0f] whitespace-nowrap">
+                  1st Month Free
+                </span>
               </div>
-              <div className="min-w-0">
-                <div className="text-sm font-medium text-[#E8E8E8] truncate">{userProfile?.full_name || userProfile?.email || userName || "My Account"}</div>
-                <div className={`text-xs font-medium ${isPremium ? "text-[#D4AF37]" : "text-[#9ca3af]"}`}>{planName}</div>
-              </div>
-            </div>
-            <div className={`rounded-2xl p-3 border ${isPremium ? "border-[#D4AF37]/30 bg-[#D4AF37]/[0.06]" : "border-white/10 bg-white/[0.04]"}`}>
-              <div className="flex items-center gap-2 mb-2">
-                <div className={`w-7 h-7 rounded-lg flex items-center justify-center ${isPremium ? "bg-[#D4AF37]/20" : "bg-white/10"}`}>
-                  <Crown className={`w-3.5 h-3.5 ${isPremium ? "text-[#D4AF37]" : "text-[#9ca3af]"}`} />
-                </div>
-                <div>
-                  <div className={`text-xs font-bold ${isPremium ? "text-[#D4AF37]" : "text-[#E8E8E8]"}`}>{planName}</div>
-                  {isPremium && planPrice && <div className="text-[10px] text-[#9ca3af]">{planPrice}</div>}
-                </div>
-              </div>
+              {/* Row 2: price */}
+              <div className="text-[10px] text-[#9ca3af] mb-2 pl-5">{planPrice || "$4.99/mo"}</div>
+              {/* Button */}
               <Link href="/pricing">
-                <button className={`w-full py-1.5 rounded-xl text-xs font-semibold transition-colors ${isPremium ? "border border-white/10 text-[#9ca3af] hover:text-[#E8E8E8]" : "text-[#0a0a0f]"}`}
-                  style={!isPremium ? { background: "linear-gradient(135deg, #D4AF37, #b8962e)" } : undefined}>
-                  {isPremium ? "Manage Plan" : "⭐ Upgrade to Premium"}
+                <button className="w-full py-1.5 rounded-xl text-xs font-semibold border border-white/10 text-[#9ca3af] hover:text-[#E8E8E8] transition-colors">
+                  Manage Plan
                 </button>
               </Link>
             </div>
@@ -609,17 +602,29 @@ export default function DashboardPage() {
             </div>
             {/* Col 2: logo + tagline centered */}
             <div className="flex flex-col items-center">
-              <Image
-                src="/images/logos/LifeFi_Logo_text_SVG.svg"
-                alt="LifeFi"
-                width={160}
-                height={160}
-                style={{ mixBlendMode: "screen", width: "auto", height: "160px" }}
-              />
-              <p className="text-[#E8E8E8] text-center leading-snug mt-0.5" style={{ fontFamily: "sans-serif", fontSize: "18px" }}>
+              <motion.div
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, ease: "easeOut" }}
+              >
+                <Image
+                  src="/images/logos/LifeFi_Logo_text_SVG.svg"
+                  alt="LifeFi"
+                  width={160}
+                  height={160}
+                  style={{ mixBlendMode: "lighten", width: "auto", height: "160px" }}
+                />
+              </motion.div>
+              <motion.p
+                initial={{ opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, ease: "easeOut", delay: 1.0 }}
+                className="text-[#E8E8E8] text-center leading-snug mt-0.5"
+                style={{ fontFamily: "sans-serif", fontSize: "18px" }}
+              >
                 <span style={{ display: "block", whiteSpace: "nowrap" }}>Your Financial Freedom,</span>
                 <span style={{ display: "block", whiteSpace: "nowrap" }}>In One Place</span>
-              </p>
+              </motion.p>
             </div>
             {/* Col 3: right actions */}
             <div className="flex items-center justify-end gap-1.5 md:gap-2.5 pt-1">
