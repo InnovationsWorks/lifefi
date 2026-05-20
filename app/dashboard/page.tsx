@@ -612,12 +612,11 @@ export default function DashboardPage() {
               <Image
                 src="/images/logos/LifeFi_Web_512.webp"
                 alt="LifeFi"
-                width={80}
-                height={80}
-                className="md:w-[110px] md:h-[110px]"
-                style={{ mixBlendMode: "lighten" }}
+                width={160}
+                height={160}
+                style={{ mixBlendMode: "lighten", width: "auto", height: "160px" }}
               />
-              <p className="text-[10px] md:text-sm text-[#E8E8E8] text-center leading-tight mt-0.5" style={{ fontFamily: "sans-serif" }}>Your Financial Freedom,<br />In One Place</p>
+              <p className="text-[#E8E8E8] text-center leading-snug mt-0.5" style={{ fontFamily: "sans-serif", fontSize: "18px" }}>Your Financial Freedom,<br />In One Place</p>
             </div>
             {/* Col 3: right actions */}
             <div className="flex items-center justify-end gap-1.5 md:gap-2.5 pt-1">

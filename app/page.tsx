@@ -162,9 +162,10 @@ export default function LandingPage() {
             <Image
               src="/images/logos/LifeFi_Web_512.webp"
               alt="LifeFi"
-              width={120}
-              height={120}
-              style={{ mixBlendMode: "lighten" }}
+              width={140}
+              height={140}
+              priority
+              style={{ mixBlendMode: "lighten", width: "auto", height: "140px" }}
             />
           </motion.div>
 
@@ -313,8 +314,8 @@ export default function LandingPage() {
         <div className="max-w-6xl mx-auto">
           <AnimatedSection className="text-center mb-16">
             <h2 className="font-display text-4xl md:text-5xl font-bold text-[#E8E8E8] mb-4">
-              Everything You Need,{" "}
-              <span className="text-gradient-blue">Nothing You Don&apos;t</span>
+              Everything You Need{" "}
+              <span className="text-gradient-blue">at Your Fingertips</span>
             </h2>
             <p className="text-[#9ca3af] text-lg max-w-2xl mx-auto">
               LifeFi gives you a complete picture of your financial life in a single, beautiful interface.
