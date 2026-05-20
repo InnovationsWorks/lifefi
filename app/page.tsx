@@ -152,6 +152,22 @@ export default function LandingPage() {
 
         {/* Hero content */}
         <div className="max-w-5xl mx-auto text-center relative" style={{ zIndex: 2 }}>
+          {/* Logo centered above hero text */}
+          <motion.div
+            initial={{ opacity: 0, y: -12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="flex justify-center mb-6"
+          >
+            <Image
+              src="/images/logos/LifeFi_Web_512.webp"
+              alt="LifeFi"
+              width={120}
+              height={120}
+              style={{ mixBlendMode: "lighten" }}
+            />
+          </motion.div>
+
           <motion.div
             initial={{ opacity: 0, y: -16 }}
             animate={{ opacity: 1, y: 0 }}

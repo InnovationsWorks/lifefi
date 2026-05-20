@@ -455,8 +455,8 @@ export default function DashboardPage() {
   return (
     <div className="h-screen bg-[#0a0a0f] flex overflow-hidden">
 
-      {/* ── Mobile: fixed logo + hamburger top-left ──────────────────────── */}
-      <div className="fixed top-0 left-0 z-[70] md:hidden flex flex-col items-center gap-3 p-3">
+      {/* ── Mobile: fixed logo + hamburger top-left — hidden while sidebar is open ── */}
+      <div className={`fixed top-0 left-0 z-[70] md:hidden flex flex-col items-center gap-3 p-3 ${sidebarOpen ? "hidden" : ""}`}>
         <Image src="/images/logos/LifeFi_Icon_Only_TRUE.svg" alt="LifeFi" width={44} height={44} />
         <motion.button
           whileTap={{ scale: 0.92 }}
