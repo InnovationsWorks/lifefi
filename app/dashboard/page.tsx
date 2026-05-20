@@ -562,7 +562,7 @@ export default function DashboardPage() {
           {/* Full user row + plan card on all sizes */}
           <div className="p-4 space-y-3">
             <div className="flex items-center gap-3 px-2">
-              <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[#4F8EF7] to-[#D4AF37] flex items-center justify-center text-white text-sm font-bold shrink-0">
+              <div className="w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold shrink-0" style={{ background: "linear-gradient(135deg, #E8834A, #D4601A)", color: "#FFF8F0" }}>
                 {userInitials}
               </div>
               <div className="min-w-0">
@@ -605,7 +605,7 @@ export default function DashboardPage() {
             <div className="flex flex-col justify-start pt-1 pl-16 md:pl-0">
               <h1 className="font-display text-sm md:text-base font-bold text-[#E8E8E8] leading-tight">Hello, 👋</h1>
               <p className="font-display text-sm md:text-base font-bold text-[#E8E8E8] leading-tight">{userProfile?.full_name?.split(" ")[0] || userName?.split(" ")[0] || "there"}</p>
-              <p className="text-[10px] md:text-xs text-[#9ca3af] leading-tight">{new Date().toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" })}</p>
+              <p className="text-[10px] md:text-xs text-[#9ca3af] mt-2 md:mt-1">{new Date().toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}</p>
             </div>
             {/* Col 2: logo + tagline centered */}
             <div className="flex flex-col items-center">
@@ -614,7 +614,7 @@ export default function DashboardPage() {
                 alt="LifeFi"
                 width={160}
                 height={160}
-                style={{ mixBlendMode: "lighten", width: "auto", height: "160px" }}
+                style={{ mixBlendMode: "screen", width: "auto", height: "160px" }}
               />
               <p className="text-[#E8E8E8] text-center leading-snug mt-0.5" style={{ fontFamily: "sans-serif", fontSize: "18px" }}>
                 <span style={{ display: "block", whiteSpace: "nowrap" }}>Your Financial Freedom,</span>
@@ -635,7 +635,7 @@ export default function DashboardPage() {
                   </span>
                 )}
               </MotionButton>
-              <div className="w-7 h-7 md:w-8 md:h-8 rounded-full bg-gradient-to-br from-[#4F8EF7] to-[#D4AF37] flex items-center justify-center text-white text-xs font-bold shrink-0">
+              <div className="w-7 h-7 md:w-8 md:h-8 rounded-full flex items-center justify-center text-xs font-bold shrink-0" style={{ background: "linear-gradient(135deg, #E8834A, #D4601A)", color: "#FFF8F0" }}>
                 {userInitials}
               </div>
             </div>
@@ -684,7 +684,7 @@ export default function DashboardPage() {
                 initial={{ opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.05 }}
-                className="rounded-3xl border border-[#D4AF37]/40 px-6 py-4 max-w-[480px] mx-auto w-full"
+                className="rounded-3xl border border-[#D4AF37]/40 px-4 py-3 mx-auto w-fit"
                 style={{ background: "linear-gradient(135deg, rgba(212,175,55,0.08) 0%, rgba(79,142,247,0.05) 100%)" }}
               >
                 <div className="flex gap-2 justify-center flex-nowrap">
@@ -718,14 +718,16 @@ export default function DashboardPage() {
                 ].map((kpi) => (
                   <motion.div key={kpi.label} variants={staggerItem} className="glass p-5">
                     <div className="text-xs text-[#9ca3af] mb-1">{kpi.label}</div>
-                    <div className="font-display text-2xl font-bold text-[#E8E8E8] mb-1">
+                    <div className="font-display text-2xl font-bold text-[#E8E8E8] mb-1 tabular-nums" style={{ fontVariantNumeric: "tabular-nums" }}>
                       <CountUp to={kpi.value} prefix={kpi.prefix ?? ""} suffix={kpi.suffix ?? ""} duration={1.3} />
                     </div>
-                    <div className="flex items-center gap-1.5">
-                      {kpi.trend === "up"   && <TrendingUp   className="w-3 h-3 text-[#22c55e]" />}
-                      {kpi.trend === "down" && <TrendingDown className="w-3 h-3 text-[#f59e0b]" />}
-                      <span className="text-xs text-[#9ca3af]">{kpi.trendVal}</span>
-                    </div>
+                    {kpi.trendVal !== "—" && (
+                      <div className="flex items-center gap-1.5">
+                        {kpi.trend === "up"   && <TrendingUp   className="w-3 h-3 text-[#22c55e]" />}
+                        {kpi.trend === "down" && <TrendingDown className="w-3 h-3 text-[#f59e0b]" />}
+                        <span className="text-xs text-[#9ca3af]">{kpi.trendVal}</span>
+                      </div>
+                    )}
                   </motion.div>
                 ))}
               </motion.div>
