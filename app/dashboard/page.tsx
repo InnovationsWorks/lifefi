@@ -57,7 +57,6 @@ const navItems = [
   { id: "calendar",  label: "Calendar",  icon: Calendar,        link: null  },
   { id: "banks",     label: "Banks",     icon: Building2,       link: null  },
   { id: "alerts",    label: "Alerts",    icon: Bell,            link: null  },
-  { id: "upgrade",   label: "Upgrade",   icon: Star,            link: "/pricing" },
   { id: "settings",  label: "Settings",  icon: Settings,        link: null  },
 ];
 
@@ -562,18 +561,19 @@ export default function DashboardPage() {
           {/* Consolidated plan card + sign out */}
           <div className="p-4 space-y-2">
             <div className="rounded-2xl p-3 border border-[#D4AF37]/30 bg-[#D4AF37]/[0.06]">
-              {/* Row 1: Star + My Plan + LifeFi Personal + badge */}
-              <div className="flex items-center gap-2 mb-1">
-                <Star className="w-3.5 h-3.5 text-[#D4AF37] shrink-0" />
-                <span className="text-xs font-bold text-[#D4AF37]">My Plan</span>
-                <span className="text-xs text-[#E8E8E8] font-medium">{planName}</span>
-                <span className="ml-auto text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-[#D4AF37] text-[#0a0a0f] whitespace-nowrap">
+              {/* 3-col grid: icon | label+price | badge */}
+              <div className="grid grid-cols-[16px_1fr_auto] gap-x-2 mb-2.5">
+                {/* Row 1 */}
+                <Star className="w-3.5 h-3.5 text-[#D4AF37] mt-0.5 shrink-0" />
+                <span className="text-xs font-semibold text-[#E8E8E8] leading-tight">My {planName}</span>
+                <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-[#D4AF37] text-[#0a0a0f] whitespace-nowrap self-start leading-tight">
                   1st Month Free
                 </span>
+                {/* Row 2 */}
+                <span />
+                <span className="text-[10px] text-[#9ca3af] leading-tight">{planPrice || "$4.99/mo"}</span>
+                <span />
               </div>
-              {/* Row 2: price */}
-              <div className="text-[10px] text-[#9ca3af] mb-2 pl-5">{planPrice || "$4.99/mo"}</div>
-              {/* Button */}
               <Link href="/pricing">
                 <button className="w-full py-1.5 rounded-xl text-xs font-semibold border border-white/10 text-[#9ca3af] hover:text-[#E8E8E8] transition-colors">
                   Manage Plan
