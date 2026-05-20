@@ -456,7 +456,7 @@ export default function DashboardPage() {
     <div className="h-screen bg-[#0a0a0f] flex overflow-hidden">
 
       {/* ── Mobile: fixed logo + hamburger top-left ──────────────────────── */}
-      <div className="fixed top-0 left-0 z-[70] md:hidden flex flex-col items-center gap-1 p-3">
+      <div className="fixed top-0 left-0 z-[70] md:hidden flex flex-col items-center gap-3 p-3">
         <Image src="/images/logos/LifeFi_Icon_Only_TRUE.svg" alt="LifeFi" width={44} height={44} />
         <motion.button
           whileTap={{ scale: 0.92 }}
@@ -493,7 +493,7 @@ export default function DashboardPage() {
       `}>
         {/* Logo + close on mobile */}
         <div className="flex items-center justify-between p-4 md:p-6 border-b border-white/5">
-          <Image src="/images/logos/LifeFi_Icon_Only_TRUE.svg" alt="LifeFi" width={56} height={56} />
+          <Image src="/images/logos/LifeFi_Icon_Only_TRUE.svg" alt="LifeFi" width={56} height={56} style={{ mixBlendMode: "lighten" }} />
           <button
             onClick={() => setSidebarOpen(false)}
             className="md:hidden text-[#9ca3af] hover:text-[#E8E8E8] transition-colors p-1"
@@ -603,7 +603,8 @@ export default function DashboardPage() {
           <div className="grid grid-cols-3 items-start gap-1">
             {/* Col 1: greeting top-left — pl-16 on mobile clears fixed logo+hamburger */}
             <div className="flex flex-col justify-start pt-1 pl-16 md:pl-0">
-              <h1 className="font-display text-sm md:text-base font-bold text-[#E8E8E8] leading-tight">{`Hello, ${userProfile?.full_name?.split(" ")[0] || userName?.split(" ")[0] || "there"} 👋`}</h1>
+              <h1 className="font-display text-sm md:text-base font-bold text-[#E8E8E8] leading-tight">Hello, 👋</h1>
+              <p className="font-display text-sm md:text-base font-bold text-[#E8E8E8] leading-tight">{userProfile?.full_name?.split(" ")[0] || userName?.split(" ")[0] || "there"}</p>
               <p className="text-[10px] md:text-xs text-[#9ca3af] leading-tight">{new Date().toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" })}</p>
             </div>
             {/* Col 2: logo + tagline centered */}
@@ -616,7 +617,7 @@ export default function DashboardPage() {
                 className="md:w-[110px] md:h-[110px]"
                 style={{ mixBlendMode: "lighten" }}
               />
-              <p className="text-[10px] md:text-sm text-[#E8E8E8] text-center leading-tight mt-0.5" style={{ fontFamily: "sans-serif" }}>Your Financial Freedom, In One Place</p>
+              <p className="text-[10px] md:text-sm text-[#E8E8E8] text-center leading-tight mt-0.5" style={{ fontFamily: "sans-serif" }}>Your Financial Freedom,<br />In One Place</p>
             </div>
             {/* Col 3: right actions */}
             <div className="flex items-center justify-end gap-1.5 md:gap-2.5 pt-1">
