@@ -160,7 +160,7 @@ export default function LandingPage() {
             className="flex justify-center mb-6"
           >
             <Image
-              src="/images/logos/LifeFi_Web_512.webp"
+              src="/images/logos/LifeFi_Logo_text_SVG.svg"
               alt="LifeFi"
               width={140}
               height={140}

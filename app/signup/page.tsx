@@ -224,7 +224,7 @@ export default function SignupPage() {
           className="text-center mb-10"
         >
           <Link href="/" className="inline-block mb-6">
-            <Image src="/images/logos/LifeFi_Web_512.webp" alt="LifeFi" width={180} height={180} />
+            <Image src="/images/logos/LifeFi_Logo_text_SVG.svg" alt="LifeFi" width={180} height={180} />
           </Link>
           <h1 className="font-display text-3xl font-bold text-[#E8E8E8] mb-2">
             Start Your Journey

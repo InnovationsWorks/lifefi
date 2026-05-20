@@ -173,7 +173,7 @@ export default function PricingPage() {
         >
           <div className="flex justify-center mb-5">
             <Image
-              src="/images/logos/LifeFi_Web_512.webp"
+              src="/images/logos/LifeFi_Logo_text_SVG.svg"
               alt="LifeFi"
               width={120}
               height={120}

@@ -192,7 +192,7 @@ export function OnboardingFlow() {
                   transition={{ delay: 0.1, type: "spring", stiffness: 360, damping: 24 }}
                   className="flex justify-center mb-6"
                 >
-                  <Image src="/images/logos/LifeFi_Web_512.webp" alt="LifeFi" width={160} height={160} />
+                  <Image src="/images/logos/LifeFi_Logo_text_SVG.svg" alt="LifeFi" width={160} height={160} />
                 </motion.div>
 
                 <motion.div

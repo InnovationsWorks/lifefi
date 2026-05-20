@@ -610,7 +610,7 @@ export default function DashboardPage() {
             {/* Col 2: logo + tagline centered */}
             <div className="flex flex-col items-center">
               <Image
-                src="/images/logos/LifeFi_Web_512.webp"
+                src="/images/logos/LifeFi_Logo_text_SVG.svg"
                 alt="LifeFi"
                 width={160}
                 height={160}
