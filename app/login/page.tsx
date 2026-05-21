@@ -32,7 +32,7 @@ function LoginForm() {
     await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: `${window.location.origin}/auth/callback?next=/dashboard`,
+        redirectTo: "https://lifefi.ai/auth/callback?next=/dashboard",
       },
     });
     setGoogleLoading(false);
@@ -44,7 +44,7 @@ function LoginForm() {
     setError("");
     const supabase = createClient();
     await supabase.auth.resetPasswordForEmail(form.email, {
-      redirectTo: `${window.location.origin}/auth/callback`,
+      redirectTo: "https://lifefi.ai/auth/callback",
     });
     setResetSent(true);
     setResetLoading(false);

@@ -32,7 +32,7 @@ function SignupForm() {
     await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: `${window.location.origin}/auth/callback?next=/dashboard`,
+        redirectTo: "https://lifefi.ai/auth/callback?next=/dashboard",
       },
     });
     setGoogleLoading(false);
