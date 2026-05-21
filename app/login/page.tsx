@@ -15,6 +15,14 @@ function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const callbackError = searchParams.get("error");
+  const callbackMessage = searchParams.get("message");
+
+  function initialError() {
+    if (callbackMessage) return decodeURIComponent(callbackMessage)
+    if (callbackError === "confirmation_failed") return "Confirmation link expired or already used. Please sign up again."
+    if (callbackError === "auth_callback_failed") return "Sign-in failed. Please try again."
+    return ""
+  }
 
   const [form, setForm] = useState({ email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
@@ -22,9 +30,7 @@ function LoginForm() {
   const [googleLoading, setGoogleLoading] = useState(false);
   const [resetLoading, setResetLoading] = useState(false);
   const [resetSent, setResetSent] = useState(false);
-  const [error, setError] = useState(
-    callbackError === "auth_callback_failed" ? "Email confirmation failed. Please try again." : ""
-  );
+  const [error, setError] = useState(initialError);
 
   async function handleGoogleSignIn() {
     setGoogleLoading(true);
