@@ -7,6 +7,7 @@ import Image from "next/image";
 import {
   ChevronRight, ChevronLeft, X, ArrowRight,
 } from "lucide-react";
+import { createClient } from "@/lib/supabase/client";
 
 // ── Design tokens ──────────────────────────────────────────────────────────
 
@@ -112,9 +113,17 @@ export function OnboardingFlow() {
   const [exiting,   setExiting]   = useState(false);
 
   useEffect(() => {
-    if (typeof window !== "undefined" && !localStorage.getItem(STORAGE_KEY)) {
-      setVisible(true);
-    }
+    if (typeof window === "undefined") return;
+    if (localStorage.getItem(STORAGE_KEY)) return;
+
+    const supabase = createClient();
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (user) {
+        localStorage.setItem(STORAGE_KEY, "1");
+      } else {
+        setVisible(true);
+      }
+    });
   }, []);
 
   function dismiss() {

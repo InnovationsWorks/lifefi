@@ -78,7 +78,10 @@ export default function LandingPage() {
     <div className="min-h-screen bg-[#0a0a0f] overflow-x-hidden">
 
       {/* ── Nav ──────────────────────────────────────────────────────────── */}
-      <nav className="fixed top-0 left-0 right-0 z-50 px-6 py-4">
+      <nav
+        className="fixed top-0 left-0 right-0 z-50 px-6 py-4 backdrop-blur-md"
+        style={{ background: "rgba(10, 10, 15, 0.80)", borderBottom: "1px solid rgba(255,255,255,0.04)" }}
+      >
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <Image src="/images/logos/LifeFi_Icon_Only_TRUE.svg" alt="LifeFi" width={36} height={36} />
           <div className="hidden md:flex items-center gap-8 text-sm text-[#9ca3af]">
@@ -218,9 +221,11 @@ export default function LandingPage() {
             transition={{ delay: 0.3, duration: 0.6 }}
             className="text-[#9ca3af] text-lg md:text-xl max-w-2xl mx-auto mb-10 leading-relaxed"
           >
-            LifeFi brings all your credit cards, bills, and utilities into one stunning
+            <span style={{ color: "#C9A84C" }}>LifeFi</span> brings all your credit cards, bills, and utilities into one manageable
             dashboard. Track spending, never miss payments, and take control of your
-            financial future.
+            financial future.{" "}
+            <br />
+            <span style={{ color: "#8899aa" }}>No access to your bank account.</span>
           </motion.p>
 
           <motion.div

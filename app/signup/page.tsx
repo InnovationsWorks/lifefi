@@ -1,11 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
 import { Mail, Lock, Eye, EyeOff, User, Check, ArrowRight, AlertCircle } from "lucide-react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { Suspense } from "react";
 import { createClient } from "@/lib/supabase/client";
 
@@ -16,6 +16,7 @@ const planLabels: Record<string, string> = {
 
 function SignupForm() {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const plan = searchParams.get("plan") ?? "free";
 
   const [form, setForm] = useState({ name: "", email: "", password: "" });
@@ -24,6 +25,12 @@ function SignupForm() {
   const [googleLoading, setGoogleLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    if (success && typeof window !== "undefined") {
+      localStorage.setItem("lifefi_onboarding_done", "1");
+    }
+  }, [success]);
 
   async function handleGoogleSignIn() {
     setGoogleLoading(true);
@@ -81,11 +88,14 @@ function SignupForm() {
           Account Created!
         </h2>
         <p className="text-[#9ca3af] text-sm mb-6">
-          Welcome to LifeFi, {form.name.split(" ")[0]}. Check your email to verify your account.
+          Welcome to <span style={{ color: "#C9A84C" }}>LifeFi</span>. Check your email to verify your account.
         </p>
-        <Link href="/dashboard" className="btn-primary inline-flex justify-center px-8 py-3">
+        <button
+          onClick={() => router.push("/dashboard")}
+          className="btn-primary inline-flex justify-center px-8 py-3 w-full"
+        >
           Go to Dashboard <ArrowRight className="w-4 h-4" />
-        </Link>
+        </button>
       </motion.div>
     );
   }
