@@ -613,13 +613,6 @@ export default function DashboardPage() {
                   style={{ mixBlendMode: "lighten", width: "auto", height: "160px" }}
                 />
               </div>
-              <p
-                className="text-[#E8E8E8] text-center leading-snug mt-0.5"
-                style={{ fontFamily: "sans-serif", fontSize: "18px", animation: "lf-rise-sm 0.6s ease-out 0.8s both" }}
-              >
-                <span style={{ display: "block", whiteSpace: "nowrap" }}>Your Financial Freedom,</span>
-                <span style={{ display: "block", whiteSpace: "nowrap" }}>In One Place</span>
-              </p>
             </div>
             {/* Col 3: right actions */}
             <div className="flex items-center justify-end gap-1.5 md:gap-2.5 pt-1">
@@ -679,6 +672,15 @@ export default function DashboardPage() {
           {/* ── Overview ──────────────────────────────────────────────── */}
           {activeNav === "overview" && (
             <>
+              {/* Tagline */}
+              <p
+                className="text-[#E8E8E8] text-center leading-snug"
+                style={{ fontFamily: "sans-serif", fontSize: "18px" }}
+              >
+                <span style={{ display: "block", whiteSpace: "nowrap" }}>Your Financial Freedom,</span>
+                <span style={{ display: "block", whiteSpace: "nowrap" }}>In One Place</span>
+              </p>
+
               {/* ── Add quick-add strip ───────────────────────────────── */}
               <motion.div
                 initial={{ opacity: 0, y: 12 }}
