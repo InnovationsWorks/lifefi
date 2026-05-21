@@ -99,7 +99,7 @@ export default function LandingPage() {
       </nav>
 
       {/* ── Hero ─────────────────────────────────────────────────────────── */}
-      <section className="relative z-0 pt-28 md:pt-32 pb-24 px-6 overflow-hidden">
+      <section className="relative z-0 pt-20 md:pt-24 pb-24 px-6 overflow-hidden">
 
         {/* Star field */}
         <svg className="absolute inset-0 w-full h-full pointer-events-none" style={{ zIndex: 0 }}>
