@@ -1,12 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import {
   Check, X, Zap, Crown, Briefcase, ArrowLeft,
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
+import { createClient } from "@/lib/supabase/client";
 
 const GOLD = "#D4AF37";
 const BLUE = "#4F8EF7";
@@ -114,6 +115,20 @@ export default function PricingPage() {
   const [selected, setSelected] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [checkoutError, setCheckoutError] = useState<string | null>(null);
+  const [subscriptionTier, setSubscriptionTier] = useState<string | null>(null);
+
+  useEffect(() => {
+    const supabase = createClient();
+    supabase.auth.getUser().then(async ({ data: { user } }) => {
+      if (!user) return;
+      const { data } = await supabase
+        .from("profiles")
+        .select("subscription_tier")
+        .eq("id", user.id)
+        .single();
+      if (data?.subscription_tier) setSubscriptionTier(data.subscription_tier);
+    });
+  }, []);
 
   const handleCheckout = async (planId: string) => {
     if (planId === 'bizfi' || planId === 'duo') return;
@@ -289,22 +304,32 @@ export default function PricingPage() {
                   <div className="text-xs text-[#9ca3af] mb-6 leading-relaxed">{plan.tagline}</div>
 
                   {/* CTA */}
-                  <button
-                    onClick={() => { setSelected(plan.id); handleCheckout(plan.id); }}
-                    className={`w-full py-3 rounded-xl font-semibold text-sm mb-6 transition-all ${
-                      plan.comingSoon
-                        ? "border border-white/10 text-[#6b7280] cursor-not-allowed"
-                        : ""
-                    }`}
-                    style={
-                      !plan.comingSoon
-                        ? { background: "#C9A84C", color: "#0A1628" }
-                        : undefined
-                    }
-                    disabled={!!plan.comingSoon || loading}
-                  >
-                    {plan.cta}
-                  </button>
+                  {subscriptionTier === plan.id ? (
+                    <div
+                      className="w-full py-3 rounded-xl font-semibold text-sm mb-6 flex items-center justify-center gap-2"
+                      style={{ background: "rgba(201,168,76,0.12)", border: "1px solid rgba(201,168,76,0.35)", color: "#C9A84C" }}
+                    >
+                      <Check className="w-4 h-4" />
+                      Your Current Plan
+                    </div>
+                  ) : (
+                    <button
+                      onClick={() => { setSelected(plan.id); handleCheckout(plan.id); }}
+                      className={`w-full py-3 rounded-xl font-semibold text-sm mb-6 transition-all ${
+                        plan.comingSoon
+                          ? "border border-white/10 text-[#6b7280] cursor-not-allowed"
+                          : ""
+                      }`}
+                      style={
+                        !plan.comingSoon
+                          ? { background: "#C9A84C", color: "#0A1628" }
+                          : undefined
+                      }
+                      disabled={!!plan.comingSoon || loading}
+                    >
+                      {plan.cta}
+                    </button>
+                  )}
 
                   {/* Features */}
                   <div className="space-y-2.5 flex-1">
