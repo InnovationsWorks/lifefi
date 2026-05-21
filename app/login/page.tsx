@@ -9,6 +9,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { OnboardingFlow } from "@/components/onboarding/OnboardingFlow";
+import { BIOMETRIC_EMAIL_KEY } from "@/lib/webauthn";
 
 function LoginForm() {
   const router = useRouter();
@@ -70,6 +71,7 @@ function LoginForm() {
       setError(authError.message);
       setLoading(false);
     } else {
+      localStorage.setItem(BIOMETRIC_EMAIL_KEY, form.email);
       router.push("/dashboard");
       router.refresh();
     }

@@ -3,6 +3,7 @@
 import { useState, useCallback, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { clearBiometricData } from "@/lib/webauthn";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
@@ -415,6 +416,7 @@ export default function DashboardPage() {
   async function handleSignOut() {
     const supabase = createClient();
     await supabase.auth.signOut();
+    clearBiometricData();
     router.push('/login');
   }
 
