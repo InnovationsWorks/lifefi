@@ -16,6 +16,8 @@ function LoginForm() {
   const searchParams = useSearchParams();
   const callbackError = searchParams.get("error");
   const callbackMessage = searchParams.get("message");
+  const rawRedirect = searchParams.get("redirectTo") ?? "";
+  const redirectTo = rawRedirect.startsWith("/") ? rawRedirect : "/dashboard";
 
   function initialError() {
     if (callbackMessage) return decodeURIComponent(callbackMessage)
@@ -78,7 +80,7 @@ function LoginForm() {
       setLoading(false);
     } else {
       localStorage.setItem(BIOMETRIC_EMAIL_KEY, form.email);
-      router.push("/dashboard");
+      router.push(redirectTo);
       router.refresh();
     }
   }

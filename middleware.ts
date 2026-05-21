@@ -38,13 +38,16 @@ export async function middleware(request: NextRequest) {
 
   if (!user && !isPublicPath) {
     const url = request.nextUrl.clone()
+    const originalPath = request.nextUrl.pathname + request.nextUrl.search
     url.pathname = '/login'
+    url.search = `?redirectTo=${encodeURIComponent(originalPath)}`
     return NextResponse.redirect(url)
   }
 
   if (user && request.nextUrl.pathname.startsWith('/login')) {
-    const url = request.nextUrl.clone()
-    url.pathname = '/dashboard'
+    const raw = request.nextUrl.searchParams.get('redirectTo') ?? ''
+    const safeDest = raw.startsWith('/') ? raw : '/dashboard'
+    const url = new URL(safeDest, request.url)
     return NextResponse.redirect(url)
   }
 
