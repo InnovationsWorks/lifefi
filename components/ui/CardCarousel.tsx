@@ -28,8 +28,21 @@ export function CardCarousel({ cards, onEdit }: CardCarouselProps) {
   const [direction, setDirection] = useState(0);
 
   if (!cards || cards.length === 0) return (
-    <div className="glass rounded-2xl p-6 text-center text-[#9ca3af]">
-      <p className="text-sm">No cards added yet. Tap + to add your first card.</p>
+    <div className="rounded-2xl p-8 text-center space-y-4" style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)" }}>
+      <div className="w-14 h-14 rounded-2xl bg-[#D4AF37]/20 flex items-center justify-center mx-auto">
+        <Wallet className="w-7 h-7 text-[#D4AF37]" />
+      </div>
+      <div>
+        <p className="text-sm font-medium text-[#E8E8E8] mb-1">No cards added yet</p>
+        <p className="text-xs text-[#9ca3af]">Track your credit utilization and never miss a payment.</p>
+      </div>
+      <button
+        onClick={() => window.dispatchEvent(new CustomEvent("lifefi:openAdd", { detail: { sheet: "card" } }))}
+        className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-sm"
+        style={{ background: "linear-gradient(135deg, #D4AF37, #b8962e)", color: "#0a0a0f" }}
+      >
+        + Add Your First Card
+      </button>
     </div>
   );
 
@@ -110,7 +123,7 @@ export function CardCarousel({ cards, onEdit }: CardCarouselProps) {
                   {onEdit && (
                     <button
                       onClick={(e) => { e.stopPropagation(); onEdit(card); }}
-                      className="w-7 h-7 rounded-lg bg-white/15 hover:bg-white/25 flex items-center justify-center transition-colors"
+                      className="w-7 h-7 rounded-lg bg-white/15 hover:bg-white/25 flex items-center justify-center transition-colors cursor-pointer"
                     >
                       <Pencil className="w-3.5 h-3.5 text-white/70" />
                     </button>
