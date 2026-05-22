@@ -40,6 +40,29 @@ function uid() {
   });
 }
 
+// Maps a Supabase credit_cards row (snake_case columns) → app CreditCard type (camelCase).
+// All Supabase ↔ app translation lives here; UI components only ever see CreditCard.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function supabaseRowToCard(row: any): CreditCard {
+  const balance     = Number(row.balance      ?? 0);
+  const creditLimit = Number(row.credit_limit ?? 0);
+  const dueDate     = String(row.due_date     ?? '');
+  const dueDayMatch = dueDate.match(/(\d+)/);
+  return {
+    id:          String(row.id        ?? ''),
+    name:        String(row.card_name ?? ''),
+    last4:       String(row.last_four ?? '0000'),
+    balance,
+    limit:       creditLimit,
+    dueDate,
+    dueDay:      dueDayMatch ? parseInt(dueDayMatch[1], 10) : undefined,
+    color:       String(row.color ?? '#4F8EF7'),
+    utilization: creditLimit > 0
+      ? Math.min(100, Math.round((balance / creditLimit) * 100))
+      : 0,
+  };
+}
+
 export function AppProvider({ children }: { children: ReactNode }) {
   const supabase = createClient();
 
@@ -65,12 +88,15 @@ export function AppProvider({ children }: { children: ReactNode }) {
         if (profile?.full_name) setUserName(profile.full_name);
         else if (user.email) setUserName(user.email.split('@')[0]);
       }
+
+      // credit_cards: select raw Supabase rows, then map snake_case → CreditCard
       const { data: cardsData, error: cardsError } = await supabase
         .from('credit_cards')
         .select('*')
         .order('created_at', { ascending: false });
       if (cardsError) console.error('[loadData] credit_cards fetch failed:', cardsError.message);
-      if (cardsData && cardsData.length > 0) setCards(cardsData);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      if (cardsData && cardsData.length > 0) setCards((cardsData as any[]).map(supabaseRowToCard));
 
       const { data: billsData, error: billsError } = await supabase
         .from('bills')
@@ -99,24 +125,70 @@ export function AppProvider({ children }: { children: ReactNode }) {
     });
   }, []);
 
-  const addCard = useCallback((c: Omit<CreditCard, 'id'>) => {
-    const newCard = { ...c, id: uid() };
-    setCards((p) => [...p, newCard]);
+  // addCard: maps app CreditCard fields → Supabase column names, then backfills the
+  // real Supabase UUID into local state so updateCard's .eq('id', ...) always matches.
+  const addCard = useCallback(async (c: Omit<CreditCard, 'id'>) => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      console.error('[addCard] no authenticated user — aborting');
+      return;
+    }
+
+    // Optimistic add with a temp UUID so the UI responds immediately
+    const tempId = uid();
+    setCards((p) => [...p, { ...c, id: tempId }]);
     touch();
-    supabase.from('credit_cards').insert(newCard).then(({ error }) => {
-      if (error) console.error('[addCard] Supabase insert failed:', error.message);
-    });
+
+    const { data, error } = await supabase
+      .from('credit_cards')
+      .insert({
+        user_id:      user.id,
+        card_name:    c.name,
+        last_four:    c.last4,
+        balance:      c.balance,
+        credit_limit: c.limit,
+        due_date:     c.dueDate,
+        color:        c.color,
+        apr:          0,
+      })
+      .select()
+      .single();
+
+    if (error) {
+      console.error('[addCard] Supabase insert failed:', error.message);
+      // Rollback the optimistic add
+      setCards((p) => p.filter((card) => card.id !== tempId));
+      return;
+    }
+
+    // Replace the temp ID with the Supabase-generated UUID and correct field names
+    if (data) {
+      setCards((p) => p.map((card) => card.id === tempId ? supabaseRowToCard(data) : card));
+    }
   }, []);
 
+  // updateCard: maps only the changed app fields → Supabase column names.
+  // Fields not present in the Supabase schema (dueDay, utilization) are skipped.
   const updateCard = useCallback((id: string, updates: Partial<Omit<CreditCard, 'id'>>) => {
-    // Guard: never run an unfiltered update — an empty id could affect all rows
+    // Guard: an empty id would produce an unfiltered UPDATE affecting all rows
     if (!id) {
       console.error('[updateCard] called with empty id — aborting Supabase write');
       return;
     }
     setCards((p) => p.map((c) => c.id === id ? { ...c, ...updates } : c));
     touch();
-    supabase.from('credit_cards').update(updates).eq('id', id).then(({ error }) => {
+
+    // Build the Supabase payload using correct column names
+    const row: Record<string, unknown> = {};
+    if (updates.name    !== undefined) row.card_name    = updates.name;
+    if (updates.last4   !== undefined) row.last_four    = updates.last4;
+    if (updates.limit   !== undefined) row.credit_limit = updates.limit;
+    if (updates.dueDate !== undefined) row.due_date     = updates.dueDate;
+    if (updates.balance !== undefined) row.balance      = updates.balance;
+    if (updates.color   !== undefined) row.color        = updates.color;
+    if (Object.keys(row).length === 0) return;
+
+    supabase.from('credit_cards').update(row).eq('id', id).then(({ error }) => {
       if (error) console.error('[updateCard] Supabase update failed:', error.message);
     });
   }, []);

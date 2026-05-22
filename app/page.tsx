@@ -20,13 +20,19 @@ const floatingCards = [
 ];
 
 // ── Star field ─────────────────────────────────────────────────────────────
+// All values are derived via integer modulo + fixed lookup arrays — no
+// floating-point computation, so SSR and client always produce identical
+// values and React hydration never warns about a prop mismatch.
+const STAR_R     = [0.4, 0.7, 1.0, 1.3, 1.6] as const;
+const STAR_DUR   = [2,   2.5, 3,   3.5, 4,   4.5, 5  ] as const;
+const STAR_DELAY = [0,   0.4, 0.8, 1.2, 1.6, 2.0, 2.4, 2.8] as const;
 const stars = Array.from({ length: 60 }, (_, i) => ({
-  id: i,
-  x: Math.random() * 100,
-  y: Math.random() * 100,
-  r: Math.random() * 1.5 + 0.4,
-  dur: Math.random() * 3 + 2,
-  delay: Math.random() * 3,
+  id:    i,
+  x:     (i * 37 + 11) % 97 + 2,               // int in [2, 98]
+  y:     (i * 53 +  7) % 93 + 4,               // int in [4, 96]
+  r:     STAR_R[i     % STAR_R.length],
+  dur:   STAR_DUR[i   % STAR_DUR.length],
+  delay: STAR_DELAY[i % STAR_DELAY.length],
 }));
 
 // ── Feature / pricing data ─────────────────────────────────────────────────
