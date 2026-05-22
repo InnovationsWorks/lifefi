@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Mic, MicOff, Check, X } from "lucide-react";
-import { parseVoiceInput, formatParsedSummary, ParsedVoiceInput } from "@/lib/parseVoice";
+import { parseVoiceInput, formatParsedSummary, ParsedVoiceInput, ordSuffix } from "@/lib/parseVoice";
 import { useApp } from "@/contexts/AppContext";
 import { useToast } from "@/contexts/ToastContext";
 
@@ -125,6 +125,13 @@ export function VoiceButton() {
 
     recog.onresult = (e) => {
       const text = e.results[0][0].transcript;
+      const lower = text.toLowerCase().trim();
+      const simpleCmd = lower.match(/\badd\s+(bill|card|utility)\b/);
+      if (simpleCmd) {
+        window.dispatchEvent(new CustomEvent("lifefi:openAdd", { detail: { sheet: simpleCmd[1] } }));
+        setState("idle");
+        return;
+      }
       setTranscript(text);
       setParsed(parseVoiceInput(text));
       setState("confirm");
@@ -155,7 +162,7 @@ export function VoiceButton() {
   function handleConfirm() {
     if (!parsed) return;
     const day = parsed.dueDay ?? 1;
-    const dueDateStr = `Due ${day}${day === 1 ? "st" : day === 2 ? "nd" : day === 3 ? "rd" : "th"}`;
+    const dueDateStr = `Due ${ordSuffix(day)}`;
 
     if (parsed.type === "card") {
       addCard({ name: parsed.name, last4: "0000", balance: 0, limit: parsed.limit ?? 0, dueDate: dueDateStr, dueDay: day, color: "#4F8EF7", utilization: 0 });

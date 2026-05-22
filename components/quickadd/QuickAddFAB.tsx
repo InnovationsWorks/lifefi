@@ -110,7 +110,7 @@ function AddBillSheet({ onClose }: { onClose: () => void }) {
     addBill({
       name: f.name.trim(),
       amount: parseFloat(f.amount),
-      dueDate: `Due ${day}${ordSuffix(day)}`,
+      dueDate: `Due ${ordSuffix(day)}`,
       dueDay: day,
       status: "unpaid",
       category: f.category,
@@ -160,7 +160,7 @@ function AddCardSheet({ onClose }: { onClose: () => void }) {
     const parsedLimit = parseFloat(limit)      || 0;
     const parsedBal   = parseFloat(balance)    || 0;
     const util        = parsedLimit > 0 ? Math.min(100, Math.round((parsedBal / parsedLimit) * 100)) : 0;
-    addCard({ name: name.trim(), last4: last4 || "0000", balance: parsedBal, limit: parsedLimit, dueDate: `Due ${day}${ordSuffix(day)}`, dueDay: day, color, utilization: util });
+    addCard({ name: name.trim(), last4: last4 || "0000", balance: parsedBal, limit: parsedLimit, dueDate: `Due ${ordSuffix(day)}`, dueDay: day, color, utilization: util });
     addToast({ type: "success", title: "Card Added", message: `${name.trim()} added successfully.` });
     onClose();
   }

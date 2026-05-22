@@ -12,7 +12,7 @@ import {
   LayoutDashboard, CreditCard, FileText, Zap, Bell, Settings, LogOut,
   TrendingUp, TrendingDown, CheckCircle2, Clock, AlertTriangle,
   ChevronRight, Calendar, Droplets, Flame, Wifi, Lightbulb, Building2,
-  Mic, Crown, Star, Sparkles, Menu, X,
+  Mic, Crown, Star, Sparkles, Menu, X, Pencil,
 } from "lucide-react";
 
 import confetti from "canvas-confetti";
@@ -302,6 +302,115 @@ function SmartAlertsPanel() {
   );
 }
 
+// ── Edit Card Modal ────────────────────────────────────────────────────────
+
+function EditCardModal({
+  card,
+  onSave,
+  onClose,
+}: {
+  card: { id: string; name: string; last4: string; balance: number; limit: number; dueDay?: number; color: string };
+  onSave: (updates: { name: string; last4: string; balance: number; limit: number; dueDate: string; dueDay: number; color: string; utilization: number }) => void;
+  onClose: () => void;
+}) {
+  const CARD_COLORS = ["#1a56db", "#D4AF37", "#6366f1", "#f97316", "#22c55e", "#ef4444"];
+  const [name,    setName]    = useState(card.name);
+  const [last4,   setLast4]   = useState(card.last4);
+  const [limit,   setLimit]   = useState(String(card.limit));
+  const [balance, setBalance] = useState(String(card.balance));
+  const [dueDay,  setDueDay]  = useState(String(card.dueDay ?? 1));
+  const [color,   setColor]   = useState(card.color);
+
+  function ordSuffix(n: number) {
+    const s = ["th","st","nd","rd"], v = n % 100;
+    return n + (s[(v-20)%10] || s[v] || s[0]);
+  }
+
+  function handleSave() {
+    if (!name.trim()) return;
+    const day         = parseInt(dueDay) || 1;
+    const parsedLimit = parseFloat(limit) || 0;
+    const parsedBal   = parseFloat(balance) || 0;
+    const util        = parsedLimit > 0 ? Math.min(100, Math.round((parsedBal / parsedLimit) * 100)) : 0;
+    onSave({ name: name.trim(), last4: last4 || "0000", balance: parsedBal, limit: parsedLimit, dueDate: `Due ${ordSuffix(day)}`, dueDay: day, color, utilization: util });
+  }
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 z-[150] bg-black/70 backdrop-blur-sm flex items-center justify-center p-4"
+      onClick={(e) => e.target === e.currentTarget && onClose()}
+    >
+      <motion.div
+        initial={{ scale: 0.92, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0.92, opacity: 0 }}
+        transition={{ type: "spring", stiffness: 300, damping: 28 }}
+        className="glass w-full max-w-sm p-6 rounded-3xl"
+      >
+        <div className="flex items-center justify-between mb-5">
+          <div className="flex items-center gap-2">
+            <Pencil className="w-4 h-4 text-[#D4AF37]" />
+            <h3 className="font-semibold text-[#E8E8E8]">Edit Card</h3>
+          </div>
+          <button onClick={onClose} className="text-[#9ca3af] hover:text-[#E8E8E8] transition-colors">
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+
+        <div className="space-y-3">
+          {[
+            { label: "Card Name", value: name, set: setName, placeholder: "e.g. Chase Sapphire" },
+            { label: "Last 4 digits", value: last4, set: setLast4, placeholder: "0000" },
+            { label: "Card Limit ($)", value: limit, set: setLimit, placeholder: "0", type: "number" },
+            { label: "Current Balance ($)", value: balance, set: setBalance, placeholder: "0.00", type: "number" },
+            { label: "Payment Due Day (1-31)", value: dueDay, set: setDueDay, placeholder: "e.g. 15", type: "number" },
+          ].map(({ label, value, set, placeholder, type = "text" }) => (
+            <div key={label}>
+              <label className="text-xs text-[#9ca3af] mb-1 block">{label}</label>
+              <input
+                type={type}
+                value={value}
+                onChange={(e) => set(e.target.value)}
+                placeholder={placeholder}
+                className="w-full bg-white/[0.06] border border-white/10 rounded-xl px-3 py-2.5 text-sm text-[#E8E8E8] placeholder-[#6b7280] outline-none focus:border-[#D4AF37]/50 transition-colors"
+              />
+            </div>
+          ))}
+          <div>
+            <div className="text-xs text-[#9ca3af] mb-2">Card Color</div>
+            <div className="flex gap-2">
+              {CARD_COLORS.map((c) => (
+                <button key={c} onClick={() => setColor(c)}
+                  className={`w-7 h-7 rounded-full border-2 transition-all ${color === c ? "border-white scale-110" : "border-transparent"}`}
+                  style={{ background: c }} />
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <div className="flex gap-2 mt-5">
+          <button
+            onClick={handleSave}
+            className="flex-1 py-2.5 rounded-xl font-semibold text-sm"
+            style={{ background: "linear-gradient(135deg, #D4AF37, #b8962e)", color: "#0a0a0f" }}
+          >
+            Save Changes
+          </button>
+          <button
+            onClick={onClose}
+            className="flex-1 py-2.5 rounded-xl text-sm border border-white/10 text-[#9ca3af] hover:text-[#E8E8E8] transition-colors"
+          >
+            Cancel
+          </button>
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+}
+
 // ── Dashboard ──────────────────────────────────────────────────────────────
 
 function UpgradeModal({ onClose }: { onClose: () => void }) {
@@ -353,12 +462,13 @@ function UpgradeModal({ onClose }: { onClose: () => void }) {
 }
 
 export default function DashboardPage() {
-  const { bills, cards, utilities, connectedBanks, payBill, userName } = useApp();
+  const { bills, cards, utilities, connectedBanks, payBill, updateCard, userName } = useApp();
   const [activeNav, setActiveNav]     = useState("overview");
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [payOverlay, setPayOverlay]   = useState<{ name: string; amount: number; method?: string } | null>(null);
   const [pendingBill, setPendingBill] = useState<typeof bills[0] | null>(null);
   const [showUpgrade, setShowUpgrade] = useState(false);
+  const [editCard, setEditCard] = useState<typeof cards[0] | null>(null);
   const [userProfile, setUserProfile] = useState<{ subscription_tier: string; email?: string; full_name?: string } | null>(null);
   const [activating, setActivating]   = useState(false);
   const router = useRouter();
@@ -745,33 +855,21 @@ export default function DashboardPage() {
                     <motion.button
                       whileHover={{ scale: 1.03 }}
                       whileTap={{ scale: 0.97 }}
-                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold"
+                      className="flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-sm"
                       style={{ background: "linear-gradient(135deg, #D4AF37, #b8962e)", color: "#0a0a0f" }}
                     >
-                      {connectedBanks.length > 0 ? "Manage" : "+ Connect Bank"}
+                      <Building2 className="w-4 h-4" />
+                      {connectedBanks.length > 0 ? "Manage" : "Connect Bank"}
                     </motion.button>
                   </Link>
                 </div>
 
                 {connectedBanks.length === 0 ? (
-                  <div className="flex flex-col sm:flex-row items-center gap-5 py-2">
-                    <div className="flex-1 min-w-0">
-                      <div className="text-sm font-medium text-[#E8E8E8] mb-1">Connect your bank account</div>
-                      <div className="text-xs text-[#9ca3af] leading-relaxed">
-                        See real balances and transactions from 12,000+ banks. Powered by Plaid — bank-level security, read-only access.
-                      </div>
+                  <div className="py-2">
+                    <div className="text-sm font-medium text-[#E8E8E8] mb-1">Connect your bank account</div>
+                    <div className="text-xs text-[#9ca3af] leading-relaxed">
+                      See real balances and transactions from 12,000+ banks. Powered by Plaid — bank-level security, read-only access.
                     </div>
-                    <Link href="/connect" className="shrink-0">
-                      <motion.button
-                        whileHover={{ scale: 1.03 }}
-                        whileTap={{ scale: 0.97 }}
-                        className="flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-sm"
-                        style={{ background: "linear-gradient(135deg, #D4AF37, #b8962e)", color: "#0a0a0f" }}
-                      >
-                        <Building2 className="w-4 h-4" />
-                        Connect Bank
-                      </motion.button>
-                    </Link>
                   </div>
                 ) : (
                   <div className="space-y-3">
@@ -905,7 +1003,7 @@ export default function DashboardPage() {
                     + Add Card
                   </MotionButton>
                 </div>
-                <CardCarousel cards={carouselCards} />
+                <CardCarousel cards={carouselCards} onEdit={(c) => setEditCard(cards.find(x => x.id === c.id) ?? null)} />
               </AnimatedSection>
 
               {/* Spending Ring + Bar Chart + Bills */}
@@ -1065,8 +1163,17 @@ export default function DashboardPage() {
                     <CreditCard className="w-4 h-4 text-[#4F8EF7]" />
                     <h2 className="font-semibold text-[#E8E8E8]">All Cards</h2>
                   </div>
+                  <motion.button
+                    whileHover={{ scale: 1.03 }}
+                    whileTap={{ scale: 0.97 }}
+                    onClick={() => window.dispatchEvent(new CustomEvent("lifefi:openAdd", { detail: { sheet: "card" } }))}
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold"
+                    style={{ background: "linear-gradient(135deg, #D4AF37, #b8962e)", color: "#0a0a0f" }}
+                  >
+                    + Add Card
+                  </motion.button>
                 </div>
-                <CardCarousel cards={carouselCards} />
+                <CardCarousel cards={carouselCards} onEdit={(c) => setEditCard(cards.find(x => x.id === c.id) ?? null)} />
                 <div className="mt-6">
                   <DebtTracker
                     items={cards.map((c) => ({
@@ -1201,9 +1308,17 @@ export default function DashboardPage() {
                     <Building2 className="w-4 h-4 text-[#D4AF37]" />
                     <h2 className="font-semibold text-[#E8E8E8]">Connected Bank Accounts</h2>
                   </div>
-                  <span className="text-xs text-[#9ca3af]">
-                    {connectedBanks.reduce((s, b) => s + b.accounts.length, 0)} account{connectedBanks.reduce((s, b) => s + b.accounts.length, 0) !== 1 ? "s" : ""}
-                  </span>
+                  <Link href="/connect">
+                    <motion.button
+                      whileHover={{ scale: 1.03 }}
+                      whileTap={{ scale: 0.97 }}
+                      className="flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-sm"
+                      style={{ background: "linear-gradient(135deg, #D4AF37, #b8962e)", color: "#0a0a0f" }}
+                    >
+                      <Building2 className="w-4 h-4" />
+                      {connectedBanks.length > 0 ? "Manage" : "Connect Bank"}
+                    </motion.button>
+                  </Link>
                 </div>
 
                 {connectedBanks.length === 0 && (
@@ -1215,17 +1330,6 @@ export default function DashboardPage() {
                       <div className="font-semibold text-[#E8E8E8] mb-1">No banks connected yet</div>
                       <div className="text-sm text-[#9ca3af]">Connect your bank to see real balances and transactions.</div>
                     </div>
-                    <Link href="/connect">
-                      <motion.button
-                        whileHover={{ scale: 1.03 }}
-                        whileTap={{ scale: 0.97 }}
-                        className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-sm"
-                        style={{ background: "linear-gradient(135deg, #D4AF37, #b8962e)", color: "#0a0a0f" }}
-                      >
-                        <Building2 className="w-4 h-4" />
-                        + Connect Bank
-                      </motion.button>
-                    </Link>
                   </div>
                 )}
 
@@ -1386,6 +1490,17 @@ export default function DashboardPage() {
 
       {/* ── Upgrade Modal ────────────────────────────────────────────────── */}
       {showUpgrade && <UpgradeModal onClose={() => setShowUpgrade(false)} />}
+
+      {/* ── Edit Card Modal ──────────────────────────────────────────────── */}
+      <AnimatePresence>
+        {editCard && (
+          <EditCardModal
+            card={editCard}
+            onSave={(updates) => { updateCard(editCard.id, updates); setEditCard(null); }}
+            onClose={() => setEditCard(null)}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 }

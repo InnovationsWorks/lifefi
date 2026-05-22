@@ -166,7 +166,7 @@ export function formatParsedSummary(p: ParsedVoiceInput): string {
   return parts.join(" · ");
 }
 
-function ordSuffix(n: number): string {
+export function ordSuffix(n: number): string {
   const s = ["th","st","nd","rd"];
   const v = n % 100;
   return n + (s[(v - 20) % 10] || s[v] || s[0]);

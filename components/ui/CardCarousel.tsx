@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence, PanInfo } from "framer-motion";
-import { Wallet, ChevronLeft, ChevronRight } from "lucide-react";
+import { Wallet, ChevronLeft, ChevronRight, Pencil } from "lucide-react";
 import { CountUp } from "./CountUp";
 
 interface Card {
@@ -18,11 +18,12 @@ interface Card {
 
 interface CardCarouselProps {
   cards: Card[];
+  onEdit?: (card: Card) => void;
 }
 
 const DRAG_THRESHOLD = 50;
 
-export function CardCarousel({ cards }: CardCarouselProps) {
+export function CardCarousel({ cards, onEdit }: CardCarouselProps) {
   const [active, setActive] = useState(0);
   const [direction, setDirection] = useState(0);
 
@@ -105,7 +106,17 @@ export function CardCarousel({ cards }: CardCarouselProps) {
                     {card.name}
                   </div>
                 </div>
-                <Wallet className="w-6 h-6 text-white/50" />
+                <div className="flex items-center gap-2">
+                  {onEdit && (
+                    <button
+                      onClick={(e) => { e.stopPropagation(); onEdit(card); }}
+                      className="w-7 h-7 rounded-lg bg-white/15 hover:bg-white/25 flex items-center justify-center transition-colors"
+                    >
+                      <Pencil className="w-3.5 h-3.5 text-white/70" />
+                    </button>
+                  )}
+                  <Wallet className="w-6 h-6 text-white/50" />
+                </div>
               </div>
 
               <div className="relative z-10 text-white/50 text-sm tracking-[0.25em] mb-3">

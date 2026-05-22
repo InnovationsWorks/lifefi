@@ -22,6 +22,7 @@ interface AppContextValue {
   addBill: (b: Omit<Bill, 'id'>) => void;
   payBill: (id: string) => void;
   addCard: (c: Omit<CreditCard, 'id'>) => void;
+  updateCard: (id: string, updates: Partial<Omit<CreditCard, 'id'>>) => void;
   addUtility: (u: Omit<Utility, 'id'>) => void;
   addConnectedBank: (bank: ConnectedBank) => void;
   togglePrivacy: () => void;
@@ -91,6 +92,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
     supabase.from('credit_cards').insert(newCard).then(() => {});
   }, []);
 
+  const updateCard = useCallback((id: string, updates: Partial<Omit<CreditCard, 'id'>>) => {
+    setCards((p) => p.map((c) => c.id === id ? { ...c, ...updates } : c));
+    touch();
+    supabase.from('credit_cards').update(updates).eq('id', id).then(() => {});
+  }, []);
+
   const addUtility = useCallback((u: Omit<Utility, 'id'>) => {
     setUtilities((p) => [...p, { ...u, id: uid() }]);
     touch();
@@ -107,7 +114,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const togglePrivacy = useCallback(() => setPrivacy((p) => !p), []);
 
   return (
-    <AppContext.Provider value={{ bills, cards, utilities, connectedBanks, privacyMode, lastUpdated, userName, addBill, payBill, addCard, addUtility, addConnectedBank, togglePrivacy }}>
+    <AppContext.Provider value={{ bills, cards, utilities, connectedBanks, privacyMode, lastUpdated, userName, addBill, payBill, addCard, updateCard, addUtility, addConnectedBank, togglePrivacy }}>
       {children}
     </AppContext.Provider>
   );
